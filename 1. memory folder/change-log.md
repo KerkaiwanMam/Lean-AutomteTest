@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-11-10 — CL-007 · เชื่อม GitHub และ push (ผู้ใช้ให้ repo)
+
+| # | จุดที่ทำ | รายละเอียด |
+|---|---|---|
+| 1 | Remote | `origin` = `https://github.com/KerkaiwanMam/Lean-AutomteTest.git` (ใช้ชื่อตามที่ผู้ใช้ให้ทุกตัวอักษร — สะกด "Automte") |
+| 2 | ตรวจก่อน push | `gh` ไม่ได้ติดตั้ง · API แบบไม่ล็อกอินตอบ 404 → repo เป็น private หรือไม่มี · `git ls-remote` (อ่านอย่างเดียว) ผ่านโดยไม่มี error และไม่มี ref → repo มีจริง เข้าถึงได้ และว่างเปล่า |
+| 3 | Push | `git push -u origin main` สำเร็จ; `origin/main` = `757272b` (ตรวจด้วย ls-remote) · ไม่ได้ใช้ force |
+| 4 | ผล pipeline | **ยังไม่เห็น** — เปิด github.com ใน browser pane ไม่ได้ (ไม่ได้รับอนุญาต) และไม่มี `gh`; ไม่ได้ดึง token จาก credential store มาเรียก API เอง |
+| 5 | ความเสี่ยงที่ระบุไว้ | repo เป็น private จึงไม่เปิดเผย `docs/instructor/*`; ถ้าจะเปิดเป็น public ต้องย้ายไฟล์เฉลยออกก่อน |
+
+---
+
 ## 2026-11-10 — CL-006 · Git commit แรก (ผู้ใช้สั่ง "Commit now")
 
 | # | จุดที่ทำ | รายละเอียด |
