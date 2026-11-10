@@ -60,7 +60,7 @@ Checklist (ใช้ใน PR):
 | 3 Defined | automation ใน CI, pyramid, test data strategy |
 | 4 Measured | metrics, quality gates, flaky management, NFR อัตโนมัติ |
 | 5 Optimizing | whole-team quality, shift-left/right, data-driven improvement |
-ตารางนี้เป็นฉบับย่อของหลักสูตร โดยตั้งชื่อระดับตาม **TMMi** (5 ระดับแบบ staged: Initial, Managed, Defined, Measured, Optimization — ต้องผ่านทุก process area ของระดับหนึ่งก่อนขึ้นระดับถัดไป) ส่วนคำอธิบายแต่ละระดับเป็นตัวอย่างของหลักสูตรเอง ไม่ใช่นิยามทางการ · อีกโมเดลคือ **TPI NEXT** (Sogeti) แบบ continuous ที่ประเมินและปรับปรุงทีละ key area ได้
+ตารางนี้เป็นฉบับย่อของหลักสูตร โดยตั้งชื่อระดับตาม **TMMi** (5 ระดับแบบ staged: Initial, Managed, Defined, Measured, Optimization — ต้องผ่านทุก process area ของระดับหนึ่งก่อนขึ้นระดับถัดไป · ชื่อระดับนี้อ้างจากแหล่งรอง ยังไม่ได้ตรวจกับเอกสาร TMMi Model ฉบับเต็ม) ส่วนคำอธิบายแต่ละระดับเป็นตัวอย่างของหลักสูตรเอง ไม่ใช่นิยามทางการ · อีกโมเดลคือ **TPI NEXT** (Sogeti) แบบ continuous ที่ประเมินและปรับปรุงทีละ key area ได้
 
 ## 📖 6. Leadership & communication
 - **รายงานผู้บริหาร:** 1 หน้า — สถานะ (🟢🟠🔴), ความเสี่ยงหลัก 3 ข้อ, สิ่งที่ต้องการให้ตัดสินใจ — ไม่ใช่ตาราง pass/fail 500 แถว

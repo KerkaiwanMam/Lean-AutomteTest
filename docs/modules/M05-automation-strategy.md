@@ -45,7 +45,7 @@ Automation = **การตรวจสอบซ้ำ (checking)** ที่ร
 | **Playwright** | TS/JS, Python, Java, .NET | auto-wait, multi-browser, API testing, trace viewer, เร็ว, parallel ในตัว | ต้องเขียนโค้ด | ทีมที่มี dev/SDET, web app สมัยใหม่ |
 | **Robot Framework** | keyword (Python ข้างหลัง) | อ่านง่ายสำหรับ non-programmer, library เยอะ (Browser, Selenium, Requests, DB, SSH, Appium), report สวย | logic ซับซ้อนเขียนยาก, ต้องออกแบบ keyword ดีๆ | ทีม QA ผสม, องค์กรใหญ่, ทดสอบหลายระบบ (web+API+DB+mainframe/SSH) |
 | **Selenium WebDriver** | หลายภาษา | มาตรฐาน W3C, ecosystem ใหญ่, Grid | ต้องจัดการ wait เอง, ช้ากว่า | legacy project, องค์กรที่ลงทุนไปแล้ว |
-| **Cypress** | JS/TS | DX ดี, time-travel debug | multi-tab/iframe ข้าม origin จำกัด | frontend team |
+| **Cypress** | JS/TS | DX ดี, time-travel debug | ควบคุมได้ทีละ browser (หลาย tab ต้องใช้ plugin `@cypress/puppeteer`) · แต่ละ test จำกัดที่ 1 superdomain (ข้าม origin ต้องใช้ `cy.origin`) | frontend team |
 | **Postman/Newman** | JS (scripts) | ง่าย, ใช้ร่วมกับ dev/BA | ไม่เหมาะกับ logic ซับซ้อน | API exploratory + smoke |
 | **k6 / JMeter / Gatling** | JS / GUI / Scala | performance | – | load/stress |
 | **Appium** | หลายภาษา | mobile native/hybrid | setup ยาก | mobile |

@@ -143,6 +143,6 @@
 | ISTQB Certified Tester Foundation Level (CTFL v4) | M01–M05 |
 | ISTQB Test Automation Engineering (CTAL-TAE) | M05, M15–M18, M20 |
 | ISTQB Foundation Level Agile Tester (CTFL-AT) | M04 |
-| ISTQB Test Automation Strategy (CT-TAS, Specialist — ต้องมี CTFL ก่อน) | M05, M20 |
+| ISTQB Test Automation Strategy (CT-TAS, Specialist — ต้องมี Foundation Level v4.0 หรือรุ่นก่อนหน้า และประสบการณ์ที่เหมาะสม) | M05, M20 |
 | Robot Framework Certified Professional (RFCP) — Robot Framework Foundation | M11, M12 |
 | Playwright — ไม่พบใบรับรองทางการจาก Microsoft/ทีม Playwright (มีเฉพาะของผู้ให้บริการรายอื่น) — ใช้ Capstone เป็น portfolio | M09, M10, M22 |

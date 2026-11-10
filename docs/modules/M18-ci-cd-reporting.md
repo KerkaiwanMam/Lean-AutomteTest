@@ -69,7 +69,7 @@ npx playwright merge-reports --reporter html ./all-blob-reports
 
 ## 📖 5. Docker ใน pipeline
 - Build image ของแอปครั้งเดียว ใช้ทุก job (ลดเวลาและ "build ต่างกัน")
-- รัน test ใน **image ของ Playwright** (`mcr.microsoft.com/playwright:<version>-noble`) → browser/font ตรงกันทุกเครื่อง (สำคัญมากกับ visual test)
+- รัน test ใน **image ของ Playwright** (`mcr.microsoft.com/playwright:v<version>-noble` — tag มีตัว `v` นำหน้าเลขเวอร์ชัน และควรตรึงให้ตรงกับเวอร์ชัน Playwright ของโปรเจกต์) → browser/font ตรงกันทุกเครื่อง (สำคัญมากกับ visual test)
 - `services:` ใน GitHub Actions/GitLab เพื่อรัน DB/mock คู่กับ job
 - Cache: `actions/setup-node` cache npm, `actions/setup-python` cache pip, cache `~/.cache/ms-playwright`
 

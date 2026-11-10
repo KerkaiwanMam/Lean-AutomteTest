@@ -64,7 +64,7 @@ await expect(page).toHaveScreenshot({ fullPage: true, mask: [page.getByTestId('c
 ```
 - ครั้งแรก: `npx playwright test --project=visual --update-snapshots` สร้าง baseline → commit baseline
 - ใน Bug Mode การ์ด 15 ของ `/lab` เลื่อน 6px และเปลี่ยนสีปุ่ม → test ต้องจับได้
-- ความเสถียร: รันใน Docker เดียวกัน, **mask** ส่วนที่เปลี่ยน (วันที่, ตัวเลขสุ่ม, รูปโฆษณา), ปิด animation (`animations: 'disabled'`), ขนาด viewport คงที่, ฟอนต์ติดตั้งครบ
+- ความเสถียร: รันใน Docker เดียวกัน, **mask** ส่วนที่เปลี่ยน (วันที่, ตัวเลขสุ่ม, รูปโฆษณา), ปิด animation (`animations: 'disabled'` ซึ่งเป็นค่าเริ่มต้นของ `toHaveScreenshot` อยู่แล้ว), ขนาด viewport คงที่, ฟอนต์ติดตั้งครบ
 - เครื่องมือ SaaS: Percy, Applitools (AI diff), Chromatic (Storybook)
 
 ## 📖 4. Security Testing พื้นฐาน (สำหรับ QA)

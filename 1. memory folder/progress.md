@@ -1,6 +1,6 @@
 # Progress & Backlog
 
-_Last updated: 2026-11-10 (CL-009)_
+_Last updated: 2026-11-10 (CL-010)_
 
 ## Status
 | Item | Status |
@@ -8,7 +8,7 @@ _Last updated: 2026-11-10 (CL-009)_
 | Course v1.0 (22 modules) | ✅ written · structure audit 22/22 |
 | ShopLab + reference tests | ✅ green (Playwright 110, Robot 45, unit 12, Newman 29) · Bug Mode 13/13 caught |
 | Content workflow & scripts | ✅ set up (CL-002) |
-| Fact-check round 1 | ✅ queue 103 → todo 0 (22 verified · 18 corrections · 10 internal · 61 skip) · references: 27 verified, 20 candidate, 2 superseded (49 total) (CL-003) |
+| Fact-check rounds 1-2 | done (CL-003, CL-010): queue 105 claims, todo 0 (22 verified, 12 corrected, 10 internal, 61 skip) · references: 60 total — 46 verified, 4 partially verified, 2 superseded, 8 candidate (6 books not opened, Google flaky blog, Marick origin) |
 
 ## Backlog (priority order)
 ### P0
@@ -17,7 +17,7 @@ _Last updated: 2026-11-10 (CL-009)_
 3. `docker build` of `practice-app/Dockerfile` — **partially verified (2026-11-10, CL-004):** Docker/Podman/WSL not installed on this machine, so no real image was built. Dockerfile steps were replayed natively (npm ci --omit=dev on only the COPY'd files, run with the image's env, health check, NODE_ENV=production hides hooks); `.dockerignore` added. Still to do on a machine with Docker: `docker build`, `docker run`, confirm the `node:24-alpine` tag, `wget` HEALTHCHECK, and the BUG_MODE=1 example in M16
 
 ### P1
-4. Fact-check round 2 — (a) read in full the sources marked "via search summary" (b) manual pass for facts the extractor cannot catch (plain-text claims without numbers/standard names) (c) remaining `candidate` references
+4. ~~Fact-check round 2~~ done (CL-010). Left over: open the 6 books (REF-040..044, 047) to check bibliographic data and the Myers quote wording; get the Kuhn 2004 PDF to check the >70% figure before re-adding it; read the TMMi Model document; have a native-Thai QA reviewer read the course
 5. ~~Files that labs say the instructor provides~~ ✅ done (CL-005): `flaky.spec.ts` (+ solution), `bad-checkout.spec.ts`, `pricing.csv` (+ solution), `docs/instructor/exercise-keys.md`
 6. Skills Assessments 1–4 (tasks + rubrics)
 7. Final exam question bank (60 questions, M22)

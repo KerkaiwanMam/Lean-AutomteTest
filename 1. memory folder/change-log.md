@@ -5,6 +5,39 @@
 
 ---
 
+## 2026-11-10 — CL-010 · Fact-check รอบที่ 2 (คิว 105 claims → todo 0)
+
+**ขอบเขต:** (a) เปิดอ่านต้นฉบับโดยตรงของแหล่งที่รอบ 1 อ่านแค่สรุป (b) ตรวจพฤติกรรมเครื่องมือที่เขียนไว้ในโมดูล (c) แหล่งที่ยังเป็น candidate (d) ข้อเท็จจริงในข้อความธรรมดาที่สคริปต์จับไม่ได้
+**ผลรวมแหล่งอ้างอิง:** 60 แหล่ง — ยืนยันแล้ว 46 · ยืนยันบางส่วน 4 · ถูกแทนที่ 2 · ยังไม่ได้เปิด 8 (หนังสือ 6 เล่มที่ไม่มีให้เปิด, บล็อก Google, ที่มา Marick)
+**ผลคิว:** skip 61 · verified 22 · corrected 12 · internal 10 · todo 0
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | M02 §6 Pairwise | "…(ในข้อมูลอุปกรณ์การแพทย์ > 70%) … ไม่พบเกิน 6 ปัจจัย … ประมาณ **12–16 cases**" | ใช้เฉพาะที่หน้า NIST ระบุ (ส่วนใหญ่ 1–2 ปัจจัย; เกือบทั้งหมด 1–6 ปัจจัย) + ผลคำนวณจริง: 96 combination, 66 คู่, ชุด pairwise **12–15 cases** (ขั้นต่ำ 12) | ตัวเลข 70% **ไม่อยู่ใน abstract** และเปิด PDF ต้นฉบับไม่ได้ (ดาวน์โหลดได้เป็นหน้า HTML ของ archive) จึงถอดออกแทนที่จะอ้างลอยๆ; "12–16" คลาดจากที่คำนวณได้ | REF-060, REF-067 |
+| 2 | M11 เฉลยข้อ 1 (`Fill Secret`) | "ค่าไม่ถูกเขียนลงใน log.html/output.xml" | ไม่บันทึกใน log ของ Robot **แต่ถ้าเปิด Playwright debug log ค่าลับจะโผล่เป็นข้อความธรรมดา** + 3 วิธีส่งค่า (`$var`, `%ENV`, ชนิด `Secret` ของ RF 7.4+) | ซอร์สของ Browser library v21.0.0 ระบุข้อยกเว้นนี้ — ข้อความเดิมเป็นจริงเพียงบางส่วนและอาจทำให้เข้าใจว่าปลอดภัยเสมอ | REF-022 |
+| 3 | M18 §5 Docker | `mcr.microsoft.com/playwright:<version>-noble` | `…:v<version>-noble` (tag มี `v` นำหน้า) + ตรึงให้ตรงกับเวอร์ชัน Playwright | เอกสาร Playwright Docker ระบุรูปแบบ `v<version>-<codename>` | REF-091 |
+| 4 | M05 ตารางเครื่องมือ (Cypress) | "multi-tab/iframe ข้าม origin จำกัด" | "ควบคุมได้ทีละ browser (หลาย tab ต้องใช้ plugin `@cypress/puppeteer`) · 1 superdomain ต่อ test (ข้าม origin ใช้ `cy.origin`)" | ข้อความเดิมคลุมเครือ/ไม่ตรงถ้อยคำของ trade-offs page; (ส่วน iframe ข้าม origin อ่านจาก trade-offs ไม่ได้จึงตัดออก) | REF-088 |
+| 5 | M19 §3 Visual | "ปิด animation (`animations: 'disabled'`)" | เพิ่ม "ซึ่งเป็นค่าเริ่มต้นของ `toHaveScreenshot` อยู่แล้ว" | API reference ระบุว่า `"disabled"` เป็น default | REF-092 |
+| 6 | 01-course-overview (CT-TAS) | "ต้องมี CTFL ก่อน" | "ต้องมี Foundation Level v4.0 หรือรุ่นก่อนหน้า และประสบการณ์ที่เหมาะสม" | ตามหน้า ISTQB (ยืนยันตรง) | REF-077 |
+| 7 | M20 §5 (TMMi) | ระบุชื่อ 5 ระดับเป็นข้อเท็จจริง | เพิ่มว่า "ชื่อระดับอ้างจากแหล่งรอง ยังไม่ได้ตรวจกับเอกสาร TMMi Model ฉบับเต็ม" | หน้า tmmi.org ไม่ได้ระบุชื่อระดับ (แหล่งรองให้ชื่อ Measured / Management and Measurement ต่างกัน) | REF-082 |
+| 8 | `3. asset folder/quotes.md` | Q1, Q2 สถานะ candidate | `verified (แหล่งรอง)` + ข้อควรระวัง: เลขหน้าของ Dijkstra ต่างกันตามฉบับ (EWD249 หน้า 7 ตาม Wikiquote; หน้า 6 ในฉบับ 1972); Myers อ้างจากบทวิจารณ์ (3rd ed. หน้า 6) ยังไม่ได้เปิดหนังสือ | ยืนยันได้เพียงว่าคำพูดมีที่มา ไม่ใช่ถ้อยคำเป๊ะจากต้นฉบับ | REF-096, REF-040 |
+
+**ยืนยันแล้วว่าถูกต้อง (ไม่ต้องแก้):**
+- **มาตรฐาน/เอกสารทางการ:** W3C WebDriver (Recommendation 5 มิ.ย. 2018, "derived from Selenium WebDriver") · RF 4.0 (ยกเลิก criticality, `--skiponfailure`, `--noncritical/--critical` เป็น alias ที่เลิกใช้) · RF 7.0 (`VAR`, `scope=SUITE`, วางจำหน่าย 11 ม.ค. 2024) · CT-TAS (Specialist; ข้อสอบ 40 ข้อ/ผ่าน 32/60 นาที) · RFCP (ผู้ออก Robot Framework Foundation, v1.1.0) · OpenAPI 3.0.3 + `nullable` · POUR ตามหน้า WAI · ISO 29119 (Part 1:2022; Parts 2–4:2021)
+- **พฤติกรรมเครื่องมือ:** Playwright — sharding/blob/`merge-reports`, ตัวเลือกของ `toHaveScreenshot` (animations/fullPage/mask/maxDiffPixelRatio/maxDiffPixels/threshold), `page.clock.setFixedTime`, `expect.soft/poll/toPass/toHaveValues`, locators เป็น strict และ query DOM ใหม่ทุกครั้ง · pabot (`--processes`, `--testlevelsplit`, `Acquire Lock`, `Run Setup Only Once`) · k6 thresholds · axe tags · npm ci · Postman cookie jar · Browser library keywords
+- **อื่นๆ:** นิยาม 2-value/3-value BVA ใน M02 ตรง ISTQB · ตัวอย่าง JS ใน M08 (`[3,1,10].sort()` → `[1,10,3]`, `0.1+0.2===0.3` → false) รันจริง · Luo et al. (3 สาเหตุหลัก) · Accelerate 4 metrics · Bossavit
+- **ยืนยันจากการรันจริงของเรา:** `page.route(..., {times: 1})`, `protocolProfileBehavior.disableCookies`, ลำดับการทำงานของ pabot กับ venv
+
+**Verification (ขั้นที่ 3):** `compare_versions.py` กับ backup — ไฟล์ที่แก้ 7 ไฟล์ + quotes.md เหมือนต้นฉบับ 98.1–99.7% (quotes.md 81% เพราะไฟล์เล็ก), ไม่มีหัวข้อหาย/เพิ่ม, ไม่มีตัวเลข "12–16" เหลือค้าง · `run_all.py` ผ่านทั้ง 4 ชุด
+
+**ข้อจำกัดที่ยังเหลือ:**
+- แหล่งที่ยืนยัน "via search summary": ISO 29119, Luo et al., Accelerate, ISTQB BVA white paper, TMMi/TPI NEXT, Healenium, mutation tools (Stryker/PIT/mutmut), Playwright MCP — เป็นเพียงว่า "มีอยู่จริงและตรงโดยรวม" ไม่ได้อ่านต้นฉบับเต็ม
+- หนังสือ 6 เล่ม (REF-040…044, 047) ไม่ได้เปิด — หลักสูตรอ้างเป็นหลักการ/บรรณานุกรม ไม่ได้ยกข้อความตรง ยกเว้นคำพูด Myers (ดู quotes.md)
+- ข้อความธรรมดาที่ไม่มีตัวเลข/ชื่อมาตรฐานยังตรวจได้เฉพาะที่สุ่มอ่าน (ประมาณ 20 ข้อ) ไม่ได้อ่านทั้งหมดทุกบรรทัด
+- ภาษาไทยยังไม่ผ่านผู้ตรวจที่เป็นเจ้าของภาษา
+
+---
+
 ## 2026-11-10 — CL-009 · ผู้ใช้ตัดสินใจ: เก็บ repo เป็น Public
 
 | # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล |

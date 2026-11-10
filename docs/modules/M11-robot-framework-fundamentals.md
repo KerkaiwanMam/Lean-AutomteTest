@@ -166,7 +166,7 @@ robot --rerunfailed results/output.xml --output rerun.xml tests     # รัน�
 
 <details><summary>เฉลย</summary>
 
-1. ค่าไม่ถูกเขียนลงใน log.html/output.xml — ป้องกันข้อมูลลับรั่วจาก report
+1. keyword นี้ไม่บันทึกค่าลับลงใน log ของ Robot (log.html/output.xml) — ป้องกันข้อมูลลับรั่วจาก report · **ข้อควรระวัง:** ถ้าเปิด Playwright debug log ค่าลับจะโผล่เป็นข้อความธรรมดาใน debug log นั้น · ส่งค่าได้ 3 แบบ: ตัวแปรท้องถิ่นแบบ `$password` (ไม่มีวงเล็บปีกกา), ตัวแปรสภาพแวดล้อมแบบ `%PASSWORD`, หรือชนิด `Secret` ใน Robot Framework 7.4+ (วิธีที่ไลบรารีแนะนำ)
 2. `${USER}[username]` เข้าถึงค่าใน dict · `&{USER}` ใช้ประกาศ หรือกระจาย dict เป็น named arguments
 3. ทำงานเสมอ — จึงใช้สำหรับ cleanup
 4. แบบแรก **retry** จนตรงหรือ timeout (assertion engine) · แบบหลังอ่านครั้งเดียว อาจ flaky

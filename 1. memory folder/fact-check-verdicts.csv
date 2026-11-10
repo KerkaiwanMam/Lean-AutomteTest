@@ -63,3 +63,17 @@ M20-quality-strategy-leadership.md,DORA,verified,REF-068,Change failure rate and
 M21-ai-assisted-testing.md,Applitools,corrected,REF-084,"Was stated as fact; now attributed to the vendor, no independent benchmark found"
 M22-capstone-and-career.md,ISTQB CTFL → CTAL-TAE,verified,REF-001;REF-002;REF-079,All three certifications exist
 M22-capstone-and-career.md,skills exam,corrected,,"Was ""Practical Skills Exam"" (exact CCNA exam name not verified) — wording made generic"
+# --- round 2 (CL-010) ---
+M02-test-design-techniques.md,Kuhn,corrected,REF-060;REF-067,"Round 2: removed the unverified "">70% medical-device"" figure (not in the abstract; PDF unavailable); now states only what NIST page says (most failures 1-2 parameters; 1-6 factors) and a computed pairwise result (96 combos, 66 pairs, 12-15 cases, lower bound 12)"
+M02-test-design-techniques.md,BVA,verified,REF-095,2-value / 3-value BVA definitions match ISTQB
+M05-automation-strategy.md,Cypress,corrected,REF-088,"Was ""multi-tab/iframe cross-origin limited""; now: one browser at a time (tabs via @cypress/puppeteer), one superdomain per test (cy.origin)"
+M05-automation-strategy.md,มาตรฐาน W3C,verified,REF-080,Direct W3C read in round 2
+M11-robot-framework-fundamentals.md,Fill Secret,corrected,REF-022,"Was ""value is not written to log.html/output.xml""; now adds the Playwright debug-log caveat and the three ways to pass the secret"
+M12-robot-framework-advanced.md,quarantine,verified,REF-081,Direct read of RF 4.0 release notes in round 2
+M18-ci-cd-reporting.md,mcr.microsoft.com,corrected,REF-091,"Was image tag <version>-noble; official tag is v<version>-noble"
+M19-non-functional-testing.md,animations,corrected,REF-092,"Added that animations: 'disabled' is already the toHaveScreenshot default"
+M19-non-functional-testing.md,POUR,verified,REF-004,Direct W3C WAI read in round 2
+01-course-overview.md,CT-TAS,corrected,REF-077,"Was ""needs CTFL first""; official: Foundation Level v4.0 or earlier + practical experience"
+M20-quality-strategy-leadership.md,TMMi,corrected,REF-082,"Level names come from secondary sources; tmmi.org page does not list them — M20 now says so"
+M06-toolchain-git-cli.md,npm ci,verified,REF-089,Direct npm docs read
+M11-robot-framework-fundamentals.md,keyword นี้ไม่บันทึกค่าลับ,corrected,REF-022,"Round 2: quiz answer rewritten with the Playwright debug-log caveat (Browser library source v21.0.0)"
