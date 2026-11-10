@@ -1,7 +1,7 @@
 import { test, expect } from '../../src/fixtures/test';
 
 /**
- * 🔒 INSTRUCTOR ONLY — solutions for tests/exercises/flaky.spec.ts (Lab 17.2).
+ * ⚠️ SPOILER (instructor key; this repository is public) — solutions for tests/exercises/flaky.spec.ts (Lab 17.2).
  * Same delays as the learner file, so a pass here proves the fix is robust, not lucky.
  *
  *   npx playwright test tests/exercises/flaky.solution.spec.ts --project=exercises --repeat-each=20 --workers=8

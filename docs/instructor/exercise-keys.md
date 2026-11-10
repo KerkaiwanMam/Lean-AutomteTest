@@ -1,6 +1,6 @@
-# 🔒 Instructor Only — Exercise Keys (Labs 12.2, 15.4, 17.2)
+# ⚠️ Spoiler — Instructor Exercise Keys (Labs 12.2, 15.4, 17.2)
 
-> อย่าแจกไฟล์นี้ก่อนผู้เรียนลองทำเอง · ผลที่วัดได้: Windows 11, Chrome, 20 รอบ, 8 workers, 2026-11-10 (ตัวเลขอาจต่างบนเครื่องอื่น แต่ลำดับควรใกล้เคียง)
+> **repo นี้เป็น public — ไฟล์นี้อ่านได้ทั่วไป** บอกผู้เรียนให้ลองทำเองก่อนเปิดไฟล์นี้ (หรือแจก repo ฉบับที่ตัด `docs/instructor/` และไฟล์ `*.solution*` ออกเมื่อสอนจริง) · ผลที่วัดได้: Windows 11, Chrome, 20 รอบ, 8 workers, 2026-11-10 (ตัวเลขอาจต่างบนเครื่องอื่น แต่ลำดับควรใกล้เคียง)
 
 ## Lab 17.2 — Fix the flaky (`tests/playwright/tests/exercises/flaky.spec.ts`)
 

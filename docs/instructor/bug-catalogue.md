@@ -1,6 +1,6 @@
-# 🔒 Instructor Only — ShopLab Bug Catalogue (Bug Mode)
+# ⚠️ Spoiler — ShopLab Bug Catalogue (Bug Mode, instructor key)
 
-> อย่าแจกไฟล์นี้ให้ผู้เรียนก่อน Capstone · เปิด Bug Mode: `POST /api/test/config {"bugMode": true}` หรือ `BUG_MODE=1`
+> **repo นี้เป็น public — ไฟล์นี้อ่านได้ทั่วไป** ผู้เรียนควรหาบั๊กเองก่อนเปิดไฟล์นี้ (หรือแจก repo ฉบับที่ตัด `docs/instructor/` ออกก่อน Capstone) · เปิด Bug Mode: `POST /api/test/config {"bugMode": true}` หรือ `BUG_MODE=1`
 > รายการสั้นแบบ machine-readable: `GET /api/test/config?reveal=1`
 
 | ID | Area | Defect | Requirement | Technique that finds it | Where in code | Reference tests that catch it |

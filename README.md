@@ -73,7 +73,7 @@ k6 run tests/performance/k6-smoke-load.js
 │   ├── modules/M01…M22               คู่มือการสอน (ทฤษฎี + labs + quiz + checklist)
 │   ├── templates/                    test plan/case/strategy/summary, bug report, framework review
 │   ├── cheatsheets/                  Playwright, Robot Framework, Locators
-│   └── instructor/bug-catalogue.md   เฉลย Bug Mode (ผู้สอนเท่านั้น)
+│   └── instructor/bug-catalogue.md   เฉลย Bug Mode (⚠️ spoiler — repo นี้เป็น public)
 ├── practice-app/                     ShopLab: Express 5 + SQLite (node:sqlite) + HTML/JS
 │   ├── src/                          server, routes, pricing, config (bug mode/chaos), openapi
 │   ├── public/                       UI: shop, cart, checkout, orders, admin, lab, a11y, api-docs

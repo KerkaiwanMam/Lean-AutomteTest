@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-11-10 — CL-009 · ผู้ใช้ตัดสินใจ: เก็บ repo เป็น Public
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล |
+|---|---|---|---|---|
+| 1 | หัวไฟล์เฉลย 6 แห่ง (`README.md` บรรทัด 76, `docs/instructor/bug-catalogue.md`, `docs/instructor/exercise-keys.md`, `flaky.solution.spec.ts`, `06_pricing_datadriver.robot`) | "🔒 Instructor Only / อย่าแจกไฟล์นี้ / ผู้สอนเท่านั้น" | "⚠️ Spoiler … repo นี้เป็น public" + คำแนะนำให้ผู้เรียนลองเองก่อน หรือแจก repo ฉบับตัดเฉลยตอนสอนจริง | ข้อความเดิมไม่ตรงความจริงเมื่อ repo เป็น public — ทำให้ผู้สอนเข้าใจผิดว่าไฟล์ถูกซ่อน |
+
+ไม่ได้ย้ายหรือลบไฟล์เฉลย (ผู้ใช้เลือกเก็บ public) · หมายเหตุสำหรับอนาคต: ถ้าจะซ่อนเฉลยภายหลัง ต้องเขียนประวัติ Git ใหม่ (ลบไฟล์ใน commit ใหม่ไม่พอ)
+
+---
+
 ## 2026-11-10 — CL-008 · อ่านผล pipeline รอบแรก + แก้ Robot test ที่ไม่เสถียร
 
 **ผล GitHub Actions (อ่านผ่าน API สาธารณะหลัง repo เป็น public):** run `757272b` = failure (เฉพาะ job `robot` ขั้น pabot; `unit`, `playwright` ×2, `api-newman` ผ่าน) · run `c26980a` = **success ทั้ง 5 jobs** (โค้ด test เหมือนกัน) → pipeline ใช้งานบน Linux ได้ แต่มี test ไม่เสถียรหนึ่งตัว

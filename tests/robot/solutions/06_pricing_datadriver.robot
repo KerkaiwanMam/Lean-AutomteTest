@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation       🔒 INSTRUCTOR ONLY — reference solution for Lab 12.2 (DataDriver).
+Documentation       ⚠️ SPOILER (instructor key; this repository is public) — reference solution for Lab 12.2 (DataDriver).
 ...                 The pricing decision table lives in ../data/pricing.csv; a BA can add or change a row
 ...                 and a new test case appears without touching this file.
 ...

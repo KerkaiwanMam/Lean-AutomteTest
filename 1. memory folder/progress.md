@@ -1,6 +1,6 @@
 # Progress & Backlog
 
-_Last updated: 2026-11-10 (CL-008)_
+_Last updated: 2026-11-10 (CL-009)_
 
 ## Status
 | Item | Status |
@@ -13,7 +13,7 @@ _Last updated: 2026-11-10 (CL-008)_
 ## Backlog (priority order)
 ### P0
 1. ~~Git init + first commit~~ ✅ done (CL-006): commit `372325d` on `main`, 169 files, local only — **not pushed** (no remote configured); author identity was set for that one commit only (`git config user.name/user.email` is still empty on this machine)
-2. CI pipeline — **ทำงานบน Linux แล้ว (CL-008):** run `c26980a` เขียวทั้ง 5 jobs; run แรกแดงที่ `robot` (race ใน `Log Out`) แก้แล้วและยืนยันด้วย stress 8 process ×3 · run หลังแก้ `039c77d` (id 42827331070) เขียวทั้ง 5 jobs — แต่รันเขียวครั้งเดียวไม่พิสูจน์ว่าหายไม่เสถียร (run `c26980a` ก็เขียวทั้งที่โค้ดเดิม); หลักฐานจริงคือ stress 8 process ล้ม 2/2 → ผ่าน 3/3 · repo ตอนนี้เป็น **public** (ผู้ใช้เปลี่ยน) — ไฟล์เฉลย `docs/instructor/*` และ `*.solution*` เปิดสาธารณะอยู่ รอผู้ใช้ตัดสินใจ
+2. CI pipeline — **ทำงานบน Linux แล้ว (CL-008):** run `c26980a` เขียวทั้ง 5 jobs; run แรกแดงที่ `robot` (race ใน `Log Out`) แก้แล้วและยืนยันด้วย stress 8 process ×3 · run หลังแก้ `039c77d` (id 42827331070) เขียวทั้ง 5 jobs — แต่รันเขียวครั้งเดียวไม่พิสูจน์ว่าหายไม่เสถียร (run `c26980a` ก็เขียวทั้งที่โค้ดเดิม); หลักฐานจริงคือ stress 8 process ล้ม 2/2 → ผ่าน 3/3 · repo ตอนนี้เป็น **public** (ผู้ใช้เปลี่ยน) — ไฟล์เฉลย `docs/instructor/*` และ `*.solution*` เปิดสาธารณะอยู่ **ผู้ใช้ตัดสินใจเก็บ public (CL-009)** — หัวไฟล์เฉลยเปลี่ยนเป็น 'Spoiler' แล้ว
 3. `docker build` of `practice-app/Dockerfile` — **partially verified (2026-11-10, CL-004):** Docker/Podman/WSL not installed on this machine, so no real image was built. Dockerfile steps were replayed natively (npm ci --omit=dev on only the COPY'd files, run with the image's env, health check, NODE_ENV=production hides hooks); `.dockerignore` added. Still to do on a machine with Docker: `docker build`, `docker run`, confirm the `node:24-alpine` tag, `wget` HEALTHCHECK, and the BUG_MODE=1 example in M16
 
 ### P1
