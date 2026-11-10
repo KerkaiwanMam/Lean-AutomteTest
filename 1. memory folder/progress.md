@@ -1,6 +1,6 @@
 # Progress & Backlog
 
-_Last updated: 2026-11-10 (CL-005)_
+_Last updated: 2026-11-10 (CL-006)_
 
 ## Status
 | Item | Status |
@@ -12,8 +12,8 @@ _Last updated: 2026-11-10 (CL-005)_
 
 ## Backlog (priority order)
 ### P0
-1. Git init + first commit (project not under version control yet)
-2. Push and run the CI pipeline (never executed; tested on Windows only)
+1. ~~Git init + first commit~~ ✅ done (CL-006): commit `372325d` on `main`, 169 files, local only — **not pushed** (no remote configured); author identity was set for that one commit only (`git config user.name/user.email` is still empty on this machine)
+2. Add a GitHub remote, push, and run the CI pipeline (never executed; tested on Windows only)
 3. `docker build` of `practice-app/Dockerfile` — **partially verified (2026-11-10, CL-004):** Docker/Podman/WSL not installed on this machine, so no real image was built. Dockerfile steps were replayed natively (npm ci --omit=dev on only the COPY'd files, run with the image's env, health check, NODE_ENV=production hides hooks); `.dockerignore` added. Still to do on a machine with Docker: `docker build`, `docker run`, confirm the `node:24-alpine` tag, `wget` HEALTHCHECK, and the BUG_MODE=1 example in M16
 
 ### P1

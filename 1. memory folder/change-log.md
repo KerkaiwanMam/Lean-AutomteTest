@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-11-10 — CL-006 · Git commit แรก (ผู้ใช้สั่ง "Commit now")
+
+| # | จุดที่ทำ | รายละเอียด |
+|---|---|---|
+| 1 | `git init -b main` | repo ใหม่ที่ root ของโปรเจกต์ |
+| 2 | Commit `372325d` | 169 ไฟล์ — หลักสูตร, ShopLab, Playwright/Robot, Postman, k6, CI, Dockerfile, โฟลเดอร์ 1–4 + `CLAUDE.md` · ไม่มี node_modules / .venv / ฐานข้อมูล / ผลรัน (ตรวจรายการ staged ก่อน commit) |
+| 3 | Identity | ตั้งเฉพาะ commit นี้ด้วย `-c user.name/user.email` (ไม่แก้ git config ของเครื่อง) · message ลงท้ายด้วย Co-Authored-By ตามกติกา |
+| 4 | สิ่งที่ไม่ได้ทำ | ไม่ push (ยังไม่มี remote) · ไม่ตั้ง `.gitattributes` — Git เตือน LF→CRLF ตอน checkout บน Windows แต่ blob ใน repo เป็น LF |
+
+---
+
 ## 2026-11-10 — CL-005 · สร้างไฟล์โจทย์ที่แล็บอ้างถึง (Backlog P1 #5)
 
 | # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
