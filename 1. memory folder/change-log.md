@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-11-10 — CL-008 · อ่านผล pipeline รอบแรก + แก้ Robot test ที่ไม่เสถียร
+
+**ผล GitHub Actions (อ่านผ่าน API สาธารณะหลัง repo เป็น public):** run `757272b` = failure (เฉพาะ job `robot` ขั้น pabot; `unit`, `playwright` ×2, `api-newman` ผ่าน) · run `c26980a` = **success ทั้ง 5 jobs** (โค้ด test เหมือนกัน) → pipeline ใช้งานบน Linux ได้ แต่มี test ไม่เสถียรหนึ่งตัว
+**หาสาเหตุ:** log/artifact ของ GitHub ต้องล็อกอิน (HTTP 403) จึงอ่านข้อความ error จริงไม่ได้ → จำลองบนเครื่องด้วย `pabot --processes 8` (CI มี CPU น้อยกว่า) → ล้ม **2/2 รอบ** ที่ test เดียว `Valid Customer Can Log In And Out`: `page.waitForNavigation: Timeout 10000ms exceeded` · **หมายเหตุ:** นี่คือการจำลองที่ให้อาการเดียวกัน ไม่ใช่การยืนยัน log ของรอบที่แดงจริงบน CI
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `tests/robot/resources/pages/login_page.resource` › `Log Out` | `Click ${NAV_LOGOUT}` แล้ว `Wait For Navigation ${BASE_URL}/login` | `Click` แล้ว `Get Url == ${BASE_URL}/login` + comment อธิบาย | เริ่มรอ **หลัง** action: ถ้าหน้าเปลี่ยนเสร็จก่อน keyword รอเก้อจน timeout; `Get Url` เป็น assertion ที่ retry | – |
+| 2 | `tests/robot/tests/ui/01_login.robot` › `Admin Lands On Back Office` | `Wait For Navigation ${BASE_URL}/admin` หลัง `Submit Credentials` | `Get Url == ${BASE_URL}/admin` | รูปแบบเดียวกัน (ยังไม่เคยล้ม แต่เสี่ยง) | – |
+| 3 | `docs/modules/M17-flaky-tests-debugging.md` §6 | ไม่มี | เพิ่มแถวกรณีศึกษา "เริ่มรอหลัง action" | ใช้เป็นตัวอย่างจริงของ race | – |
+
+**ผลหลังแก้:** `pabot --processes 8` ×3 รอบ = **44/44 ผ่านทุกรอบ** (ก่อนแก้ล้ม 2/2) · Playwright ไม่ได้รันซ้ำเพราะไม่ได้แก้ไฟล์ฝั่งนั้น
+
+---
+
 ## 2026-11-10 — CL-007 · เชื่อม GitHub และ push (ผู้ใช้ให้ repo)
 
 | # | จุดที่ทำ | รายละเอียด |

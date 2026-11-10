@@ -18,7 +18,7 @@ Valid Customer Can Log In And Out
 
 Admin Lands On Back Office
     Submit Credentials    ${ADMIN}[username]    ${ADMIN}[password]
-    Wait For Navigation    ${BASE_URL}/admin
+    Get Url    ==    ${BASE_URL}/admin
     Get Text    h1    ==    Back Office
 
 Locked Account Is Rejected

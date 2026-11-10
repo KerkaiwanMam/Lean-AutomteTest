@@ -70,6 +70,7 @@ Test ที่ผลไม่คงที่โดยที่โค้ด/ข�
 | Robot Drag And Drop ไม่ทำงาน | keyword ใช้ mouse coordinate ไม่ auto-scroll | `Scroll To Element` ก่อน + `steps=10` |
 | Newman 401 test ได้ 200 | cookie jar ส่ง cookie จาก login | `disableCookies` |
 | pabot fail 44/44 | ไม่ได้ activate venv | activate ก่อนรัน |
+| Robot job บน GitHub Actions แดงรอบแรก เขียวรอบสอง (โค้ดเหมือนกัน) — `Valid Customer Can Log In And Out` ล้มด้วย `waitForNavigation timeout` | `Click` แล้วค่อย `Wait For Navigation` — บนเครื่องช้า/โหลดสูง หน้าเปลี่ยนเสร็จก่อนเริ่มรอ จึงรอการเปลี่ยนหน้าที่ผ่านไปแล้ว (race: **เริ่มรอหลัง action**) | ใช้ assertion ที่ retry: `Get Url    ==    ${BASE_URL}/login` · พิสูจน์ซ้ำได้ด้วย `pabot --processes 8`: ก่อนแก้ล้ม 2/2 รอบ, หลังแก้ผ่าน 44/44 สามรอบ |
 
 ---
 

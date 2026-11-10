@@ -34,4 +34,7 @@ Logged In User Should Be
 
 Log Out
     Click    ${NAV_LOGOUT}
-    Wait For Navigation    ${BASE_URL}/login
+    # NOT "Wait For Navigation" after the click: on a slow/loaded runner the page may already have
+    # navigated before the wait starts, and the keyword then waits for a navigation that never comes.
+    # Get Url is an assertion that retries until the URL matches (or times out).
+    Get Url    ==    ${BASE_URL}/login
