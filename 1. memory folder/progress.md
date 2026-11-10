@@ -1,0 +1,31 @@
+# Progress & Backlog
+
+_Last updated: 2026-11-10 (CL-005)_
+
+## Status
+| Item | Status |
+|---|---|
+| Course v1.0 (22 modules) | ✅ written · structure audit 22/22 |
+| ShopLab + reference tests | ✅ green (Playwright 110, Robot 45, unit 12, Newman 29) · Bug Mode 13/13 caught |
+| Content workflow & scripts | ✅ set up (CL-002) |
+| Fact-check round 1 | ✅ queue 103 → todo 0 (22 verified · 18 corrections · 10 internal · 61 skip) · references: 27 verified, 20 candidate, 2 superseded (49 total) (CL-003) |
+
+## Backlog (priority order)
+### P0
+1. Git init + first commit (project not under version control yet)
+2. Push and run the CI pipeline (never executed; tested on Windows only)
+3. `docker build` of `practice-app/Dockerfile` — **partially verified (2026-11-10, CL-004):** Docker/Podman/WSL not installed on this machine, so no real image was built. Dockerfile steps were replayed natively (npm ci --omit=dev on only the COPY'd files, run with the image's env, health check, NODE_ENV=production hides hooks); `.dockerignore` added. Still to do on a machine with Docker: `docker build`, `docker run`, confirm the `node:24-alpine` tag, `wget` HEALTHCHECK, and the BUG_MODE=1 example in M16
+
+### P1
+4. Fact-check round 2 — (a) read in full the sources marked "via search summary" (b) manual pass for facts the extractor cannot catch (plain-text claims without numbers/standard names) (c) remaining `candidate` references
+5. ~~Files that labs say the instructor provides~~ ✅ done (CL-005): `flaky.spec.ts` (+ solution), `bad-checkout.spec.ts`, `pricing.csv` (+ solution), `docs/instructor/exercise-keys.md`
+6. Skills Assessments 1–4 (tasks + rubrics)
+7. Final exam question bank (60 questions, M22)
+8. Lab solution guides for instructors
+9. Native Thai QA reviewer pass (language + practice fit)
+
+### P2
+10. Run k6 · 11. ESLint/Prettier + Robocop/Robotidy configs · 12. Firefox/WebKit/mobile projects · 13. Robot Bug Mode result table · 14. Visual baselines from CI/Docker
+
+### P3
+Slides, online quizzes, GraphQL/WebSocket, mobile + Appium, capstone auto-grading (see `docs/00-project-plan.md`)

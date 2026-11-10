@@ -1,0 +1,113 @@
+# CI pipeline for the ShopLab training project (Module 18).
+# Stages: unit -> api (fast feedback) -> ui (Playwright, sharded) + robot -> reports.
+# Every job starts its own ShopLab instance, so jobs never share state.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      bug_mode:
+        description: 'Run against BUG MODE (expect failures)'
+        type: boolean
+        default: false
+  schedule:
+    - cron: '0 1 * * 1-5' # nightly full regression 08:00 Bangkok time
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUG_MODE: ${{ inputs.bug_mode && '1' || '0' }}
+  BASE_URL: http://localhost:3000
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm, cache-dependency-path: practice-app/package-lock.json }
+      - run: npm ci
+        working-directory: practice-app
+      - run: npm test
+        working-directory: practice-app
+
+  playwright:
+    needs: unit
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1/2, 2/2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - name: Install app + tests
+        run: |
+          npm ci --prefix practice-app
+          npm ci --prefix tests/playwright
+          npx --prefix tests/playwright playwright install --with-deps chromium
+      - name: Run Playwright (shard ${{ matrix.shard }})
+        working-directory: tests/playwright
+        run: npx playwright test --project=api --project=ui --project=ui-admin --shard=${{ matrix.shard }}
+        env:
+          CI: 'true'
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ strategy.job-index }}
+          path: |
+            tests/playwright/playwright-report
+            tests/playwright/test-results
+          retention-days: 14
+
+  robot:
+    needs: unit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13', cache: pip }
+      - name: Install
+        run: |
+          npm ci --prefix practice-app
+          pip install -r requirements.txt
+          rfbrowser init chromium
+      - name: Start ShopLab
+        run: |
+          npm start --prefix practice-app &
+          npx --yes wait-on http://localhost:3000/api/health
+      - name: Run Robot Framework in parallel (pabot)
+        working-directory: tests/robot
+        run: |
+          curl -s -X POST http://localhost:3000/api/test/reset
+          pabot --processes 4 --outputdir results --variable RESET_DATA:False \
+                --variable BUG_MODE:${{ env.BUG_MODE == '1' && 'True' || 'False' }} \
+                --exclude legacy --xunit xunit.xml tests
+      - name: Upload Robot logs
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-results
+          path: tests/robot/results
+
+  api-newman:
+    needs: unit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: |
+          npm ci --prefix practice-app
+          npm start --prefix practice-app &
+          npx --yes wait-on http://localhost:3000/api/health
+          npx --yes newman run tests/postman/ShopLab.postman_collection.json -e tests/postman/local.postman_environment.json --reporters cli,junit --reporter-junit-export newman.xml

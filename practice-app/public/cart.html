@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLab — Cart</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <h1 data-i18n="cart.title">Shopping Cart</h1>
+    <p id="cart-empty" class="alert info hidden" data-testid="cart-empty"><span data-i18n="cart.empty">Your cart is empty</span> — <a href="/">continue shopping</a></p>
+    <div id="cart-content" class="hidden" style="display:grid;grid-template-columns:2fr 1fr;gap:1rem">
+      <div class="card" style="overflow-x:auto">
+        <table data-testid="cart-table">
+          <thead><tr><th>Product</th><th class="right-align">Price</th><th>Qty</th><th class="right-align">Line total</th><th><span class="hidden">Actions</span></th></tr></thead>
+          <tbody id="cart-body"></tbody>
+        </table>
+        <div class="row" style="margin-top:.75rem">
+          <button class="btn small" type="button" id="clear-cart" data-testid="clear-cart">Empty cart</button>
+        </div>
+      </div>
+      <aside class="card summary" aria-label="Order summary">
+        <form id="coupon-form" class="row" data-testid="coupon-form">
+          <div class="field grow" style="margin:0">
+            <label for="coupon" data-i18n="cart.coupon">Coupon code</label>
+            <input id="coupon" name="coupon" type="text" data-testid="coupon-input" autocomplete="off">
+          </div>
+          <button class="btn" type="submit" data-testid="apply-coupon" data-i18n="cart.apply">Apply</button>
+        </form>
+        <div class="field-error" data-testid="coupon-message" role="status" aria-live="polite"></div>
+        <fieldset class="field" style="border:0;padding:0">
+          <legend class="label">Shipping method</legend>
+          <label class="inline-options"><input type="radio" name="shipping" value="standard" checked data-testid="shipping-standard"> Standard (฿50, free from ฿1,000)</label>
+          <label class="inline-options"><input type="radio" name="shipping" value="express" data-testid="shipping-express"> Express (฿120)</label>
+        </fieldset>
+        <dl>
+          <dt data-i18n="summary.subtotal">Subtotal</dt><dd data-testid="summary-subtotal">-</dd>
+          <dt data-i18n="summary.discount">Discount</dt><dd data-testid="summary-discount">-</dd>
+          <dt data-i18n="summary.shipping">Shipping</dt><dd data-testid="summary-shipping">-</dd>
+          <dt data-i18n="summary.vat">VAT 7%</dt><dd data-testid="summary-vat">-</dd>
+          <dt class="total" data-i18n="summary.total">Total</dt><dd class="total" data-testid="summary-total">-</dd>
+        </dl>
+        <a class="btn primary" href="/checkout" id="checkout-btn" data-testid="checkout-button" style="width:100%;margin-top:1rem" data-i18n="cart.checkout">Proceed to checkout</a>
+      </aside>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/cart.js"></script>
+</body>
+</html>

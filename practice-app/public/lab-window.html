@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLab — New Window</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <main>
+    <h1 id="window-title">This is a new window</h1>
+    <p id="window-kind"></p>
+    <button class="btn" type="button" id="close-window" onclick="window.close()">Close this window</button>
+  </main>
+  <script>
+    document.getElementById('window-kind').textContent = new URLSearchParams(location.search).get('popup') ? 'Opened as a popup' : 'Opened in a new tab';
+  </script>
+</body>
+</html>

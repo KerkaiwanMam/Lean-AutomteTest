@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLab — Elements Lab</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <h1>Elements Lab</h1>
+    <p class="muted">Each card is a classic "hard to automate" UI pattern. Some cards intentionally have <strong>no</strong> <code>data-testid</code> so you must practise role/text/CSS/XPath locators. Jump to:
+      <a href="#alerts">alerts</a> · <a href="#dynamic">dynamic</a> · <a href="#iframe">iframe</a> · <a href="#windows">windows</a> · <a href="#shadow">shadow DOM</a> · <a href="#dnd">drag &amp; drop</a> · <a href="#table">table</a> · <a href="#files">files</a></p>
+
+    <div class="lab-grid">
+      <!-- 1. Native dialogs -->
+      <section class="card" id="alerts">
+        <h2>1. JavaScript dialogs</h2>
+        <div class="row">
+          <button class="btn" type="button" id="btn-alert">Show alert</button>
+          <button class="btn" type="button" id="btn-confirm">Show confirm</button>
+          <button class="btn" type="button" id="btn-prompt">Show prompt</button>
+        </div>
+        <p>Result: <output id="dialog-result">none</output></p>
+      </section>
+
+      <!-- 2. Dynamic loading -->
+      <section class="card" id="dynamic">
+        <h2>2. Dynamic loading</h2>
+        <button class="btn" type="button" id="start-loading">Start</button>
+        <div id="loading-indicator" class="spinner hidden" role="progressbar" aria-label="Loading"></div>
+        <p id="loaded-text" class="hidden"></p>
+        <hr>
+        <p>Button enabled after 3 s: <button class="btn small" type="button" id="delayed-enable" disabled>Wait for me</button></p>
+        <p id="appear-host">Element appears after 2.5 s → </p>
+        <p><button class="btn small" type="button" id="remove-me">Click to remove me</button></p>
+        <div class="progress" aria-label="Upload progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><div></div></div>
+        <button class="btn small" type="button" id="start-progress" style="margin-top:.5rem">Start progress</button> <span id="progress-text">0%</span>
+      </section>
+
+      <!-- 3. Dynamic attributes -->
+      <section class="card" id="dynamic-ids">
+        <h2>3. Dynamic IDs &amp; classes</h2>
+        <p class="muted">IDs and classes change on every page load. Locate by role / text instead.</p>
+        <div id="dynamic-id-host"></div>
+        <p>Clicked: <span id="dynamic-clicks">0</span></p>
+      </section>
+
+      <!-- 4. iframe -->
+      <section class="card" id="iframe">
+        <h2>4. iframe (and nested iframe)</h2>
+        <iframe src="/lab-frame.html" title="Payment form frame" name="payment-frame" id="payment-frame" style="width:100%;height:230px;border:1px solid var(--border);border-radius:8px"></iframe>
+        <p>Message from frame: <output id="frame-message">none</output></p>
+      </section>
+
+      <!-- 5. windows/tabs -->
+      <section class="card" id="windows">
+        <h2>5. New tab &amp; popup window</h2>
+        <div class="row">
+          <a class="btn" href="/lab-window.html" target="_blank" rel="noopener" id="open-tab">Open in new tab</a>
+          <button class="btn" type="button" id="open-popup">Open popup</button>
+        </div>
+      </section>
+
+      <!-- 6. hover / tooltip / context -->
+      <section class="card" id="hover">
+        <h2>6. Hover, tooltip, right-click, double-click</h2>
+        <div class="menu">
+          <button class="btn" type="button" aria-haspopup="true">Account ▾</button>
+          <div class="submenu" role="menu">
+            <a role="menuitem" href="#profile" id="menu-profile">Profile</a>
+            <a role="menuitem" href="#settings" id="menu-settings">Settings</a>
+            <a role="menuitem" href="#billing" id="menu-billing">Billing</a>
+          </div>
+        </div>
+        <span class="tooltip" style="margin-left:1rem">Hover me <span class="tip" role="tooltip">Tooltip text appears on hover</span></span>
+        <p style="margin-top:1rem"><button class="btn small" type="button" id="right-click-target">Right-click me</button>
+          <button class="btn small" type="button" id="double-click-target">Double-click me</button></p>
+        <p>Action: <output id="mouse-result">none</output></p>
+      </section>
+
+      <!-- 7. shadow DOM -->
+      <section class="card" id="shadow">
+        <h2>7. Shadow DOM</h2>
+        <shadow-greeter id="open-shadow" data-mode="open"></shadow-greeter>
+        <shadow-greeter id="closed-shadow" data-mode="closed"></shadow-greeter>
+        <p class="hint">Playwright pierces <em>open</em> shadow roots automatically. A <em>closed</em> root cannot be reached by normal locators.</p>
+      </section>
+
+      <!-- 8. drag & drop -->
+      <section class="card" id="dnd">
+        <h2>8. Drag &amp; drop</h2>
+        <div class="dnd-columns">
+          <div><strong>To do</strong><div class="dropzone" id="col-todo" data-testid="col-todo">
+            <div class="draggable" draggable="true" id="task-1">Write test plan</div>
+            <div class="draggable" draggable="true" id="task-2">Automate login</div>
+            <div class="draggable" draggable="true" id="task-3">Review PR</div>
+          </div></div>
+          <div><strong>Done</strong><div class="dropzone" id="col-done" data-testid="col-done"></div></div>
+        </div>
+        <p>Done count: <span id="done-count">0</span></p>
+      </section>
+
+      <!-- 9. form controls -->
+      <section class="card" id="controls">
+        <h2>9. Form controls</h2>
+        <div class="field"><label for="volume">Volume: <output id="volume-out">50</output></label><input type="range" id="volume" min="0" max="100" value="50"></div>
+        <div class="field"><label for="appointment">Appointment date</label><input type="date" id="appointment" min="2026-01-01" max="2027-12-31"></div>
+        <div class="field">
+          <span class="label" id="fruit-label">Favourite fruit (custom dropdown)</span>
+          <div class="custom-select" id="fruit-select">
+            <button class="btn" type="button" aria-haspopup="listbox" aria-labelledby="fruit-label fruit-value" id="fruit-trigger"><span id="fruit-value">Choose…</span> ▾</button>
+            <ul class="options hidden" role="listbox" aria-labelledby="fruit-label" tabindex="-1">
+              <li role="option" data-value="mango">Mango</li><li role="option" data-value="durian">Durian</li>
+              <li role="option" data-value="rambutan">Rambutan</li><li role="option" data-value="mangosteen">Mangosteen</li>
+            </ul>
+          </div>
+        </div>
+        <div class="field"><label for="country">Country (autocomplete)</label><input type="text" id="country" list="" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="country-list">
+          <ul id="country-list" role="listbox" class="card hidden" style="list-style:none;padding:.25rem;margin:.25rem 0"></ul></div>
+        <div class="field"><label for="skills">Skills (multi-select)</label>
+          <select id="skills" multiple size="4"><option>Playwright</option><option>Robot Framework</option><option>Selenium</option><option>Cypress</option><option>k6</option></select></div>
+        <div class="field"><label class="inline-options"><input type="checkbox" role="switch" id="notify-switch"> Email notifications</label></div>
+        <div class="field"><span class="label">Rich text (contenteditable)</span><div contenteditable="true" id="editor" class="card" style="min-height:60px" aria-label="Editor"></div></div>
+      </section>
+
+      <!-- 10. keyboard -->
+      <section class="card" id="keyboard">
+        <h2>10. Keyboard events</h2>
+        <div class="field"><label for="key-input">Press any key here</label><input type="text" id="key-input"></div>
+        <p>Last key: <output id="key-result">none</output></p>
+        <p class="hint">Try Enter, Escape, Control+A, Shift+Tab.</p>
+      </section>
+
+      <!-- 11. table -->
+      <section class="card" id="table" style="grid-column:1/-1">
+        <h2>11. Sortable, filterable, paginated table</h2>
+        <div class="row" style="margin-bottom:.5rem">
+          <div class="field grow" style="margin:0"><label for="emp-filter">Filter by name or department</label><input type="search" id="emp-filter"></div>
+          <div class="field" style="margin:0"><label for="emp-page-size">Rows</label><select id="emp-page-size"><option>5</option><option selected>10</option><option>25</option></select></div>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="employees">
+            <thead><tr><th class="sortable" data-key="id">ID</th><th class="sortable" data-key="name">Name</th><th class="sortable" data-key="department">Department</th><th class="sortable" data-key="salary">Salary</th><th class="sortable" data-key="startDate">Start date</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="row" style="margin-top:.5rem;justify-content:space-between"><span id="emp-info"></span>
+          <span><button class="btn small" type="button" id="emp-prev">Prev</button> <button class="btn small" type="button" id="emp-next">Next</button></span></div>
+      </section>
+
+      <!-- 12. files -->
+      <section class="card" id="files">
+        <h2>12. File upload &amp; download</h2>
+        <form id="upload-form">
+          <div class="field"><label for="files-input">Choose up to 3 files (≤ 2 MB each)</label><input type="file" id="files-input" name="files" multiple></div>
+          <div class="dropzone" id="drop-upload" style="min-height:60px">…or drop files here</div>
+          <button class="btn" type="submit" style="margin-top:.5rem">Upload</button>
+        </form>
+        <ul id="upload-result"></ul>
+        <p>Download:
+          <a href="/api/lab/download?type=txt" id="download-txt">sample.txt</a> ·
+          <a href="/api/lab/download?type=csv" id="download-csv">employees.csv</a> ·
+          <a href="/api/lab/download?type=json" id="download-json">data.json</a></p>
+      </section>
+
+      <!-- 13. infinite scroll -->
+      <section class="card" id="infinite">
+        <h2>13. Infinite scroll</h2>
+        <div class="feed" id="feed" tabindex="0" aria-label="Feed"></div>
+        <p class="hint">Loaded <span id="feed-count">0</span> items</p>
+      </section>
+
+      <!-- 14. flaky / toast -->
+      <section class="card" id="flaky">
+        <h2>14. Flaky &amp; transient elements</h2>
+        <p><button class="btn" type="button" id="call-flaky">Call flaky API</button> <output id="flaky-result">-</output></p>
+        <p><button class="btn" type="button" id="show-toast">Show toast (disappears in 2 s)</button></p>
+        <p><button class="btn" type="button" id="moving-button">Catch me (moves after first hover)</button> <output id="moving-result"></output></p>
+        <p class="hint">Use these to practise assertions on transient UI, retries and what NOT to do (fixed sleeps).</p>
+      </section>
+
+      <!-- 15. visual -->
+      <section class="card visual-card" id="visual" data-testid="visual-card">
+        <h2>15. Visual regression target</h2>
+        <p>This card is stable in normal mode. In bug mode its layout and colour change slightly — can your screenshot comparison catch it?</p>
+        <button class="btn primary" type="button">Primary action</button> <button class="btn" type="button">Secondary</button>
+      </section>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/lab.js"></script>
+</body>
+</html>

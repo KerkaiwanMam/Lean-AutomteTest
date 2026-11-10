@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLab — Register</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <div class="card" style="max-width:640px;margin:1rem auto">
+      <h1 data-i18n="register.title">Create account</h1>
+      <div id="register-success" class="alert success hidden" role="status" data-testid="register-success"></div>
+      <div id="register-error" class="alert error hidden" role="alert" data-testid="register-error"></div>
+      <form id="register-form" data-testid="register-form" novalidate>
+        <div class="row">
+          <div class="field grow">
+            <label for="username">Username *</label>
+            <input id="username" name="username" type="text" autocomplete="username" data-testid="reg-username" aria-describedby="username-hint">
+            <span id="username-hint" class="hint">4–20 characters: letters, digits or _</span>
+            <span class="field-error" data-testid="error-username"></span>
+          </div>
+          <div class="field grow">
+            <label for="email">Email *</label>
+            <input id="email" name="email" type="email" autocomplete="email" data-testid="reg-email">
+            <span class="field-error" data-testid="error-email"></span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field grow">
+            <label for="password">Password *</label>
+            <input id="password" name="password" type="password" autocomplete="new-password" data-testid="reg-password" aria-describedby="pw-hint">
+            <span id="pw-hint" class="hint">8–64 chars with upper, lower, digit and special character</span>
+            <span class="hint">Strength: <strong data-testid="password-strength" id="strength">-</strong></span>
+            <span class="field-error" data-testid="error-password"></span>
+          </div>
+          <div class="field grow">
+            <label for="confirmPassword">Confirm password *</label>
+            <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" data-testid="reg-confirm-password">
+            <span class="field-error" data-testid="error-confirmPassword"></span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="fullName">Full name *</label>
+          <input id="fullName" name="fullName" type="text" autocomplete="name" data-testid="reg-fullname">
+          <span class="field-error" data-testid="error-fullName"></span>
+        </div>
+        <div class="row">
+          <div class="field grow">
+            <label for="phone">Mobile phone *</label>
+            <input id="phone" name="phone" type="tel" inputmode="numeric" placeholder="08xxxxxxxx" data-testid="reg-phone">
+            <span class="field-error" data-testid="error-phone"></span>
+          </div>
+          <div class="field grow">
+            <label for="birthDate">Birth date * <span class="hint">(age 18–60)</span></label>
+            <input id="birthDate" name="birthDate" type="date" data-testid="reg-birthdate">
+            <span class="field-error" data-testid="error-birthDate"></span>
+          </div>
+        </div>
+        <fieldset class="field" style="border:0;padding:0">
+          <legend class="label">Gender</legend>
+          <div class="inline-options" data-testid="reg-gender">
+            <label><input type="radio" name="gender" value="male"> Male</label>
+            <label><input type="radio" name="gender" value="female"> Female</label>
+            <label><input type="radio" name="gender" value="other"> Other</label>
+            <label><input type="radio" name="gender" value="unspecified" checked> Prefer not to say</label>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label for="province">Province *</label>
+          <select id="province" name="province" data-testid="reg-province"><option value="">-- Select province --</option></select>
+          <span class="field-error" data-testid="error-province"></span>
+        </div>
+        <fieldset class="field" style="border:0;padding:0">
+          <legend class="label">Interests</legend>
+          <div class="inline-options" id="interests" data-testid="reg-interests"></div>
+        </fieldset>
+        <div class="field">
+          <label for="avatar">Profile picture <span class="hint">(PNG/JPEG, max 1 MB)</span></label>
+          <input id="avatar" name="avatar" type="file" accept="image/png,image/jpeg" data-testid="reg-avatar">
+          <img id="avatar-preview" alt="Avatar preview" class="hidden" width="80" height="80" style="object-fit:cover;border-radius:50%" data-testid="avatar-preview">
+          <span class="field-error" data-testid="error-avatar"></span>
+        </div>
+        <div class="field">
+          <label class="inline-options"><input type="checkbox" id="acceptTerms" name="acceptTerms" data-testid="reg-terms"> I accept the <a href="#terms" id="terms-link">terms and conditions</a> *</label>
+          <span class="field-error" data-testid="error-acceptTerms"></span>
+        </div>
+        <button class="btn primary" type="submit" id="register-button" data-testid="register-button">Create account</button>
+      </form>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/register.js"></script>
+</body>
+</html>

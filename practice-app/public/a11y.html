@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ShopLab — Accessibility Lab (intentionally broken)</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .low-contrast { color: #b5b5b5; background: #ffffff; }
+    .fake-button { display: inline-block; padding: .4rem .8rem; background: #2952cc; color: #fff; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <!-- This page deliberately violates WCAG so learners can practise axe-core scans (Module 19).
+       Known issues: missing lang, missing alt, low contrast, unlabeled inputs, empty button, empty link,
+       skipped heading level, duplicate id, positive tabindex, div used as button, autoplaying motion. -->
+  <main>
+    <h1>Accessibility Lab</h1>
+    <h4>Newsletter</h4>
+    <p class="low-contrast">This text has very low contrast and is hard to read.</p>
+    <img src="/img/electronics.svg">
+    <form>
+      <input type="text" placeholder="Your email">
+      <input type="text" id="dup" placeholder="Name">
+      <input type="text" id="dup" placeholder="Phone">
+      <button type="submit"></button>
+    </form>
+    <a href="/"></a>
+    <div class="fake-button" onclick="alert('clicked')">Subscribe</div>
+    <p><a href="#" tabindex="5">Positive tabindex link</a></p>
+    <select><option>One</option><option>Two</option></select>
+    <p><a href="/a11y-fixed.html">See the fixed version →</a></p>
+  </main>
+</body>
+</html>

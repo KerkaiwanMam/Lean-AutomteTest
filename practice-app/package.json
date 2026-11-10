@@ -1,0 +1,22 @@
+{
+  "name": "shoplab",
+  "version": "1.0.0",
+  "description": "ShopLab — a practice e-commerce web app + REST API for learning test automation (Playwright, Robot Framework, API, DB, a11y, performance).",
+  "main": "src/server.js",
+  "private": true,
+  "scripts": {
+    "start": "node --no-warnings=ExperimentalWarning src/server.js",
+    "start:bugs": "node --no-warnings=ExperimentalWarning -e \"process.env.BUG_MODE='1'; require('./src/server.js').start()\"",
+    "dev": "node --no-warnings=ExperimentalWarning --watch src/server.js",
+    "reset": "node --no-warnings=ExperimentalWarning -e \"require('./src/db').reset(); console.log('ShopLab database reset')\"",
+    "test": "node --no-warnings=ExperimentalWarning --test \"test/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.3.0",
+    "multer": "^2.5.0"
+  }
+}

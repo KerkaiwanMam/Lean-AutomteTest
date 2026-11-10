@@ -1,0 +1,184 @@
+{
+  "info": {
+    "name": "ShopLab API",
+    "description": "Postman collection for ShopLab (Module 13). Run in Postman or with Newman:\n  newman run tests/postman/ShopLab.postman_collection.json -e tests/postman/local.postman_environment.json\nRequests are ordered: Setup -> Auth -> Products -> Cart -> Orders -> Negative.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 Setup",
+      "item": [
+        {
+          "name": "Reset data",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('status 200', () => pm.response.to.have.status(200));",
+            "pm.test('reset ok', () => pm.expect(pm.response.json().ok).to.be.true);"
+          ] } }],
+          "request": { "method": "POST", "url": "{{baseUrl}}/api/test/reset" }
+        },
+        {
+          "name": "Create test user",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "const u = pm.response.json();",
+            "pm.collectionVariables.set('username', u.username);",
+            "pm.collectionVariables.set('password', u.password);"
+          ] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/api/test/users" }
+        }
+      ]
+    },
+    {
+      "name": "01 Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const body = pm.response.json();",
+            "pm.test('token returned', () => pm.expect(body.token).to.be.a('string').and.not.empty);",
+            "pm.test('role is customer', () => pm.expect(body.user.role).to.eql('customer'));",
+            "pm.test('response time < 1000ms', () => pm.expect(pm.response.responseTime).to.be.below(1000));",
+            "pm.collectionVariables.set('token', body.token);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"username\":\"{{username}}\",\"password\":\"{{password}}\"}" },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Me",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('is the logged-in user', () => pm.expect(pm.response.json().user.username).to.eql(pm.collectionVariables.get('username')));"
+          ] } }],
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/auth/me" }
+        }
+      ]
+    },
+    {
+      "name": "02 Products",
+      "item": [
+        {
+          "name": "List products (page 1)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const body = pm.response.json();",
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('28 products, 8 per page', () => { pm.expect(body.total).to.eql(28); pm.expect(body.items).to.have.lengthOf(8); });",
+            "const schema = { type: 'object', required: ['items','total','page','pageSize','totalPages'], properties: { items: { type: 'array', items: { type: 'object', required: ['id','sku','name','price','stock'] } } } };",
+            "pm.test('matches schema', () => pm.response.to.have.jsonSchema(schema));"
+          ] } }],
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/products?page=1&pageSize=8", "host": ["{{baseUrl}}"], "path": ["api", "products"], "query": [{ "key": "page", "value": "1" }, { "key": "pageSize", "value": "8" }] } }
+        },
+        {
+          "name": "Search USB hub (remember id)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const items = pm.response.json().items;",
+            "pm.test('exactly one result', () => pm.expect(items).to.have.lengthOf(1));",
+            "pm.collectionVariables.set('hubId', items[0].id);"
+          ] } }],
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/products?search=usb-c", "host": ["{{baseUrl}}"], "path": ["api", "products"], "query": [{ "key": "search", "value": "usb-c" }] } }
+        }
+      ]
+    },
+    {
+      "name": "03 Cart",
+      "item": [
+        {
+          "name": "Add USB hub to cart",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "pm.test('subtotal 1000', () => pm.expect(pm.response.json().subtotal).to.eql(1000));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "body": { "mode": "raw", "raw": "{\"productId\": {{hubId}}, \"qty\": 1}" },
+            "url": "{{baseUrl}}/api/cart/items"
+          }
+        },
+        {
+          "name": "Quote with SAVE10",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const q = pm.response.json();",
+            "pm.test('discount 100', () => pm.expect(q.discount).to.eql(100));",
+            "pm.test('shipping 50 (900 < 1000 after discount)', () => pm.expect(q.shipping).to.eql(50));",
+            "pm.test('VAT on discounted amount', () => pm.expect(q.vat).to.eql(66.5));",
+            "pm.test('total', () => pm.expect(q.total).to.eql(1016.5));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "body": { "mode": "raw", "raw": "{\"couponCode\":\"SAVE10\",\"shippingMethod\":\"standard\"}" },
+            "url": "{{baseUrl}}/api/cart/quote"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Orders",
+      "item": [
+        {
+          "name": "Checkout by card",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "const o = pm.response.json();",
+            "pm.test('status PAID', () => pm.expect(o.status).to.eql('PAID'));",
+            "pm.test('order number format', () => pm.expect(o.orderNo).to.match(/^SL-\\d{8}-\\d{4}$/));",
+            "pm.collectionVariables.set('orderId', o.id);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"shippingMethod\": \"standard\",\n  \"paymentMethod\": \"card\",\n  \"couponCode\": \"SAVE10\",\n  \"card\": {\"number\": \"4242424242424242\", \"expiry\": \"12/30\", \"cvv\": \"123\", \"name\": \"POSTMAN\"},\n  \"address\": {\"fullName\": \"Postman Tester\", \"phone\": \"0812345678\", \"line1\": \"1 API Rd\", \"district\": \"Sathorn\", \"province\": \"Bangkok\", \"postcode\": \"10120\"}\n}" },
+            "url": "{{baseUrl}}/api/orders"
+          }
+        },
+        {
+          "name": "Cancel order",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('CANCELLED', () => pm.expect(pm.response.json().status).to.eql('CANCELLED'));"
+          ] } }],
+          "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/orders/{{orderId}}/cancel" }
+        }
+      ]
+    },
+    {
+      "name": "05 Negative",
+      "item": [
+        {
+          "name": "Cart without token -> 401",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('401', () => pm.response.to.have.status(401));",
+            "pm.test('error code', () => pm.expect(pm.response.json().error.code).to.eql('UNAUTHORIZED'));"
+          ] } }],
+          "protocolProfileBehavior": { "disableCookies": true },
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/cart", "description": "Login stored the sl_token cookie in Postman's cookie jar. disableCookies makes this a truly anonymous request." }
+        },
+        {
+          "name": "Customer on admin endpoint -> 403",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('403', () => pm.response.to.have.status(403));"] } }],
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/admin/users" }
+        },
+        {
+          "name": "Invalid pageSize -> 400",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('400', () => pm.response.to.have.status(400));",
+            "pm.test('details.pageSize', () => pm.expect(pm.response.json().error.details).to.have.property('pageSize'));"
+          ] } }],
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/products?pageSize=51" }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "token", "value": "" },
+    { "key": "username", "value": "" },
+    { "key": "password", "value": "" },
+    { "key": "hubId", "value": "" },
+    { "key": "orderId", "value": "" }
+  ]
+}

@@ -1,0 +1,12 @@
+datasources:ebaac961ace01746bce589a9f2e142daa3fdb6b3
+commandlineoptions:c7eed3a27bd3cae0d43a236ccfa68c4fc93f160c
+suitesfrom:no-suites-from-option
+file:b8aa9b6516df866528bc37b84fc06375be58e78e
+--suite Tests.Api.Orders Api
+--suite Tests.Api.Products Api
+--suite Tests.Db.Database Checks
+--suite Tests.Ui.01 Login
+--suite Tests.Ui.02 Catalog
+--suite Tests.Ui.03 Cart Pricing
+--suite Tests.Ui.04 Checkout Bdd
+--suite Tests.Ui.05 Elements Lab

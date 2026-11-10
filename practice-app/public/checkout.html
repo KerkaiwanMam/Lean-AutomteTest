@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLab — Checkout</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <h1 data-i18n="checkout.title">Checkout</h1>
+    <ol class="steps" data-testid="checkout-steps" aria-label="Checkout progress">
+      <li data-step="1">1. Address</li><li data-step="2">2. Payment</li><li data-step="3">3. Review</li><li data-step="4">4. Done</li>
+    </ol>
+    <div id="checkout-error" class="alert error hidden" role="alert" data-testid="checkout-error"></div>
+
+    <form id="checkout-form" novalidate class="card" style="max-width:720px">
+      <!-- STEP 1: address -->
+      <section data-step-panel="1" data-testid="step-address">
+        <h2>Shipping address</h2>
+        <div class="row">
+          <div class="field grow"><label for="fullName">Full name</label><input id="fullName" name="fullName" type="text" data-testid="addr-fullname" autocomplete="name"><span class="field-error" data-testid="error-address.fullName"></span></div>
+          <div class="field grow"><label for="phone">Phone</label><input id="phone" name="phone" type="tel" data-testid="addr-phone"><span class="field-error" data-testid="error-address.phone"></span></div>
+        </div>
+        <div class="field"><label for="line1">Address</label><input id="line1" name="line1" type="text" data-testid="addr-line1" autocomplete="address-line1"><span class="field-error" data-testid="error-address.line1"></span></div>
+        <div class="row">
+          <div class="field grow"><label for="district">District</label><input id="district" name="district" type="text" data-testid="addr-district"><span class="field-error" data-testid="error-address.district"></span></div>
+          <div class="field grow"><label for="province">Province</label><input id="province" name="province" type="text" data-testid="addr-province"><span class="field-error" data-testid="error-address.province"></span></div>
+          <div class="field" style="width:140px"><label for="postcode">Postcode</label><input id="postcode" name="postcode" type="text" inputmode="numeric" maxlength="5" data-testid="addr-postcode"><span class="field-error" data-testid="error-address.postcode"></span></div>
+        </div>
+        <div class="row"><a class="btn" href="/cart">Back to cart</a><button class="btn primary" type="button" data-next="2" data-testid="to-payment">Continue to payment</button></div>
+      </section>
+
+      <!-- STEP 2: payment -->
+      <section data-step-panel="2" class="hidden" data-testid="step-payment">
+        <h2>Payment</h2>
+        <fieldset class="field" style="border:0;padding:0">
+          <legend class="label">Payment method</legend>
+          <label class="inline-options"><input type="radio" name="paymentMethod" value="card" checked data-testid="pay-card"> Credit / debit card</label>
+          <label class="inline-options"><input type="radio" name="paymentMethod" value="cod" data-testid="pay-cod"> Cash on delivery (max ฿5,000)</label>
+        </fieldset>
+        <div id="card-fields">
+          <div class="field"><label for="cardNumber">Card number</label><input id="cardNumber" name="cardNumber" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" data-testid="card-number"><span class="field-error" data-testid="error-card.number"></span></div>
+          <div class="row">
+            <div class="field grow"><label for="cardExpiry">Expiry (MM/YY)</label><input id="cardExpiry" name="cardExpiry" type="text" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp" data-testid="card-expiry"><span class="field-error" data-testid="error-card.expiry"></span></div>
+            <div class="field grow"><label for="cardCvv">CVV</label><input id="cardCvv" name="cardCvv" type="password" inputmode="numeric" maxlength="3" autocomplete="cc-csc" data-testid="card-cvv"><span class="field-error" data-testid="error-card.cvv"></span></div>
+          </div>
+          <div class="field"><label for="cardName">Name on card</label><input id="cardName" name="cardName" type="text" autocomplete="cc-name" data-testid="card-name"><span class="field-error" data-testid="error-card.name"></span></div>
+          <p class="hint">Test cards: 4242 4242 4242 4242 (success) · 4000 0000 0000 0002 (declined)</p>
+        </div>
+        <div class="row"><button class="btn" type="button" data-next="1" data-testid="back-to-address">Back</button><button class="btn primary" type="button" data-next="3" data-testid="to-review">Review order</button></div>
+      </section>
+
+      <!-- STEP 3: review -->
+      <section data-step-panel="3" class="hidden" data-testid="step-review">
+        <h2>Review your order</h2>
+        <table data-testid="review-items"><thead><tr><th>Product</th><th>Qty</th><th class="right-align">Total</th></tr></thead><tbody id="review-body"></tbody></table>
+        <div class="summary" style="margin-top:1rem"><dl id="review-summary"></dl></div>
+        <p class="muted" id="review-address" data-testid="review-address"></p>
+        <div class="row"><button class="btn" type="button" data-next="2">Back</button><button class="btn primary" type="submit" id="place-order" data-testid="place-order">Place order</button></div>
+      </section>
+
+      <!-- STEP 4: confirmation -->
+      <section data-step-panel="4" class="hidden" data-testid="step-done">
+        <div class="alert success" role="status">
+          <h2 style="margin-top:0">Thank you! 🎉</h2>
+          <p>Your order number is <strong data-testid="order-number" id="order-number"></strong>.</p>
+          <p>Status: <span id="order-status" data-testid="order-status"></span> · Total: <strong id="order-total" data-testid="order-total"></strong></p>
+        </div>
+        <div class="row"><a class="btn primary" id="view-order" data-testid="view-order" href="/orders">View order</a><a class="btn" href="/">Continue shopping</a></div>
+      </section>
+    </form>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/checkout.js"></script>
+</body>
+</html>

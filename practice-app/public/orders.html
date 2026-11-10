@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLab — My Orders</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <h1 data-i18n="orders.title">My Orders</h1>
+    <div class="row" style="margin-bottom:1rem">
+      <div class="field" style="margin:0">
+        <label for="status-filter">Filter by status</label>
+        <select id="status-filter" data-testid="status-filter">
+          <option value="">All</option><option>PENDING</option><option>PAID</option><option>SHIPPED</option><option>DELIVERED</option><option>CANCELLED</option>
+        </select>
+      </div>
+    </div>
+    <p id="no-orders" class="alert info hidden" data-testid="no-orders">You have no orders yet.</p>
+    <div class="card" style="overflow-x:auto">
+      <table data-testid="orders-table">
+        <thead><tr><th>Order no.</th><th>Date</th><th>Items</th><th>Status</th><th class="right-align">Total</th><th><span class="hidden">Actions</span></th></tr></thead>
+        <tbody id="orders-body"></tbody>
+      </table>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script>
+  (async () => {
+    const { api, money, requireLogin } = window.SL;
+    await window.SL.renderHeader('orders');
+    await requireLogin();
+    const tbody = document.getElementById('orders-body');
+    async function load() {
+      const status = document.getElementById('status-filter').value;
+      const r = await api(`/orders${status ? `?status=${status}` : ''}`);
+      const items = r.ok ? r.data.items : [];
+      document.getElementById('no-orders').classList.toggle('hidden', items.length > 0);
+      tbody.innerHTML = items.map((o) => `
+        <tr data-testid="order-row" data-order-id="${o.id}">
+          <td data-testid="order-no">${o.orderNo}</td>
+          <td>${new Date(o.createdAt).toLocaleDateString('en-GB')}</td>
+          <td>${o.items.reduce((n, i) => n + i.qty, 0)}</td>
+          <td><span class="status ${o.status}" data-testid="order-status">${o.status}</span></td>
+          <td class="right-align" data-testid="order-total">${money(o.total)}</td>
+          <td><a class="btn small" href="/order?id=${o.id}" data-testid="view-order">View</a></td>
+        </tr>`).join('');
+    }
+    document.getElementById('status-filter').addEventListener('change', load);
+    load();
+  })();
+  </script>
+</body>
+</html>

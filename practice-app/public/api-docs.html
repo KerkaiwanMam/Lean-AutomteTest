@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLab — API Docs</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .method { display:inline-block; min-width:64px; text-align:center; font-weight:700; font-size:.8rem; padding:.1rem .4rem; border-radius:6px; color:#fff; }
+    .GET{background:#1e7d34}.POST{background:#2952cc}.PUT{background:#9a6200}.PATCH{background:#6b3fb5}.DELETE{background:#c62828}
+    pre { background:#14213d; color:#e6ecff; padding:.75rem; border-radius:8px; overflow-x:auto; font-size:.85rem; }
+  </style>
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <h1>ShopLab REST API</h1>
+    <p>Base URL: <code>/api</code> · Machine-readable contract: <a href="/api/openapi.json" data-testid="openapi-link">/api/openapi.json</a> (OpenAPI 3.0 — import it into Postman, Insomnia or Swagger UI).</p>
+    <h2>Quick start</h2>
+<pre># 1) reset data to a known state (non-production only)
+curl -X POST http://localhost:3000/api/test/reset
+
+# 2) login and keep the token
+curl -X POST http://localhost:3000/api/auth/login -H "Content-Type: application/json" \
+     -d '{"username":"customer","password":"Passw0rd!"}'
+
+# 3) call a protected endpoint
+curl http://localhost:3000/api/cart -H "Authorization: Bearer &lt;token&gt;"
+
+# 4) turn on bug mode / latency (chaos)
+curl -X POST http://localhost:3000/api/test/config -H "Content-Type: application/json" \
+     -d '{"bugMode":true,"latencyMs":500}'</pre>
+    <h2>Error format</h2>
+<pre>{ "error": { "code": "VALIDATION_ERROR", "message": "Invalid input", "details": { "email": "Email is invalid" } } }</pre>
+    <h2>Endpoints</h2>
+    <div id="endpoints" data-testid="endpoints"></div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script>
+  (async () => {
+    await window.SL.renderHeader('api');
+    const spec = await (await fetch('/api/openapi.json')).json();
+    const byTag = {};
+    for (const [path, ops] of Object.entries(spec.paths)) {
+      for (const [method, op] of Object.entries(ops)) {
+        if (method === 'parameters') continue;
+        const tag = (op.tags && op.tags[0]) || 'other';
+        (byTag[tag] = byTag[tag] || []).push({ method: method.toUpperCase(), path, op });
+      }
+    }
+    document.getElementById('endpoints').innerHTML = Object.entries(byTag).map(([tag, list]) => `
+      <section class="card" style="margin-bottom:1rem"><h3 style="margin-top:0">${tag}</h3>
+        <table><tbody>${list.map((e) => `<tr data-testid="endpoint-row"><td style="width:90px"><span class="method ${e.method}">${e.method}</span></td>
+          <td style="width:280px"><code>/api${e.path}</code></td><td>${window.SL.esc(e.op.summary || '')}${e.op.security ? ' 🔒' : ''}</td>
+          <td class="muted" style="font-size:.85rem">${Object.keys(e.op.responses || {}).join(', ')}</td></tr>`).join('')}</tbody></table>
+      </section>`).join('');
+  })();
+  </script>
+</body>
+</html>

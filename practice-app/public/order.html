@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLab — Order detail</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <p><a href="/orders" data-testid="back-to-orders">← Back to my orders</a></p>
+    <div id="not-found" class="alert error hidden" role="alert" data-testid="order-not-found">Order not found</div>
+    <div id="order" class="hidden" style="display:grid;grid-template-columns:2fr 1fr;gap:1rem">
+      <div class="card">
+        <h1>Order <span data-testid="order-no" id="order-no"></span></h1>
+        <p>Status: <span id="status" class="status" data-testid="order-status"></span> · Placed on <span id="created"></span></p>
+        <table data-testid="order-items"><thead><tr><th>SKU</th><th>Product</th><th class="right-align">Price</th><th>Qty</th><th class="right-align">Total</th></tr></thead><tbody id="items"></tbody></table>
+        <h2>Shipping address</h2>
+        <p id="address" data-testid="order-address"></p>
+        <div class="row">
+          <a class="btn" id="invoice" data-testid="download-invoice" href="#">Download invoice (CSV)</a>
+          <button class="btn danger hidden" type="button" id="cancel" data-testid="cancel-order">Cancel order</button>
+        </div>
+      </div>
+      <aside class="card summary"><dl id="summary"></dl></aside>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script>
+  (async () => {
+    const { api, money, esc, qs, toast, errMsg, requireLogin } = window.SL;
+    await window.SL.renderHeader('orders');
+    await requireLogin();
+    const id = Number(qs('id'));
+    async function load() {
+      const r = await api(`/orders/${id}`);
+      if (!r.ok) { document.getElementById('not-found').classList.remove('hidden'); return; }
+      const o = r.data;
+      document.getElementById('order-no').textContent = o.orderNo;
+      const st = document.getElementById('status'); st.textContent = o.status; st.className = `status ${o.status}`;
+      document.getElementById('created').textContent = new Date(o.createdAt).toLocaleString('en-GB');
+      document.getElementById('items').innerHTML = o.items.map((i) => `<tr data-testid="order-item"><td>${i.sku}</td><td>${esc(i.name)}</td><td class="right-align">${money(i.price)}</td><td>${i.qty}</td><td class="right-align">${money(i.lineTotal)}</td></tr>`).join('');
+      const a = o.address;
+      document.getElementById('address').textContent = `${a.fullName} (${a.phone}), ${a.line1}, ${a.district}, ${a.province} ${a.postcode}`;
+      document.getElementById('summary').innerHTML = `
+        <dt>Subtotal</dt><dd data-testid="order-subtotal">${money(o.subtotal)}</dd>
+        <dt>Discount ${o.couponCode ? `(${esc(o.couponCode)})` : ''}</dt><dd data-testid="order-discount">${money(o.discount)}</dd>
+        <dt>Shipping (${o.shippingMethod})</dt><dd data-testid="order-shipping">${money(o.shipping)}</dd>
+        <dt>VAT 7%</dt><dd data-testid="order-vat">${money(o.vat)}</dd>
+        <dt class="total">Total</dt><dd class="total" data-testid="order-total">${money(o.total)}</dd>
+        <dt>Payment</dt><dd>${o.paymentMethod === 'card' ? `Card •••• ${o.paymentLast4}` : 'Cash on delivery'}</dd>`;
+      document.getElementById('invoice').href = `/api/orders/${o.id}/invoice.csv`;
+      document.getElementById('cancel').classList.toggle('hidden', !['PENDING', 'PAID'].includes(o.status));
+      document.getElementById('order').classList.remove('hidden');
+    }
+    document.getElementById('cancel').addEventListener('click', async () => {
+      if (!window.confirm('Are you sure you want to cancel this order?')) return;
+      const r = await api(`/orders/${id}/cancel`, { method: 'POST' });
+      if (r.ok) toast('Order cancelled', 'success'); else toast(errMsg(r), 'error');
+      load();
+    });
+    load();
+  })();
+  </script>
+</body>
+</html>

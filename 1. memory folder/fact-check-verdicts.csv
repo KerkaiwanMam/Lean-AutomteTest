@@ -1,0 +1,65 @@
+file_suffix,match,status,ref_ids,note
+# --- broad rules first: course-design choices, roadmap, lab instructions, quiz questions are not factual claims ---
+00-project-plan.md,*,skip,,Course design / roadmap decision
+01-course-overview.md,*,skip,,Course design (weights, schedule, tool list)
+bug-catalogue.md,*,internal,,Checked against Bug Mode run (all 13 bugs caught)
+test-case-template.md,*,internal,,Example values match ShopLab quote API
+test-plan-template.md,*,skip,,Template placeholder / example criteria
+test-strategy-template.md,*,skip,,Template heading
+REQUIREMENTS.md,*,internal,,Spec of ShopLab; behaviour confirmed by unit + API + UI tests
+README.md,*,internal,,Setup instructions tested on this machine
+M03-test-process-and-defects.md,*,skip,,Example criteria / lab / quiz
+M05-automation-strategy.md,*,skip,,Example roadmap / ROI worked example
+M07-web-fundamentals-locators.md,*,skip,,Quiz answer / guidance
+M08-programming-for-testers.md,*,skip,,Lab instruction
+M10-playwright-advanced.md,*,skip,,Lab instruction / guidance
+M13-api-testing.md,*,skip,,Example values from ShopLab
+M14-database-data-testing.md,*,skip,,Learning objective / lab
+M15-framework-architecture.md,*,skip,,Quality target (design choice)
+M16-test-data-environments.md,*,skip,,Table of strategies
+M17-flaky-tests-debugging.md,*,skip,,Team target (design choice)
+M18-ci-cd-reporting.md,*,skip,,Objective / example gate / lab
+M19-non-functional-testing.md,*,skip,,Objective / lab / quiz
+M20-quality-strategy-leadership.md,*,skip,,Guidance / lab
+M21-ai-assisted-testing.md,*,skip,,Guidance / lab
+M22-capstone-and-career.md,*,skip,,Course design
+# --- external facts: verified ---
+01-course-overview.md,Node.js,verified,REF-073,node:sqlite unflagged in v22.13.0 / v23.4.0
+01-course-overview.md,ISTQB Certified Tester Foundation Level (CTFL v4),verified,REF-001,CTFL v4.0 exists; chapters 1-6 confirmed on istqb.org
+01-course-overview.md,CTAL-TAE,verified,REF-002,CTAL-TAE v2.0 syllabus (2024) read
+01-course-overview.md,CTFL-AT,corrected,REF-077,Was "ISTQB Agile Tester / Test Automation Strategy" (one row); split into CTFL-AT and CT-TAS (Specialist; needs CTFL)
+01-course-overview.md,RFCP,verified,REF-079,RFCP syllabus published by Robot Framework Foundation
+01-course-overview.md,Playwright —,corrected,,"Was ""no official certificate"": no Microsoft/Playwright-team certificate found, only third-party ones (search 2026-11-10); wording made precise"
+README.md,Node.js ≥ 22.13,verified,REF-073,
+M01-testing-fundamentals.md,ISTQB CTFL บทที่ 1,verified,REF-001,Ch.1 Fundamentals of Testing
+M01-testing-fundamentals.md,Early testing saves time and money,corrected,REF-001;REF-066,"Was ""หลายสิบเท่า"" — ISTQB principle gives no multiplier; popular 10-100x figure has weak evidence (Bossavit)"
+M02-test-design-techniques.md,ISTQB CTFL บทที่ 4,verified,REF-001,Ch.4 Test Analysis & Design
+M02-test-design-techniques.md,Kuhn,corrected,REF-060;REF-067,"Was ""most bugs come from 2-factor interaction""; research says most failures from 1 OR 2 factors, >70% in medical-device data, none above 6"
+M02-test-design-techniques.md,PICT,verified,REF-026,
+M02-test-design-techniques.md,REQ-ORD-04,internal,,BVA example from ShopLab spec
+M02-test-design-techniques.md,เร็วกว่ามาก,corrected,,"Was ""100 เท่า"" — no measurement behind the multiplier; replaced with pointer to M04 timing table"
+M03-test-process-and-defects.md,ISTQB CTFL บทที่ 5,verified,REF-001,Ch.5 Managing the Test Activities
+M04-agile-devops-test-pyramid.md,Testing Trophy,verified,REF-064,Static → Unit → Integration → E2E; integration emphasised
+M04-agile-devops-test-pyramid.md,DORA,corrected,REF-068;REF-046,"Was 4 metrics incl. ""time to restore""; now 5 metrics in 2 groups; renamed to failed deployment recovery time; rework rate added"
+M04-agile-devops-test-pyramid.md,ทดสอบแต่ละ business rule,skip,,Guidance
+M05-automation-strategy.md,ISTQB CTAL-TAE บทที่ 1–2,verified,REF-002,Ch.1 Introduction and Objectives; Ch.2 Preparing for Test Automation
+M05-automation-strategy.md,มาตรฐาน W3C,verified,REF-080,WebDriver became a W3C Recommendation (5 June 2018); spec derived from Selenium WebDriver
+M05-automation-strategy.md,SSHLibrary,skip,,Guidance
+M09-playwright-fundamentals.md,Actionability,corrected,REF-070,"Was ""attached · visible · stable · enabled · receives events""; official list for click: visible, stable, receives events, enabled, not inert"
+M11-robot-framework-fundamentals.md,RFCP,verified,REF-079,
+M11-robot-framework-fundamentals.md,RF 7,verified,REF-074,VAR syntax introduced in RF 7.0 (Jan 2024)
+M12-robot-framework-advanced.md,quarantine,verified,REF-081,RF 4.0 removed criticality; --skiponfailure added; --noncritical kept as deprecated alias
+M13-api-testing.md,10–100,corrected,,Removed unmeasured multiplier
+M15-framework-architecture.md,ISTQB CTAL-TAE บทที่ 3,verified,REF-002,Ch.3 Test Automation Architecture
+M16-test-data-environments.md,เร็วกว่าคลิกผ่าน UI มาก,corrected,,"Was ""50 เท่า"" — removed unmeasured multiplier"
+M19-non-functional-testing.md,POUR,verified,REF-004,WCAG four principles
+M19-non-functional-testing.md,Deque,corrected,REF-069,"Was ""~30–50%""; Deque 2021: ~57% of issues by volume (vendor data); 20–30% is the older criteria-based figure"
+M19-non-functional-testing.md,OWASP Top 10:2025,corrected,REF-076,Table moved from 2021 to 2025 codes (A02 Security Misconfiguration, A04 Crypto, A05 Injection, A06 Insecure Design, A07 Authentication Failures, A10 added)
+M19-non-functional-testing.md,OWASP ZAP baseline,verified,REF-075,ghcr.io/zaproxy/zaproxy:stable zap-baseline.py; passive (no attacks)
+M19-non-functional-testing.md,security** เบื้องต้นตาม OWASP Top 10,verified,REF-076,
+M19-non-functional-testing.md,IDOR อยู่ใน OWASP หมวดใด,verified,REF-076;REF-006,A01 in 2021 and 2025; API1:2023 BOLA
+M20-quality-strategy-leadership.md,TMMi,corrected,REF-082;REF-083,"Was ""อ้างอิงโมเดล: TMMi, TPI NEXT"" under a self-made table; now states the table is a simplified course version, TMMi staged 5 levels vs TPI NEXT continuous key areas"
+M20-quality-strategy-leadership.md,DORA,verified,REF-068,Change failure rate and lead time are current DORA metrics
+M21-ai-assisted-testing.md,Applitools,corrected,REF-084,"Was stated as fact; now attributed to the vendor, no independent benchmark found"
+M22-capstone-and-career.md,ISTQB CTFL → CTAL-TAE,verified,REF-001;REF-002;REF-079,All three certifications exist
+M22-capstone-and-career.md,skills exam,corrected,,"Was ""Practical Skills Exam"" (exact CCNA exam name not verified) — wording made generic"

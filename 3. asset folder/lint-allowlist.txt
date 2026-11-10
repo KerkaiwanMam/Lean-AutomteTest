@@ -1,0 +1,6 @@
+# Phrases that text_lint.py must NOT report (one per line, exact substring of the sentence).
+# Thai has no spaces between words, so word boundaries can look like a repeated word.
+# Add a phrase here only after checking it is correct Thai.
+ยกตัวอย่างอย่างละ
+ทำไมทำไม่ได้
+เป้าหมายตายตัว

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLab — Accessibility Lab (fixed)</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <main>
+    <h1>Accessibility Lab — fixed version</h1>
+    <h2>Newsletter</h2>
+    <p>This text now has sufficient contrast.</p>
+    <img src="/img/electronics.svg" alt="Electronics category icon" width="80" height="80">
+    <form aria-label="Newsletter sign-up">
+      <div class="field"><label for="email">Your email</label><input type="email" id="email" autocomplete="email"></div>
+      <div class="field"><label for="name">Name</label><input type="text" id="name" autocomplete="name"></div>
+      <div class="field"><label for="phone">Phone</label><input type="tel" id="phone" autocomplete="tel"></div>
+      <div class="field"><label for="freq">Frequency</label><select id="freq"><option>Weekly</option><option>Monthly</option></select></div>
+      <button class="btn primary" type="submit">Subscribe</button>
+    </form>
+    <p><a href="/">Back to ShopLab home</a> · <a href="/a11y.html">See the broken version</a></p>
+  </main>
+</body>
+</html>

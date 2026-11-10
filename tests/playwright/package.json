@@ -1,0 +1,32 @@
+{
+  "name": "shoplab-playwright-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reference Playwright + TypeScript test framework for ShopLab (course reference implementation).",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --project=ui --project=ui-admin",
+    "test:api": "playwright test --project=api",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:bugs": "cross-env BUG_MODE=1 playwright test",
+    "test:headed": "playwright test --headed --workers=1",
+    "test:debug": "playwright test --debug",
+    "test:visual": "cross-env VISUAL=1 playwright test --project=visual",
+    "test:exercises:flaky": "cross-env EXERCISES=1 playwright test tests/exercises/flaky.spec.ts --project=exercises --repeat-each=20 --workers=8",
+    "test:exercises:kata": "cross-env EXERCISES=1 playwright test tests/exercises/bad-checkout.spec.ts --project=exercises",
+    "test:exercises:solutions": "cross-env EXERCISES=1 playwright test tests/exercises/flaky.solution.spec.ts --project=exercises --repeat-each=20 --workers=8",
+    "test:visual:update": "cross-env VISUAL=1 playwright test --project=visual --update-snapshots",
+    "codegen": "playwright codegen http://localhost:3000",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
+    "ajv": "^8.17.1",
+    "cross-env": "^10.1.0",
+    "typescript": "^7.0.2"
+  }
+}

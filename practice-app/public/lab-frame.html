@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Payment frame</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>body{background:#fff;padding:.75rem}</style>
+</head>
+<body>
+  <form id="frame-form">
+    <div class="field"><label for="card-holder">Card holder (inside iframe)</label><input id="card-holder" type="text"></div>
+    <button class="btn primary" type="submit">Submit inside frame</button>
+    <p id="frame-status" role="status"></p>
+  </form>
+  <iframe src="/lab-frame-inner.html" title="Nested frame" style="width:100%;height:70px;border:1px dashed #aaa"></iframe>
+  <script>
+    document.getElementById('frame-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const v = document.getElementById('card-holder').value;
+      document.getElementById('frame-status').textContent = `Submitted: ${v}`;
+      parent.postMessage({ type: 'frame-submit', text: `Frame submitted for ${v}` }, location.origin);
+    });
+  </script>
+</body>
+</html>

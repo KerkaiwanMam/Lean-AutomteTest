@@ -1,0 +1,14 @@
+node_modules/
+.venv/
+__pycache__/
+practice-app/data/
+tests/playwright/test-results/
+tests/playwright/playwright-report/
+tests/playwright/blob-report/
+tests/robot/results/
+tests/robot/browser/
+tests/robot/log.html
+tests/robot/report.html
+tests/robot/output.xml
+*.log
+.env

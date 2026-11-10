@@ -1,0 +1,12 @@
+*** Test Cases ***,${sku},${qty},${coupon},${shipping},${discount},${free_ship},${message},[Tags]
+R1 Below Free Shipping Threshold,BOOK-002,1,${NONE},standard,0,False,${NONE},REQ-PRC-03
+R2 Exactly On Threshold (BUG-01),ELEC-003,1,${NONE},standard,0,False,${NONE},REQ-PRC-03
+R3 Above Threshold,BOOK-001,1,${NONE},standard,0,False,${NONE},REQ-PRC-03
+R4 Discount Applied Before VAT (BUG-02),ELEC-003,1,SAVE10,standard,100,False,Coupon SAVE10 applied,REQ-PRC-02
+R5 Percent Discount Is Capped,ELEC-004,1,SAVE10,standard,500,False,Coupon SAVE10 applied,REQ-PRC-02
+R6 Fixed Coupon Above Minimum,FASH-003,1,BIG500,standard,500,False,${NONE},REQ-PRC-02
+R7 Fixed Coupon Below Minimum,FASH-001,1,BIG500,standard,0,False,Subtotal is too low for this coupon,REQ-PRC-07
+R8 Free Shipping Coupon,FASH-001,1,FREESHIP,standard,0,True,${NONE},REQ-PRC-02
+R9 Expired Coupon Is Rejected (BUG-07),FASH-001,1,EXPIRED20,standard,0,False,Coupon has expired,REQ-PRC-07
+R10 Unknown Coupon Is Invalid,FASH-001,1,NOPE,standard,0,False,Coupon code is invalid,REQ-PRC-07
+R11 Express Shipping Always Charged,ELEC-001,1,${NONE},express,0,False,${NONE},REQ-PRC-04

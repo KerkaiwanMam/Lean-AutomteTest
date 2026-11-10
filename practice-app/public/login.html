@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLab — Login</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <div class="card" style="max-width:420px;margin:2rem auto">
+      <h1 data-i18n="login.title">Login</h1>
+      <div id="login-error" class="alert error hidden" role="alert" data-testid="login-error"></div>
+      <form id="login-form" data-testid="login-form" novalidate>
+        <div class="field">
+          <label for="username" data-i18n="login.username">Username</label>
+          <input id="username" name="username" type="text" autocomplete="username" data-testid="username" required>
+          <span class="field-error" data-testid="error-username"></span>
+        </div>
+        <div class="field">
+          <label for="password" data-i18n="login.password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" data-testid="password" required>
+          <span class="field-error" data-testid="error-password"></span>
+          <label class="inline-options"><input type="checkbox" id="show-password" data-testid="show-password"> <span data-i18n="login.show">Show password</span></label>
+        </div>
+        <div class="field">
+          <label class="inline-options"><input type="checkbox" name="remember" data-testid="remember-me"> Remember me</label>
+        </div>
+        <button class="btn primary" type="submit" id="login-button" data-testid="login-button" style="width:100%">
+          <span data-i18n="login.submit">Login</span>
+        </button>
+      </form>
+      <p class="muted" style="margin-top:1rem"><span data-i18n="login.noAccount">Don't have an account?</span> <a href="/register" data-testid="register-link">Register</a></p>
+      <details class="hint">
+        <summary>Practice accounts</summary>
+        <ul>
+          <li><code>customer</code> / <code>Passw0rd!</code></li>
+          <li><code>jane</code> / <code>Passw0rd!</code> (has orders)</li>
+          <li><code>admin</code> / <code>Admin123!</code></li>
+          <li><code>locked</code> / <code>Passw0rd!</code> (locked)</li>
+          <li><code>slow</code> / <code>Passw0rd!</code> (3 s delay)</li>
+        </ul>
+      </details>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script>
+  (async () => {
+    const { api, qs, showFieldErrors } = window.SL;
+    await window.SL.renderHeader('login');
+    const form = document.getElementById('login-form');
+    const errBox = document.getElementById('login-error');
+    const btn = document.getElementById('login-button');
+    document.getElementById('show-password').addEventListener('change', (e) => {
+      document.getElementById('password').type = e.target.checked ? 'text' : 'password';
+    });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errBox.classList.add('hidden');
+      const username = form.username.value.trim();
+      const password = form.password.value;
+      const errors = {};
+      if (!username) errors.username = 'Username is required';
+      if (!password) errors.password = 'Password is required';
+      showFieldErrors(form, errors);
+      if (Object.keys(errors).length) return;
+      btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
+      btn.firstElementChild.textContent = 'Signing in…';
+      const r = await api('/auth/login', { method: 'POST', body: { username, password } });
+      btn.disabled = false;
+      btn.removeAttribute('aria-busy');
+      btn.firstElementChild.textContent = window.SL.t('login.submit');
+      if (r.ok) {
+        const next = qs('next');
+        location.href = next && next.startsWith('/') && !next.startsWith('//') ? next : (r.data.user.role === 'admin' ? '/admin' : '/');
+      } else {
+        errBox.textContent = window.SL.errMsg(r);
+        errBox.classList.remove('hidden');
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

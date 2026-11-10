@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "shoplab",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "practice-app", "start"],
+      "port": 3000
+    }
+  ]
+}
