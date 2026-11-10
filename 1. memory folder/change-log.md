@@ -5,6 +5,33 @@
 
 ---
 
+## 2026-11-10 — CL-011 · Skills Assessments 1–4 + grader วัดการจับบั๊ก
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `practice-app/src/config.js` | Bug Mode เปิด/ปิดได้ทั้ง 13 ตัวพร้อมกันเท่านั้น | env `GRADING_BUGS=BUG-xx[,..]` เปิดเฉพาะบั๊กที่ระบุ, suite ที่ถูกตรวจปิดไม่ได้, `/api/test/config` คืน `activeBugs`; แถบ BUG MODE ไม่แสดง | ให้ตรวจได้ว่า suite จับบั๊กแต่ละตัวได้หรือไม่ (mutation-style) และให้ SA1 ฝังบั๊ก 1 ตัวแบบไม่บอก | – |
+| 2 | `practice-app/public/product.html` | BUG-09 (XSS) อ่านเฉพาะ `bugMode` | อ่าน `activeBugs` ด้วย | BUG-09 อยู่ฝั่ง browser จึงต้องรู้โหมด grading | – |
+| 3 | `practice-app/test/config.test.js` (ใหม่) | – | 4 unit tests ของ grading mode | ยืนยันว่าเปิดแค่บั๊กที่ระบุและปิดไม่ได้ | – |
+| 4 | `tools/grade_suite.py` (ใหม่) | – | รัน baseline + ทีละบั๊ก บน ShopLab ที่ start ใหม่ทุกรอบ (port/data dir แยก) → `report.md`, `result.json`, log ต่อรอบ | เกณฑ์ SA3 / Capstone (เดิมเป็นงาน roadmap v2.0 "auto-grading") | – |
+| 5 | `docs/assessments/` (ใหม่) | หลักสูตรอ้างถึง SA1–SA4 แต่ไม่มีไฟล์ | README (กติกา/สภาพแวดล้อม/grader) + SA1–SA4 (โจทย์, งานที่ส่ง, rubric, เงื่อนไขบังคับ) | Backlog P1 #6 | – |
+| 6 | SA2 Part A | – | `sa2-challenge.ts` (assertions) + `sa2-locators.spec.ts` (ผู้เรียน) + `sa2-locators.solution.spec.ts` (เฉลย) | ตรวจอัตโนมัติได้ ผู้เรียนแก้เฉพาะ locator | REF-071, REF-020 |
+| 7 | `docs/instructor/assessment-keys.md` (ใหม่) | – | บั๊กที่ฝังใน SA1 (หลัก + สำรอง), ค่าเงิน decision table, เฉลย SA2, บั๊กในขอบเขต SA3, จุดอ่อนจริงของ reference Robot suite สำหรับ SA4 | answer key (repo public → ติดป้าย Spoiler) | – |
+| 8 | Overview, README, `.gitignore` | – | ลิงก์ไป SA ทั้ง 4 + grader; ignore `grading/` | – | – |
+
+**ผลที่ยืนยันด้วยการรันจริง:**
+- Unit tests ShopLab: 16/16 (เพิ่ม 4)
+- Grader กับ reference Playwright `--project=api`: baseline เขียว · จับได้ **10/13** — พลาด BUG-01, BUG-07, BUG-09
+- Grader กับ `--project=ui` เฉพาะ 3 ตัวนั้น: baseline เขียว · จับได้ **3/3**; BUG-09 ถูกจับโดย test ที่ตั้งใจไว้ (`review text is shown as plain text`)
+- SA2 เฉลย: **30/30** (10 ข้อ × 3 รอบ) · template ผู้เรียน: ล้ม 10/10 ตามตั้งใจ · `tsc` ผ่าน · ชุดปกติยังเป็น 110 tests
+- ค่าเงินทุกค่าใน instructor key คำนวณด้วย `pricing.js` (R1–R9, SA2 Part B = total 1,923.11)
+
+**ข้อจำกัด:**
+- Grader กับ Robot (`tests/api`, BUG-10/BUG-12): baseline เขียว, จับได้ 2/2 และล้มที่ test ที่ตรงกับบั๊ก — แต่ยังไม่ได้รัน Robot ครบ 13 บั๊ก และ Playwright ทั้งชุดก็รันแยก (api 13 บั๊ก + ui 3 บั๊ก) ไม่ใช่ทั้งชุดในรอบเดียว
+- SA1, SA3 Part 2–3 และ SA4 ตรวจด้วย rubric โดยผู้สอน ยังไม่มีตัวอย่างงานของผู้เรียนจริงมาทดลองให้คะแนน
+- Grader ถือว่า "suite ล้ม = จับได้" จึงต้องดู baseline และ log ประกอบ (เขียนไว้ใน README ของ assessments)
+
+---
+
 ## 2026-11-10 — CL-010 · Fact-check รอบที่ 2 (คิว 105 claims → todo 0)
 
 **ขอบเขต:** (a) เปิดอ่านต้นฉบับโดยตรงของแหล่งที่รอบ 1 อ่านแค่สรุป (b) ตรวจพฤติกรรมเครื่องมือที่เขียนไว้ในโมดูล (c) แหล่งที่ยังเป็น candidate (d) ข้อเท็จจริงในข้อความธรรมดาที่สคริปต์จับไม่ได้

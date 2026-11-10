@@ -35,25 +35,25 @@
 | | [M02](modules/M02-test-design-techniques.md) | Test Design Techniques | 8 | P0 |
 | | [M03](modules/M03-test-process-and-defects.md) | Test Process, Documentation & Defect Management | 5 | P0 |
 | | [M04](modules/M04-agile-devops-test-pyramid.md) | Agile, DevOps & Test Pyramid | 4 | P0 |
-| | | 🏁 **Skills Assessment 1** — ออกแบบ test suite จาก REQUIREMENTS.md | 3 | |
+| | | 🏁 [**Skills Assessment 1**](assessments/SA1-test-design.md) — ออกแบบ test suite จาก REQUIREMENTS.md | 3 | |
 | **2 Automation Foundations** | [M05](modules/M05-automation-strategy.md) | Automation Strategy & Tool Selection | 4 | P0 |
 | | [M06](modules/M06-toolchain-git-cli.md) | Tester's Toolchain: Git, CLI, VS Code | 5 | P1 |
 | | [M07](modules/M07-web-fundamentals-locators.md) | Web Fundamentals: DOM, Locators, HTTP, DevTools | 8 | P0 |
 | | [M08](modules/M08-programming-for-testers.md) | Programming for Testers (TypeScript & Python) | 10 | P1 |
-| | | 🏁 **Skills Assessment 2** — locator challenge + script แรก | 2 | |
+| | | 🏁 [**Skills Assessment 2**](assessments/SA2-locators-first-script.md) — locator challenge + script แรก | 2 | |
 | **3 Tools** | [M09](modules/M09-playwright-fundamentals.md) | Playwright Fundamentals | 8 | P0 |
 | | [M10](modules/M10-playwright-advanced.md) | Playwright Advanced | 10 | P0 |
 | | [M11](modules/M11-robot-framework-fundamentals.md) | Robot Framework Fundamentals | 8 | P0 |
 | | [M12](modules/M12-robot-framework-advanced.md) | Robot Framework Advanced | 8 | P0 |
 | | [M13](modules/M13-api-testing.md) | API & Contract Testing | 8 | P1 |
 | | [M14](modules/M14-database-data-testing.md) | Database & Data Testing | 4 | P1 |
-| | | 🏁 **Skills Assessment 3** — automate ShopLab checkout ด้วย 2 เครื่องมือ | 4 | |
+| | | 🏁 [**Skills Assessment 3**](assessments/SA3-automate-checkout.md) — automate ShopLab checkout ด้วย 2 เครื่องมือ | 4 | |
 | **4 Engineering** | [M15](modules/M15-framework-architecture.md) | Test Framework Architecture & Design Patterns | 10 | P0 |
 | | [M16](modules/M16-test-data-environments.md) | Test Data & Environment Management | 5 | P0 |
 | | [M17](modules/M17-flaky-tests-debugging.md) | Reliability: Flaky Tests & Debugging | 5 | P1 |
 | | [M18](modules/M18-ci-cd-reporting.md) | CI/CD, Docker, Parallelism & Reporting | 8 | P1 |
 | | [M19](modules/M19-non-functional-testing.md) | Performance, Accessibility, Visual, Security, Mobile | 10 | P2 |
-| | | 🏁 **Skills Assessment 4** — framework review + pipeline | 3 | |
+| | | 🏁 [**Skills Assessment 4**](assessments/SA4-framework-review-pipeline.md) — framework review + pipeline | 3 | |
 | **5 Expert** | [M20](modules/M20-quality-strategy-leadership.md) | Quality Strategy, Metrics & Leadership | 6 | P2 |
 | | [M21](modules/M21-ai-assisted-testing.md) | AI-Assisted Testing | 4 | P2 |
 | | [M22](modules/M22-capstone-and-career.md) | Capstone Project, Final Exam & Career | 16 | P0 |
@@ -78,7 +78,7 @@
 |---|---|---|
 | Quizzes ท้ายโมดูล | 15% | ผ่านที่ ≥ 80% (ทำซ้ำได้) |
 | Labs | 25% | ส่งโค้ด/เอกสาร ตาม checklist ของแต่ละแล็บ |
-| Skills Assessments (4 ครั้ง) | 25% | งานปฏิบัติจับเวลา เหมือน Practical Exam |
+| [Skills Assessments](assessments/README.md) (4 ครั้ง) | 25% | งานปฏิบัติจับเวลา เหมือน Practical Exam · SA3 ตรวจด้วย grader ที่วัดว่า test จับบั๊กได้กี่ตัว |
 | Capstone Project | 35% | สร้าง framework ครบวงจร + นำเสนอ (ดู M22) |
 
 **เกณฑ์จบหลักสูตร:** คะแนนรวม ≥ 75% และ Capstone ต้องจับบั๊กใน Bug Mode ได้ ≥ 10 จาก 13 ตัว

@@ -35,8 +35,19 @@ const BUGS = {
   'BUG-13': 'Login error message reveals whether the username exists',
 };
 
+/**
+ * GRADING MODE — used by tools/grade_suite.py (Skills Assessments, Capstone).
+ * GRADING_BUGS=BUG-01[,BUG-07...] switches on ONLY the listed defects, regardless of bugMode, and
+ * the learner's suite cannot switch them off through /api/test/config. This lets a grader run a
+ * suite once per defect and count which defects the suite detects (a simple mutation-testing score).
+ */
+const gradingBugs = (process.env.GRADING_BUGS || '')
+  .split(',')
+  .map((s) => s.trim().toUpperCase())
+  .filter((id) => Object.prototype.hasOwnProperty.call(BUGS, id));
+
 module.exports = {
-  get: () => ({ ...state }),
+  get: () => ({ ...state, ...(gradingBugs.length ? { activeBugs: [...gradingBugs] } : {}) }),
   set(patch = {}) {
     if (typeof patch.bugMode === 'boolean') state.bugMode = patch.bugMode;
     if (Number.isFinite(patch.latencyMs)) state.latencyMs = Math.max(0, Math.min(patch.latencyMs, 30000));
@@ -48,6 +59,9 @@ module.exports = {
     return module.exports.get();
   },
   /** true when the given intentional defect is active */
-  bug: (id) => state.bugMode && Object.prototype.hasOwnProperty.call(BUGS, id),
+  bug: (id) => (gradingBugs.length
+    ? gradingBugs.includes(id)
+    : state.bugMode && Object.prototype.hasOwnProperty.call(BUGS, id)),
+  gradingBugs,
   BUGS,
 };

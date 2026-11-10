@@ -12,3 +12,6 @@ tests/robot/report.html
 tests/robot/output.xml
 *.log
 .env
+
+# grader output (tools/grade_suite.py)
+grading/

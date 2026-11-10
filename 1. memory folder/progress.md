@@ -1,6 +1,6 @@
 # Progress & Backlog
 
-_Last updated: 2026-11-10 (CL-010)_
+_Last updated: 2026-11-10 (CL-011)_
 
 ## Status
 | Item | Status |
@@ -19,7 +19,7 @@ _Last updated: 2026-11-10 (CL-010)_
 ### P1
 4. ~~Fact-check round 2~~ done (CL-010). Left over: open the 6 books (REF-040..044, 047) to check bibliographic data and the Myers quote wording; get the Kuhn 2004 PDF to check the >70% figure before re-adding it; read the TMMi Model document; have a native-Thai QA reviewer read the course
 5. ~~Files that labs say the instructor provides~~ ✅ done (CL-005): `flaky.spec.ts` (+ solution), `bad-checkout.spec.ts`, `pricing.csv` (+ solution), `docs/instructor/exercise-keys.md`
-6. Skills Assessments 1–4 (tasks + rubrics)
+6. ~~Skills Assessments 1–4~~ done (CL-011): docs/assessments/ + tools/grade_suite.py + GRADING_BUGS mode + SA2 auto-checked challenge + instructor key. Left: try the grader on a Robot suite; pilot the rubrics on real learner work
 7. Final exam question bank (60 questions, M22)
 8. Lab solution guides for instructors
 9. Native Thai QA reviewer pass (language + practice fit)

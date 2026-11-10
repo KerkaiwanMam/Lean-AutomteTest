@@ -10,6 +10,7 @@
 | คู่มือ 22 โมดูล | [docs/modules/](docs/modules/) |
 | Requirement ของเว็บฝึก (ใช้ออกแบบ test) | [practice-app/REQUIREMENTS.md](practice-app/REQUIREMENTS.md) |
 | Templates / Cheat sheets | [docs/templates/](docs/templates/) · [docs/cheatsheets/](docs/cheatsheets/) |
+| Skills Assessments 1–4 + grader (วัดว่า test จับบั๊กได้กี่ตัว) | [docs/assessments/](docs/assessments/README.md) · [tools/grade_suite.py](tools/grade_suite.py) |
 | เฉลยบั๊กสำหรับผู้สอน | [docs/instructor/bug-catalogue.md](docs/instructor/bug-catalogue.md) |
 
 ---

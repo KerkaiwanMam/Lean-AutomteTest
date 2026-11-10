@@ -104,7 +104,7 @@
       document.getElementById('reviews').innerHTML = list.length ? list.map((rv) => `
         <div class="review" data-testid="review-item">
           <div><strong data-testid="review-author">${esc(rv.username)}</strong> <span class="stars">${'★'.repeat(rv.rating)}${'☆'.repeat(5 - rv.rating)}</span></div>
-          <div class="review-comment" data-testid="review-text">${cfg.bugMode ? rv.comment : esc(rv.comment)}</div>
+          <div class="review-comment" data-testid="review-text">${cfg.bugMode || (cfg.activeBugs || []).includes('BUG-09') ? rv.comment : esc(rv.comment)}</div>
         </div>`).join('') : '<p class="muted" data-testid="no-reviews">No reviews yet.</p>';
     }
     renderReviews(p.reviews);

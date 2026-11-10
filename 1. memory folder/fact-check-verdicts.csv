@@ -77,3 +77,7 @@ M19-non-functional-testing.md,POUR,verified,REF-004,Direct W3C WAI read in round
 M20-quality-strategy-leadership.md,TMMi,corrected,REF-082,"Level names come from secondary sources; tmmi.org page does not list them — M20 now says so"
 M06-toolchain-git-cli.md,npm ci,verified,REF-089,Direct npm docs read
 M11-robot-framework-fundamentals.md,keyword นี้ไม่บันทึกค่าลับ,corrected,REF-022,"Round 2: quiz answer rewritten with the Playwright debug-log caveat (Browser library source v21.0.0)"
+# --- Skills Assessments (CL-011) ---
+SA1-test-design.md,*,skip,,Assessment design (rubric weights)
+SA3-automate-checkout.md,*,skip,,Assessment design (time / tools)
+assessment-keys.md,*,internal,,"Money values computed with practice-app/src/pricing.js; grader results from tools/grade_suite.py runs; Robot-suite weaknesses observed in this repo"
