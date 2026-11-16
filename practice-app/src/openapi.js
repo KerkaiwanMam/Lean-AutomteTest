@@ -5,13 +5,16 @@ const json = (schema) => ({ content: { 'application/json': { schema } } });
 const err = (description) => ({ description, ...json(ref('Error')) });
 const idParam = { name: 'id', in: 'path', required: true, schema: { type: 'integer' } };
 const secured = [{ bearerAuth: [] }, { cookieAuth: [] }];
+const money = { type: 'number', minimum: 0, description: 'THB, at most 2 decimals' };
+const isoDate = { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' };
 
 module.exports = {
   openapi: '3.0.3',
   info: {
     title: 'ShopLab API',
     version: '1.0.0',
-    description: 'Practice e-commerce API for learning test automation. Auth: POST /api/auth/login then send `Authorization: Bearer <token>` (or the sl_token cookie).',
+    description: 'Practice e-commerce API for learning test automation. Auth: POST /api/auth/login then send `Authorization: Bearer <token>` (or the sl_token cookie). '
+      + 'Paths under /loanlab belong to LoanLab, a fictional retail lending & payment module (see REQUIREMENTS-LOANLAB.md).',
   },
   servers: [{ url: '/api' }],
   components: {
@@ -73,6 +76,60 @@ module.exports = {
           status: { type: 'string', enum: ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'] }, paymentMethod: { type: 'string' }, shippingMethod: { type: 'string' },
           subtotal: { type: 'number' }, discount: { type: 'number' }, shipping: { type: 'number' }, vat: { type: 'number' }, total: { type: 'number' },
           address: ref('Address'), createdAt: { type: 'string' }, items: { type: 'array', items: { type: 'object' } },
+        },
+      },
+      // ---------- LoanLab ----------
+      Loan: {
+        type: 'object', required: ['id', 'loanNo', 'accountId', 'accountNo', 'accountStatus', 'principal', 'outstanding', 'minimumPayment', 'status'],
+        properties: {
+          id: { type: 'integer' }, loanNo: { type: 'string', pattern: '^LN-\\d{6}$' }, accountId: { type: 'integer' }, accountNo: { type: 'string', pattern: '^LA-\\d{6}$' },
+          accountStatus: { type: 'string', enum: ['PENDING', 'ACTIVE', 'FROZEN', 'CLOSED'] }, principal: money, outstanding: money, minimumPayment: money,
+          status: { type: 'string', enum: ['ACTIVE', 'CLOSED'] }, createdAt: { type: 'string' }, updatedAt: { type: 'string' },
+        },
+      },
+      LoanAccount: {
+        type: 'object', required: ['id', 'accountNo', 'userId', 'holderName', 'status', 'loans'],
+        properties: {
+          id: { type: 'integer' }, accountNo: { type: 'string', pattern: '^LA-\\d{6}$' }, userId: { type: 'integer' }, username: { type: 'string' }, holderName: { type: 'string' },
+          status: { type: 'string', enum: ['PENDING', 'ACTIVE', 'FROZEN', 'CLOSED'] }, createdAt: { type: 'string' }, updatedAt: { type: 'string' },
+          loans: { type: 'array', items: ref('Loan') },
+        },
+      },
+      LoanAccountList: { type: 'object', required: ['businessDate', 'items'], properties: { businessDate: isoDate, items: { type: 'array', items: ref('LoanAccount') } } },
+      LoanTransaction: {
+        type: 'object', required: ['id', 'ref', 'type', 'loanId', 'loanNo', 'amount', 'status', 'businessDate', 'settlementDate', 'balanceAfter'],
+        properties: {
+          id: { type: 'integer' }, ref: { type: 'string', pattern: '^(PM|RV)-\\d{8}-\\d{6}$' }, type: { type: 'string', enum: ['PAYMENT', 'REVERSAL'] },
+          loanId: { type: 'integer' }, loanNo: { type: 'string' }, amount: { type: 'number', exclusiveMinimum: 0 },
+          status: { type: 'string', enum: ['POSTED', 'PARTIALLY_REVERSED', 'REVERSED'] },
+          reversedAmount: { type: 'number', nullable: true }, reversibleAmount: { type: 'number', nullable: true },
+          originalTransactionId: { type: 'integer', nullable: true }, originalRef: { type: 'string', nullable: true },
+          reference: { type: 'string', nullable: true }, reason: { type: 'string', nullable: true },
+          businessDate: isoDate, settlementDate: { ...isoDate, nullable: true }, balanceAfter: money, createdAt: { type: 'string' },
+          reversals: { type: 'array', items: { type: 'object' } }, reversibleToday: { type: 'boolean' },
+        },
+      },
+      LoanTransactionList: { type: 'object', required: ['items'], properties: { loan: ref('Loan'), items: { type: 'array', items: ref('LoanTransaction') } } },
+      PaymentRequest: { type: 'object', required: ['amount'], properties: { amount: { type: 'number', example: 500 } } },
+      PaymentResponse: { type: 'object', required: ['transaction', 'loan'], properties: { transaction: ref('LoanTransaction'), loan: ref('Loan') } },
+      ReversalRequest: {
+        type: 'object', required: ['originalTransactionId', 'reference', 'reason'],
+        properties: {
+          originalTransactionId: { type: 'integer' }, reference: { type: 'string', pattern: '^[A-Za-z0-9_-]{4,40}$' }, reason: { type: 'string', minLength: 5, maxLength: 200 },
+          amount: { type: 'number', description: 'Optional. Omit to reverse everything that is left.' },
+        },
+      },
+      ReversalResponse: { type: 'object', required: ['reversal', 'original', 'loan'], properties: { reversal: ref('LoanTransaction'), original: ref('LoanTransaction'), loan: ref('Loan') } },
+      EodRun: {
+        type: 'object', required: ['id', 'businessDate', 'nextBusinessDate', 'settledCount', 'paymentsTotal', 'reversalsTotal', 'netTotal', 'status', 'breaks'],
+        properties: {
+          id: { type: 'integer' }, businessDate: isoDate, nextBusinessDate: isoDate, settledCount: { type: 'integer', minimum: 0 },
+          paymentsTotal: money, reversalsTotal: money, netTotal: { type: 'number' }, status: { type: 'string', enum: ['BALANCED', 'OUT_OF_BALANCE'] },
+          breaks: {
+            type: 'array',
+            items: { type: 'object', required: ['loanId', 'loanNo', 'expected', 'actual', 'difference'], properties: { loanId: { type: 'integer' }, loanNo: { type: 'string' }, expected: { type: 'number' }, actual: { type: 'number' }, difference: { type: 'number' } } },
+          },
+          runAt: { type: 'string' },
         },
       },
     },
@@ -155,5 +212,33 @@ module.exports = {
       post: { tags: ['test-hooks'], summary: 'Set bugMode / latencyMs / failureRate', requestBody: json({ type: 'object', properties: { bugMode: { type: 'boolean' }, latencyMs: { type: 'integer' }, failureRate: { type: 'number' } } }), responses: { 200: { description: 'OK' } } },
     },
     '/test/users': { post: { tags: ['test-hooks'], summary: 'Create a unique test user', responses: { 201: { description: 'Created' } } } },
+    // ---------- LoanLab (officer = admin role) ----------
+    '/loanlab/business-date': { get: { tags: ['loanlab'], summary: 'Current system business date', security: secured, responses: { 200: { description: 'OK' }, 401: err('Unauthorized') } } },
+    '/loanlab/accounts': {
+      get: { tags: ['loanlab'], summary: 'My lending accounts with loans (officer: ?all=1)', security: secured, parameters: [{ name: 'all', in: 'query', schema: { type: 'string', enum: ['1'] } }], responses: { 200: { description: 'Accounts', ...json(ref('LoanAccountList')) }, 401: err('Unauthorized'), 403: err('Forbidden') } },
+      post: { tags: ['loanlab-officer'], summary: 'Create an account for a customer (starts PENDING)', security: secured, requestBody: { required: true, ...json({ type: 'object', required: ['username', 'holderName'], properties: { username: { type: 'string' }, holderName: { type: 'string', minLength: 2, maxLength: 100 } } }) }, responses: { 201: { description: 'Created', ...json(ref('LoanAccount')) }, 400: err('Validation'), 403: err('Forbidden'), 404: err('CUSTOMER_NOT_FOUND') } },
+    },
+    '/loanlab/accounts/{id}': { parameters: [idParam], get: { tags: ['loanlab'], summary: 'Account detail', security: secured, responses: { 200: { description: 'Account', ...json(ref('LoanAccount')) }, 404: err('Not found') } } },
+    '/loanlab/accounts/{id}/status': { parameters: [idParam], patch: { tags: ['loanlab-officer'], summary: 'Change account status (state machine)', security: secured, requestBody: json({ type: 'object', required: ['status'], properties: { status: { type: 'string', enum: ['ACTIVE', 'FROZEN', 'CLOSED'] } } }), responses: { 200: { description: 'Account', ...json(ref('LoanAccount')) }, 403: err('Forbidden'), 409: err('INVALID_TRANSITION / ACCOUNT_HAS_BALANCE') } } },
+    '/loanlab/loans': { post: { tags: ['loanlab-officer'], summary: 'Open a loan under an ACTIVE account', security: secured, requestBody: { required: true, ...json({ type: 'object', required: ['accountId', 'principal'], properties: { accountId: { type: 'integer' }, principal: { type: 'number', minimum: 1000, maximum: 1000000 } } }) }, responses: { 201: { description: 'Created', ...json(ref('Loan')) }, 400: err('Validation'), 403: err('Forbidden'), 409: err('ACCOUNT_NOT_ACTIVE') } } },
+    '/loanlab/loans/{id}': { parameters: [idParam], get: { tags: ['loanlab'], summary: 'Loan detail with outstanding balance', security: secured, responses: { 200: { description: 'Loan', ...json(ref('Loan')) }, 404: err('Not found') } } },
+    '/loanlab/loans/{id}/payments': { parameters: [idParam], post: { tags: ['loanlab'], summary: 'Pay a loan (minimum 500 or the pay-off amount; no overpayment)', security: secured, requestBody: { required: true, ...json(ref('PaymentRequest')) }, responses: { 201: { description: 'Posted', ...json(ref('PaymentResponse')) }, 400: err('VALIDATION_ERROR / OVERPAYMENT / BELOW_MINIMUM'), 404: err('Not found'), 409: err('ACCOUNT_NOT_ACTIVE / LOAN_CLOSED') } } },
+    '/loanlab/loans/{id}/transactions': {
+      parameters: [idParam],
+      get: { tags: ['loanlab'], summary: 'Transaction history of a loan (newest first)', security: secured, parameters: [{ name: 'type', in: 'query', schema: { type: 'string', enum: ['PAYMENT', 'REVERSAL'] } }, { name: 'status', in: 'query', schema: { type: 'string', enum: ['POSTED', 'PARTIALLY_REVERSED', 'REVERSED'] } }], responses: { 200: { description: 'History', ...json(ref('LoanTransactionList')) }, 404: err('Not found') } },
+    },
+    '/loanlab/transactions': { get: { tags: ['loanlab'], summary: 'My transactions across loans (officer: ?all=1)', security: secured, responses: { 200: { description: 'Transactions', ...json(ref('LoanTransactionList')) } } } },
+    '/loanlab/transactions/{id}': { parameters: [idParam], get: { tags: ['loanlab'], summary: 'Transaction detail (a payment lists its reversals)', security: secured, responses: { 200: { description: 'Transaction', ...json(ref('LoanTransaction')) }, 404: err('Not found') } } },
+    '/loanlab/reversals': { post: { tags: ['loanlab-officer'], summary: 'Reverse a payment, fully or partly (same business date only)', security: secured, requestBody: { required: true, ...json(ref('ReversalRequest')) }, responses: { 201: { description: 'Reversed', ...json(ref('ReversalResponse')) }, 400: err('VALIDATION_ERROR / EXCEEDS_REVERSIBLE_AMOUNT'), 403: err('Forbidden'), 404: err('TRANSACTION_NOT_FOUND'), 409: err('NOT_REVERSIBLE / DUPLICATE_REVERSAL / ALREADY_REVERSED / REVERSAL_WINDOW_CLOSED / ACCOUNT_NOT_ELIGIBLE') } } },
+    '/loanlab/eod': { post: { tags: ['loanlab-officer'], summary: 'Run end-of-day: T+1 settlement, reconciliation, roll the business date', security: secured, responses: { 201: { description: 'EOD run', ...json(ref('EodRun')) }, 403: err('Forbidden') } } },
+    '/loanlab/eod-runs': { get: { tags: ['loanlab-officer'], summary: 'EOD run history with reconciliation breaks', security: secured, responses: { 200: { description: 'Runs' }, 403: err('Forbidden') } } },
+    '/test/loanlab/reset': { post: { tags: ['test-hooks'], summary: 'Reset LoanLab data only', responses: { 200: { description: 'OK' } } } },
+    '/test/loanlab/accounts': { post: { tags: ['test-hooks'], summary: 'Create an account and loan in a given status and balance', requestBody: json({ type: 'object', required: ['username'], properties: { username: { type: 'string' }, accountStatus: { type: 'string', enum: ['PENDING', 'ACTIVE', 'FROZEN', 'CLOSED'] }, outstanding: { type: 'number' }, principal: { type: 'number' }, holderName: { type: 'string' }, noLoan: { type: 'boolean' } } }), responses: { 201: { description: 'Created' } } } },
+    '/test/loanlab/loans/{id}': { parameters: [idParam], patch: { tags: ['test-hooks'], summary: 'Force the outstanding balance without a ledger entry (reconciliation break)', requestBody: json({ type: 'object', required: ['outstanding'], properties: { outstanding: { type: 'number' } } }), responses: { 200: { description: 'Loan', ...json(ref('Loan')) } } } },
+    '/test/loanlab/business-date': {
+      get: { tags: ['test-hooks'], summary: 'Read the system business date', responses: { 200: { description: 'OK' } } },
+      post: { tags: ['test-hooks'], summary: 'Set the system business date (Monday-Friday)', requestBody: json({ type: 'object', required: ['date'], properties: { date: isoDate } }), responses: { 200: { description: 'OK' }, 400: err('Not a business day') } },
+    },
+    '/test/loanlab/eod': { post: { tags: ['test-hooks'], summary: 'Run end-of-day for the current business date', responses: { 201: { description: 'EOD run', ...json(ref('EodRun')) } } } },
   },
 };

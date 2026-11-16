@@ -35,16 +35,35 @@ const BUGS = {
   'BUG-13': 'Login error message reveals whether the username exists',
 };
 
+// LoanLab (Retail Lending & Payment module) has its own catalogue so that the ShopLab list above —
+// and every score counted against it — stays exactly as it was. Same switches: bugMode / GRADING_BUGS.
+const LOANLAB_BUGS = {
+  'LL-BUG-01': 'A payment of exactly 500.00 is rejected (minimum uses > instead of >=)',
+  'LL-BUG-02': 'Overpayment is accepted and the balance is floored at 0',
+  'LL-BUG-03': 'A FROZEN account can still make payments',
+  'LL-BUG-04': 'Exact pay-off below 500.00 is rejected (minimum is not relaxed)',
+  'LL-BUG-05': 'Full payment leaves the loan ACTIVE with balance 0',
+  'LL-BUG-06': 'A duplicate reversal is processed again (balance restored twice)',
+  'LL-BUG-07': 'Reversal marks the payment but does not restore the outstanding balance',
+  'LL-BUG-08': 'Any logged-in customer can read another customer\'s loan and transactions (IDOR)',
+  'LL-BUG-09': 'A customer can post a reversal (officer role is not checked)',
+  'LL-BUG-10': 'A payment can be reversed after end-of-day',
+  'LL-BUG-11': 'T+1 uses the next calendar day instead of the next business day',
+  'LL-BUG-12': 'EOD reconciliation always reports BALANCED',
+  'LL-BUG-13': 'A partially reversed payment keeps status POSTED',
+};
+const ALL_BUGS = { ...BUGS, ...LOANLAB_BUGS };
+
 /**
  * GRADING MODE — used by tools/grade_suite.py (Skills Assessments, Capstone).
- * GRADING_BUGS=BUG-01[,BUG-07...] switches on ONLY the listed defects, regardless of bugMode, and
+ * GRADING_BUGS=BUG-01[,BUG-07,LL-BUG-03...] switches on ONLY the listed defects, regardless of bugMode, and
  * the learner's suite cannot switch them off through /api/test/config. This lets a grader run a
  * suite once per defect and count which defects the suite detects (a simple mutation-testing score).
  */
 const gradingBugs = (process.env.GRADING_BUGS || '')
   .split(',')
   .map((s) => s.trim().toUpperCase())
-  .filter((id) => Object.prototype.hasOwnProperty.call(BUGS, id));
+  .filter((id) => Object.prototype.hasOwnProperty.call(ALL_BUGS, id));
 
 module.exports = {
   get: () => ({ ...state, ...(gradingBugs.length ? { activeBugs: [...gradingBugs] } : {}) }),
@@ -61,7 +80,8 @@ module.exports = {
   /** true when the given intentional defect is active */
   bug: (id) => (gradingBugs.length
     ? gradingBugs.includes(id)
-    : state.bugMode && Object.prototype.hasOwnProperty.call(BUGS, id)),
+    : state.bugMode && Object.prototype.hasOwnProperty.call(ALL_BUGS, id)),
   gradingBugs,
   BUGS,
+  LOANLAB_BUGS,
 };

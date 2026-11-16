@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LoanLab — Loan Payment</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/loanlab/loanlab.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main class="ll-narrow">
+    <p><a href="/loanlab/" data-testid="back-to-accounts">← Account overview</a></p>
+    <h1 data-testid="page-title">Loan Payment</h1>
+    <p id="load-error" class="alert error hidden" role="alert" data-testid="load-error"></p>
+
+    <section id="loan-card" class="card hidden" data-testid="loan-summary">
+      <dl class="ll-facts">
+        <dt>Loan no.</dt><dd data-testid="loan-no"></dd>
+        <dt>Account</dt><dd><span data-testid="account-no"></span> <span id="account-status"></span></dd>
+        <dt>Loan status</dt><dd id="loan-status"></dd>
+        <dt>Outstanding balance</dt><dd data-testid="outstanding"></dd>
+        <dt>Minimum payment</dt><dd data-testid="minimum-payment"></dd>
+        <dt>Business date</dt><dd data-testid="business-date"></dd>
+      </dl>
+    </section>
+
+    <p id="payment-unavailable" class="alert info hidden" data-testid="payment-unavailable"></p>
+
+    <form id="payment-form" class="card hidden" style="margin-top:1rem" data-testid="payment-form" novalidate>
+      <div id="payment-error" class="alert error hidden" role="alert" data-testid="payment-error"></div>
+      <div class="field">
+        <label for="amount">Amount (THB)</label>
+        <input id="amount" name="amount" type="text" inputmode="decimal" autocomplete="off" data-testid="amount" required>
+        <span class="field-error" data-testid="error-amount"></span>
+      </div>
+      <div class="ll-actions">
+        <button class="btn" type="button" id="pay-full" data-testid="pay-full">Pay full balance</button>
+        <button class="btn primary" type="submit" id="pay-button" data-testid="pay-button">Pay</button>
+      </div>
+    </form>
+
+    <section id="payment-success" class="card hidden" style="margin-top:1rem" role="status" data-testid="payment-success">
+      <p class="alert success" data-testid="payment-message"></p>
+      <dl class="ll-facts">
+        <dt>Reference</dt><dd data-testid="receipt-ref"></dd>
+        <dt>Amount paid</dt><dd data-testid="receipt-amount"></dd>
+        <dt>Balance after</dt><dd data-testid="receipt-balance"></dd>
+        <dt>Status</dt><dd id="receipt-status"></dd>
+      </dl>
+      <p style="margin-bottom:0"><a class="btn small" id="view-transaction" data-testid="view-transaction" href="#">View transaction</a>
+        <a class="btn small" id="view-history" data-testid="view-history" href="#">Payment history</a></p>
+    </section>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/loanlab/loanlab.js"></script>
+  <script>
+  (async () => {
+    const { api, money, qs, errMsg, showFieldErrors } = window.SL;
+    const { status, showAlert, parseAmount } = window.LL;
+    await window.LL.start('accounts');
+    const loanId = Number(qs('loanId'));
+    const form = document.getElementById('payment-form');
+    const errBox = document.getElementById('payment-error');
+    const btn = document.getElementById('pay-button');
+    const text = (testid, value) => { document.querySelector(`[data-testid="${testid}"]`).textContent = value; };
+    let loan;
+
+    function renderLoan(l) {
+      loan = l;
+      text('loan-no', l.loanNo);
+      text('account-no', l.accountNo);
+      document.getElementById('account-status').innerHTML = status(l.accountStatus, 'account-status');
+      document.getElementById('loan-status').innerHTML = status(l.status, 'loan-status');
+      text('outstanding', money(l.outstanding));
+      text('minimum-payment', money(l.minimumPayment));
+      document.getElementById('loan-card').classList.remove('hidden');
+      const reason = l.status === 'CLOSED' ? 'This loan is closed. There is nothing left to pay.'
+        : l.accountStatus !== 'ACTIVE' ? `Payments are not available while the account is ${l.accountStatus}.` : '';
+      showAlert(document.getElementById('payment-unavailable'), reason);
+      form.classList.toggle('hidden', !!reason);
+    }
+
+    const [loanRes, dateRes] = await Promise.all([api(`/loanlab/loans/${loanId}`), api('/loanlab/business-date')]);
+    if (!loanRes.ok) return showAlert(document.getElementById('load-error'), loanRes.status === 404 ? 'Loan not found' : errMsg(loanRes));
+    renderLoan(loanRes.data);
+    text('business-date', dateRes.ok ? dateRes.data.businessDate : '—');
+
+    document.getElementById('pay-full').addEventListener('click', () => { form.amount.value = loan.outstanding.toFixed(2); });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showAlert(errBox, '');
+      document.getElementById('payment-success').classList.add('hidden');
+      const raw = form.amount.value.trim();
+      const amount = parseAmount(raw);
+      const errors = {};
+      if (!raw) errors.amount = 'Amount is required';
+      else if (amount === null || amount <= 0) errors.amount = 'Enter an amount greater than 0 with at most 2 decimals';
+      showFieldErrors(form, errors);
+      if (Object.keys(errors).length) return;
+
+      btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
+      const r = await api(`/loanlab/loans/${loanId}/payments`, { method: 'POST', body: { amount } });
+      btn.disabled = false;
+      btn.removeAttribute('aria-busy');
+      if (!r.ok) return showAlert(errBox, errMsg(r));
+
+      const { transaction: t, loan: l } = r.data;
+      form.reset();
+      renderLoan(l);
+      text('payment-message', l.status === 'CLOSED' ? 'Payment posted. The loan is now fully paid and closed.' : 'Payment posted.');
+      text('receipt-ref', t.ref);
+      text('receipt-amount', money(t.amount));
+      text('receipt-balance', money(t.balanceAfter));
+      document.getElementById('receipt-status').innerHTML = status(t.status, 'receipt-status');
+      document.getElementById('view-transaction').href = `/loanlab/transaction?id=${t.id}`;
+      document.getElementById('view-history').href = `/loanlab/history?loanId=${l.id}`;
+      document.getElementById('payment-success').classList.remove('hidden');
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_TARGETS = ["docs", "README.md", "practice-app/REQUIREMENTS.md"]
+DEFAULT_TARGETS = ["docs", "README.md", "practice-app/REQUIREMENTS.md", "practice-app/REQUIREMENTS-LOANLAB.md"]
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")

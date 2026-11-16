@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LoanLab — Reverse Transaction</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/loanlab/loanlab.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main class="ll-narrow">
+    <p><a id="back-to-transaction" href="/loanlab/" data-testid="back-to-transaction">← Transaction detail</a></p>
+    <h1 data-testid="page-title">Reverse Transaction</h1>
+    <p id="reverse-forbidden" class="alert error hidden" role="alert" data-testid="reverse-forbidden">Only an officer can reverse a payment.</p>
+    <p id="load-error" class="alert error hidden" role="alert" data-testid="load-error"></p>
+
+    <section id="original-card" class="card hidden" data-testid="original-summary">
+      <dl class="ll-facts">
+        <dt>Original transaction</dt><dd data-testid="original-ref"></dd>
+        <dt>Loan no.</dt><dd data-testid="original-loan-no"></dd>
+        <dt>Amount</dt><dd data-testid="original-amount"></dd>
+        <dt>Status</dt><dd id="original-status"></dd>
+        <dt>Business date</dt><dd data-testid="original-business-date"></dd>
+        <dt>Still reversible</dt><dd data-testid="reversible-amount"></dd>
+      </dl>
+    </section>
+
+    <p id="reverse-unavailable" class="alert info hidden" data-testid="reverse-unavailable"></p>
+
+    <form id="reverse-form" class="card hidden" style="margin-top:1rem" data-testid="reverse-form" novalidate>
+      <div id="reverse-error" class="alert error hidden" role="alert" data-testid="reverse-error"></div>
+      <div class="field">
+        <label for="reverse-amount">Amount to reverse (THB)</label>
+        <input id="reverse-amount" name="amount" type="text" inputmode="decimal" autocomplete="off" data-testid="reverse-amount">
+        <span class="hint">Leave empty to reverse everything that is left.</span>
+        <span class="field-error" data-testid="error-amount"></span>
+      </div>
+      <div class="field">
+        <label for="reverse-reference">Reversal reference</label>
+        <input id="reverse-reference" name="reference" type="text" autocomplete="off" maxlength="40" data-testid="reverse-reference" required>
+        <span class="field-error" data-testid="error-reference"></span>
+      </div>
+      <div class="field">
+        <label for="reverse-reason">Reason</label>
+        <textarea id="reverse-reason" name="reason" rows="3" maxlength="200" data-testid="reverse-reason" required></textarea>
+        <span class="field-error" data-testid="error-reason"></span>
+      </div>
+      <div class="field">
+        <label class="inline-options"><input type="checkbox" name="confirm" data-testid="reverse-confirm"> I confirm that this payment should be reversed</label>
+        <span class="field-error" data-testid="error-confirm"></span>
+      </div>
+      <button class="btn danger" type="submit" id="reverse-button" data-testid="reverse-button">Reverse payment</button>
+    </form>
+
+    <section id="reverse-success" class="card hidden" style="margin-top:1rem" role="status" data-testid="reverse-success">
+      <p class="alert success" data-testid="reverse-message">Reversal posted.</p>
+      <dl class="ll-facts">
+        <dt>Reversal</dt><dd data-testid="reversal-ref"></dd>
+        <dt>Amount reversed</dt><dd data-testid="reversal-amount"></dd>
+        <dt>Outstanding balance</dt><dd data-testid="new-outstanding"></dd>
+      </dl>
+      <p style="margin-bottom:0"><a class="btn small" id="view-reversal" data-testid="view-reversal" href="#">View reversal</a></p>
+    </section>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/loanlab/loanlab.js"></script>
+  <script>
+  (async () => {
+    const { api, money, qs, errMsg, showFieldErrors } = window.SL;
+    const { status, showAlert, parseAmount } = window.LL;
+    const user = await window.LL.start('accounts');
+    const id = Number(qs('id'));
+    const form = document.getElementById('reverse-form');
+    const errBox = document.getElementById('reverse-error');
+    const btn = document.getElementById('reverse-button');
+    const text = (testid, value) => { document.querySelector(`[data-testid="${testid}"]`).textContent = value; };
+    document.getElementById('back-to-transaction').href = `/loanlab/transaction?id=${id}`;
+
+    if (user.role !== 'admin') return document.getElementById('reverse-forbidden').classList.remove('hidden');
+
+    function renderOriginal(t) {
+      text('original-ref', t.ref);
+      text('original-loan-no', t.loanNo);
+      text('original-amount', money(t.amount));
+      document.getElementById('original-status').innerHTML = status(t.status, 'original-status');
+      text('original-business-date', t.businessDate);
+      text('reversible-amount', money(t.reversibleAmount));
+      document.getElementById('original-card').classList.remove('hidden');
+      const reason = t.reversibleAmount <= 0 ? 'This payment has already been fully reversed.'
+        : !t.reversibleToday ? `This payment can no longer be reversed: its business date (${t.businessDate}) has been closed by end-of-day.` : '';
+      showAlert(document.getElementById('reverse-unavailable'), reason);
+      form.classList.toggle('hidden', !!reason);
+    }
+
+    const r = await api(`/loanlab/transactions/${id}`);
+    if (!r.ok) return showAlert(document.getElementById('load-error'), r.status === 404 ? 'Transaction not found' : errMsg(r));
+    if (r.data.type !== 'PAYMENT') return showAlert(document.getElementById('load-error'), 'Only a payment can be reversed.');
+    renderOriginal(r.data);
+    form.reference.value = `RV-${Date.now().toString(36).toUpperCase()}`;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showAlert(errBox, '');
+      const rawAmount = form.amount.value.trim();
+      const amount = rawAmount ? parseAmount(rawAmount) : undefined;
+      const reference = form.reference.value.trim();
+      const reason = form.reason.value.trim();
+      const errors = {};
+      if (rawAmount && (amount === null || amount <= 0)) errors.amount = 'Enter an amount greater than 0 with at most 2 decimals';
+      if (!/^[A-Za-z0-9_-]{4,40}$/.test(reference)) errors.reference = 'Reference must be 4-40 characters: letters, digits, - or _';
+      if (reason.length < 5) errors.reason = 'Reason must be at least 5 characters';
+      if (!form.confirm.checked) errors.confirm = 'Please confirm the reversal';
+      showFieldErrors(form, errors);
+      if (Object.keys(errors).length) return;
+
+      btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
+      const res = await api('/loanlab/reversals', { method: 'POST', body: { originalTransactionId: id, reference, reason, ...(amount === undefined ? {} : { amount }) } });
+      btn.disabled = false;
+      btn.removeAttribute('aria-busy');
+      if (!res.ok) return showAlert(errBox, errMsg(res));
+
+      const { reversal, original, loan } = res.data;
+      renderOriginal(original);
+      showAlert(document.getElementById('reverse-unavailable'), '');
+      form.classList.add('hidden');
+      text('reversal-ref', reversal.ref);
+      text('reversal-amount', money(reversal.amount));
+      text('new-outstanding', money(loan.outstanding));
+      document.getElementById('view-reversal').href = `/loanlab/transaction?id=${reversal.id}`;
+      document.getElementById('reverse-success').classList.remove('hidden');
+    });
+  })();
+  </script>
+</body>
+</html>

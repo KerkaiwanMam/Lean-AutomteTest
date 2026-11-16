@@ -9,6 +9,7 @@
 | ภาพรวมหลักสูตร, learning path, การประเมิน, competency matrix | [docs/01-course-overview.md](docs/01-course-overview.md) |
 | คู่มือ 22 โมดูล | [docs/modules/](docs/modules/) |
 | Requirement ของเว็บฝึก (ใช้ออกแบบ test) | [practice-app/REQUIREMENTS.md](practice-app/REQUIREMENTS.md) |
+| Requirement ของ LoanLab — โมดูลฝึกโดเมนสินเชื่อ (มี spoiler ของ Lab 2.6) | [practice-app/REQUIREMENTS-LOANLAB.md](practice-app/REQUIREMENTS-LOANLAB.md) |
 | Templates / Cheat sheets | [docs/templates/](docs/templates/) · [docs/cheatsheets/](docs/cheatsheets/) |
 | Skills Assessments 1–4 + grader (วัดว่า test จับบั๊กได้กี่ตัว) | [docs/assessments/](docs/assessments/README.md) · [tools/grade_suite.py](tools/grade_suite.py) |
 | เฉลยบั๊กสำหรับผู้สอน | [docs/instructor/bug-catalogue.md](docs/instructor/bug-catalogue.md) |
@@ -23,7 +24,7 @@
 ```bash
 cd practice-app
 npm ci
-npm test            # unit tests ของ pricing (12 tests)
+npm test            # unit tests: pricing, grading mode, กฎของ LoanLab
 npm start           # http://localhost:3000
 ```
 - `/` ร้านค้า · `/lab` Elements Lab (15 UI patterns ที่ automate ยาก) · `/admin` back office · `/api-docs` API · `/a11y.html` หน้าฝึก accessibility
@@ -32,6 +33,13 @@ npm start           # http://localhost:3000
 - **Bug Mode** (บั๊กฝังไว้ 13 ตัว): `npm run start:bugs` หรือ `POST /api/test/config {"bugMode": true}`
 - Chaos: `POST /api/test/config {"latencyMs": 1000, "failureRate": 0.3}`
 - Docker: `docker build -t shoplab ./practice-app && docker run --rm -p 3000:3000 shoplab`
+
+**LoanLab** — โมดูลฝึก Retail Lending & Payment ในแอปเดียวกัน (ระบบสมมติเพื่อการเรียน ไม่ได้อ้างอิงธนาคารจริง)
+- `/loanlab/` account overview → payment → payment history → transaction detail → reverse transaction · API: `/api/loanlab/*` (ดู `/api-docs`)
+- ใช้บัญชีชุดเดียวกับ ShopLab: `jane` มีสินเชื่อ 3 สัญญาพร้อมประวัติ · `admin` ทำหน้าที่ officer (reverse และรัน EOD)
+- Test hooks: `POST /api/test/loanlab/accounts` (สร้างบัญชีและสินเชื่อในสถานะที่ต้องการ) · `/api/test/loanlab/business-date` · `/api/test/loanlab/eod`
+- Bug Mode ใช้สวิตช์เดียวกับ ShopLab และมีบั๊กของ LoanLab อีก 13 ตัว (`LL-BUG-01` ถึง `LL-BUG-13`)
+- Reference tests: `npm run test:loanlab` ใน `tests/playwright` · `robot --outputdir results tests/loanlab` ใน `tests/robot`
 
 ### 2) Playwright (TypeScript)
 ```bash

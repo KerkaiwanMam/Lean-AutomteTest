@@ -1,6 +1,9 @@
 """Check that every course module follows the standard module format.
 
 Usage:  python "4. script folder/audit_structure.py" [docs/modules/M01-....md ...]
+        python "4. script folder/audit_structure.py" --curriculum [docs/02-master-curriculum.md]
+The --curriculum mode checks that every chapter of the master curriculum has the 8 standard sections
+in order, at least 3 objectives, and a status mark on every content-map row.
 Exit code 1 when a required section is missing or quiz questions/answers do not match.
 """
 from __future__ import annotations
@@ -48,7 +51,62 @@ def audit(path):
             "answers": answers, "words": len(text.split()), "problems": problems}
 
 
+CHAPTER_SECTIONS = ["Learning Objectives", "Content Map", "Concepts & Technical Deep Dive", "Design:",
+                    "Practical Example", "Workshop", "Engineering Assignment & Deliverables", "Recommended Reading"]
+STATUS_MARKS = ["✅", "✏️", "🆕", "📝", "⛔"]
+
+
+def audit_curriculum(path):
+    """Check a master-curriculum file: every '## Chapter N' has the 8 standard sections, in order."""
+    text = path.read_text(encoding="utf-8")
+    chapters = re.split(r"^## Chapter ", text, flags=re.M)[1:]
+    bad = 0
+    totals = dict.fromkeys(STATUS_MARKS, 0)
+    print(f"{'chapter':<62} {'obj':>3} {'rows':>4} {'labs':>4}  " + " ".join(STATUS_MARKS) + "  problems")
+    for i, block in enumerate(chapters, start=1):
+        block = re.split(r"^# ", block, flags=re.M)[0]          # stop at the next part/appendix heading
+        title = block.splitlines()[0].strip()
+        heads = re.findall(r"^### (.+)$", block, re.M)
+        problems, pos = [], -1
+        if not title.startswith(f"{i} "):
+            problems.append(f"expected chapter {i}")
+        for want in CHAPTER_SECTIONS:
+            idx = next((k for k, h in enumerate(heads) if want in h), None)
+            if idx is None:
+                problems.append(f"missing '{want}'")
+            elif idx < pos:
+                problems.append(f"'{want}' out of order")
+            else:
+                pos = idx
+        if any(not h.startswith(f"{i}.") for h in heads):
+            problems.append("section number does not match chapter")
+
+        def section(name):
+            m = re.search(rf"^### [^\n]*{re.escape(name)}[^\n]*\n(.*?)(?=^### |\Z)", block, re.M | re.S)
+            return m.group(1) if m else ""
+        objectives = len(re.findall(r"^\d+\. ", section("Learning Objectives"), re.M))
+        cmap = [l for l in section("Content Map").splitlines() if re.match(rf"^\| {i}\.[A-Z] ", l)]
+        labs = len(re.findall(rf"^\| (?:{i}\.\d+|\d) \|", section("Workshop"), re.M))
+        marks = {s: sum(1 for l in cmap if s in l.rsplit("|", 2)[-2]) for s in STATUS_MARKS}
+        for s in STATUS_MARKS:
+            totals[s] += marks[s]
+        if objectives < 3:
+            problems.append(f"only {objectives} objectives")
+        if not cmap:
+            problems.append("empty content map")
+        if any(sum(1 for s in STATUS_MARKS if s in l.rsplit('|', 2)[-2]) == 0 for l in cmap):
+            problems.append("content-map row without status")
+        bad += bool(problems)
+        print(f"{title[:62]:<62} {objectives:>3} {len(cmap):>4} {labs:>4}  "
+              + " ".join(f"{marks[s]:>2}" for s in STATUS_MARKS) + f"  {'; '.join(problems) or 'OK'}")
+    print(f"\n{len(chapters)} chapters · content-map rows by status: "
+          + " · ".join(f"{s} {totals[s]}" for s in STATUS_MARKS) + f" · {bad} chapter(s) with problems")
+    return 1 if bad else 0
+
+
 def main(argv):
+    if argv and argv[0] == "--curriculum":
+        return audit_curriculum(ROOT / (argv[1] if len(argv) > 1 else "docs/02-master-curriculum.md"))
     paths = [ROOT / a for a in argv] if argv else sorted((ROOT / "docs" / "modules").glob("M*.md"))
     rows = [audit(p) for p in paths]
     print(f"{'module':<52} {'obj':>3} {'labs':>4} {'quiz':>4} {'ans':>4} {'words':>6}  problems")

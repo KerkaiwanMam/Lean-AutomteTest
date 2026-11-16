@@ -11,6 +11,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 STEPS = [
     ("Structure audit (modules)", ["audit_structure.py"], False),
+    ("Structure audit (master curriculum)", ["audit_structure.py", "--curriculum"], False),
+    ("TOC (master curriculum)", ["md_toc.py", "docs/02-master-curriculum.md", "--check"], False),
     ("Links", ["check_links.py"], True),
     ("Text lint", ["text_lint.py"], True),
     ("Fact-check queue", ["extract_claims.py"], True),
@@ -21,7 +23,7 @@ def main(argv):
     results = []
     for title, cmd, takes_paths in STEPS:
         print(f"\n===== {title} =====", flush=True)
-        args = [sys.executable, str(HERE / cmd[0]), *(argv if takes_paths else [])]
+        args = [sys.executable, str(HERE / cmd[0]), *cmd[1:], *(argv if takes_paths else [])]
         code = subprocess.call(args, cwd=HERE.parent)
         results.append((title, code))
     print("\n===== Summary =====")
