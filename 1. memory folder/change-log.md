@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-11-16 — CL-014 · งานต่อเนื่องของ LoanLab (ยังไม่เสร็จ — หยุดเพราะ usage limit)
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `.github/workflows/test.yml` job `playwright` | `--project=api --project=ui --project=ui-admin` | เพิ่ม `--project=loanlab --project=loanlab-eod` | ให้ reference tests ของ LoanLab รันบน CI | – |
+
+**ยังไม่ได้ยืนยัน:** ยังไม่ได้รันคำสั่งแบบ `--shard` บนเครื่องนี้ และยังไม่ได้ push จึงยังไม่เคยรันบน CI · ยังไม่ได้ commit
+**ยังไม่ได้เริ่ม:** หน้าจอ officer (สร้าง Account, เปิด Loan, เปลี่ยนสถานะ) พร้อม Playwright test · request ของ LoanLab ใน Postman collection (newman ติดตั้งในเครื่องแล้ว) · หน้า Transfer ยังต้องการกฎจากผู้ใช้
+
+---
+
 ## 2026-11-16 — CL-013 · สร้าง LoanLab (โมดูลฝึก Retail Lending & Payment) ใน practice-app
 
 **ที่มา:** gap G-1 / ข้อเสนอ P0-1 ของรายงาน audit (CL-012) — Roadmap ใช้โดเมน Banking แต่ไม่มีระบบฝึก ทำให้ Lab 6.4, Lab 12.4 และ 20.B ติดสถานะ ⛔
