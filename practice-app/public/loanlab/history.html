@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LoanLab — Payment History</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/loanlab/loanlab.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <p><a href="/loanlab/" data-testid="back-to-accounts">← Account overview</a></p>
+    <h1 data-testid="page-title">Payment History</h1>
+    <p id="load-error" class="alert error hidden" role="alert" data-testid="load-error"></p>
+    <p id="loan-line" class="hidden">Loan <strong data-testid="loan-no"></strong> · Outstanding <strong data-testid="outstanding"></strong> · <span id="loan-status"></span></p>
+
+    <div class="row" style="margin-bottom:1rem">
+      <div class="field" style="margin:0">
+        <label for="type-filter">Type</label>
+        <select id="type-filter" data-testid="type-filter"><option value="">All</option><option>PAYMENT</option><option>REVERSAL</option></select>
+      </div>
+      <div class="field" style="margin:0">
+        <label for="status-filter">Status</label>
+        <select id="status-filter" data-testid="status-filter"><option value="">All</option><option>POSTED</option><option>PARTIALLY_REVERSED</option><option>REVERSED</option></select>
+      </div>
+    </div>
+
+    <p id="no-transactions" class="alert info hidden" data-testid="no-transactions">No transactions found.</p>
+    <div class="card" style="overflow-x:auto">
+      <table class="ll-table" data-testid="history-table">
+        <thead><tr><th>Reference</th><th>Type</th><th class="right-align">Amount</th><th>Status</th><th>Business date</th><th>Settlement</th><th class="right-align">Balance after</th><th><span class="hidden">Actions</span></th></tr></thead>
+        <tbody id="history-body"></tbody>
+      </table>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/loanlab/loanlab.js"></script>
+  <script>
+  (async () => {
+    const { api, money, qs, esc, errMsg } = window.SL;
+    const { status, settlementText, showAlert } = window.LL;
+    await window.LL.start('accounts');
+    const loanId = Number(qs('loanId'));
+    const tbody = document.getElementById('history-body');
+
+    async function load() {
+      const params = new URLSearchParams();
+      const type = document.getElementById('type-filter').value;
+      const st = document.getElementById('status-filter').value;
+      if (type) params.set('type', type);
+      if (st) params.set('status', st);
+      const r = await api(`/loanlab/loans/${loanId}/transactions${params.size ? `?${params}` : ''}`);
+      if (!r.ok) return showAlert(document.getElementById('load-error'), r.status === 404 ? 'Loan not found' : errMsg(r));
+      const { loan, items } = r.data;
+      document.querySelector('[data-testid="loan-no"]').textContent = loan.loanNo;
+      document.querySelector('[data-testid="outstanding"]').textContent = money(loan.outstanding);
+      document.getElementById('loan-status').innerHTML = status(loan.status, 'loan-status');
+      document.getElementById('loan-line').classList.remove('hidden');
+      document.getElementById('no-transactions').classList.toggle('hidden', items.length > 0);
+      tbody.innerHTML = items.map((t) => `
+        <tr data-testid="txn-row" data-txn-id="${t.id}">
+          <td data-testid="txn-ref">${esc(t.ref)}</td>
+          <td data-testid="txn-type">${esc(t.type)}</td>
+          <td class="right-align" data-testid="txn-amount">${money(t.amount)}</td>
+          <td>${status(t.status, 'txn-status')}</td>
+          <td data-testid="txn-business-date">${esc(t.businessDate)}</td>
+          <td data-testid="txn-settlement">${esc(settlementText(t))}</td>
+          <td class="right-align" data-testid="txn-balance-after">${money(t.balanceAfter)}</td>
+          <td><a class="btn small" href="/loanlab/transaction?id=${t.id}" data-testid="view-txn">View</a></td>
+        </tr>`).join('');
+    }
+    document.getElementById('type-filter').addEventListener('change', load);
+    document.getElementById('status-filter').addEventListener('change', load);
+    load();
+  })();
+  </script>
+</body>
+</html>

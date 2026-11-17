@@ -23,7 +23,7 @@ router.post('/test/reset', (_req, res) => {
 
 router.get('/test/config', (req, res) => {
   const body = config.get();
-  if (req.query.reveal === '1') body.bugs = config.BUGS;
+  if (req.query.reveal === '1') { body.bugs = config.BUGS; body.loanlabBugs = config.LOANLAB_BUGS; }
   res.json(body);
 });
 

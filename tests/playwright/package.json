@@ -7,6 +7,7 @@
     "test": "playwright test",
     "test:ui": "playwright test --project=ui --project=ui-admin",
     "test:api": "playwright test --project=api",
+    "test:loanlab": "playwright test --project=loanlab --project=loanlab-eod",
     "test:smoke": "playwright test --grep @smoke",
     "test:bugs": "cross-env BUG_MODE=1 playwright test",
     "test:headed": "playwright test --headed --workers=1",

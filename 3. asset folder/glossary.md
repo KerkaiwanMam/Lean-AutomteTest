@@ -37,3 +37,12 @@
 | GitHub Actions | GitHub Actions | CI/CD ของ GitHub | M18 |
 | OpenAPI | OpenAPI | มาตรฐานอธิบาย REST API | M13 |
 | ShopLab | ShopLab | เว็บฝึกของหลักสูตร | ทุกโมดูล |
+| Test condition | | สิ่งที่ต้องทดสอบ ได้จาก test analysis (CTFL v4.0.1 §1.4.1) | Ch 2 |
+| Product risk / Project risk | | ความเสี่ยงต่อคุณภาพของผลิตภัณฑ์ / ความเสี่ยงต่อการบริหารโครงการ | Ch 1 |
+| First-run pass rate | | สัดส่วน test ที่ผ่านตั้งแต่รอบแรกโดยไม่อาศัย retry | Ch 16 |
+| Golden dataset | | ชุดกรณีทดสอบระบบ AI ที่ผู้เชี่ยวชาญรับรองคำตอบหรือเกณฑ์แล้ว | Ch 19 |
+| Facade | | pattern ที่รวมหลายขั้นตอนของระบบย่อยไว้หลัง method เดียว | Ch 7 |
+| LoanLab | LoanLab | ระบบฝึกโดเมน Lending & Payment ใน `practice-app/` (หน้าเว็บ `/loanlab/`) — ระบบสมมติ ไม่ได้อ้างอิงธนาคารจริง | Ch 1, 2, 6, 8, 10, 12, 20 |
+| Business date | | วันทำการปัจจุบันของระบบ (ไม่ใช่นาฬิกาเครื่อง) — ใน LoanLab เปลี่ยนเมื่อรัน EOD หรือผ่าน test hook | Ch 14, 20 |
+| EOD (End-of-day) | | การประมวลผลสิ้นวันทำการ — ใน LoanLab คือ settlement แบบ T+1, reconciliation และเลื่อน business date | Ch 14, 20 |
+| Reversal | | รายการย้อนกลับที่อ้างอิงรายการเดิมและคืนยอด — ใน LoanLab ทำได้ทั้งจำนวนหรือบางส่วน | Ch 2, 20 |

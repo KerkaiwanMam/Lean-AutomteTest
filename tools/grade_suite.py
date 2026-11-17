@@ -9,6 +9,7 @@ Usage (from the repository root):
   python tools/grade_suite.py --cwd tests/playwright --cmd "npx playwright test --project=api"
   python tools/grade_suite.py --cwd tests/robot --cmd "robot --outputdir {out} --exclude legacy tests" --bugs BUG-01,BUG-07
   python tools/grade_suite.py ... --report grading/student-01        (writes report.md + result.json + logs)
+  python tools/grade_suite.py --cwd tests/playwright --cmd "npx playwright test --project=loanlab --project=loanlab-eod" --bugs loanlab
 
 The command receives BASE_URL=http://localhost:<port> and START_SERVER=0 in its environment.
 `{out}` and `{base_url}` in --cmd are replaced with a per-run output folder and the base URL.
@@ -29,7 +30,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "practice-app"
-ALL_BUGS = [f"BUG-{i:02d}" for i in range(1, 14)]
+ALL_BUGS = [f"BUG-{i:02d}" for i in range(1, 14)]  # ShopLab; "--bugs all" means exactly this list
+LOANLAB_BUGS = [f"LL-BUG-{i:02d}" for i in range(1, 14)]  # LoanLab module; "--bugs loanlab"
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -99,14 +101,15 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cmd", required=True, help="test command to run (shell syntax)")
     ap.add_argument("--cwd", default=".", help="folder to run the command in, relative to the repo root")
-    ap.add_argument("--bugs", default="all", help="'all' or a comma list such as BUG-01,BUG-07")
+    ap.add_argument("--bugs", default="all", help="'all' (ShopLab), 'loanlab' (LoanLab) or a comma list such as BUG-01,LL-BUG-07")
     ap.add_argument("--port", type=int, default=3100)
     ap.add_argument("--timeout", type=int, default=1200, help="seconds per suite run")
     ap.add_argument("--report", default=None, help="folder for report.md, result.json and logs")
     args = ap.parse_args()
 
-    bugs = ALL_BUGS if args.bugs == "all" else [b.strip().upper() for b in args.bugs.split(",") if b.strip()]
-    unknown = [b for b in bugs if b not in ALL_BUGS]
+    presets = {"all": ALL_BUGS, "loanlab": LOANLAB_BUGS}
+    bugs = presets.get(args.bugs.lower()) or [b.strip().upper() for b in args.bugs.split(",") if b.strip()]
+    unknown = [b for b in bugs if b not in ALL_BUGS + LOANLAB_BUGS]
     if unknown:
         ap.error(f"unknown bug ids: {unknown}")
     report_dir = Path(args.report or (ROOT / "grading" / datetime.now().strftime("%Y%m%d-%H%M%S"))).resolve()

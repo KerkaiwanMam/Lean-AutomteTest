@@ -1,12 +1,13 @@
-file_suffix,match,status,ref_ids,note
+﻿file_suffix,match,status,ref_ids,note
 # --- broad rules first: course-design choices, roadmap, lab instructions, quiz questions are not factual claims ---
 00-project-plan.md,*,skip,,Course design / roadmap decision
 01-course-overview.md,*,skip,,Course design (weights, schedule, tool list)
-bug-catalogue.md,*,internal,,Checked against Bug Mode run (all 13 bugs caught)
+bug-catalogue.md,*,internal,,"Checked against Bug Mode run (all 13 ShopLab bugs caught); LoanLab section checked with tools/grade_suite.py --bugs loanlab on 2026-11-14 (13/13 by each reference suite)"
 test-case-template.md,*,internal,,Example values match ShopLab quote API
 test-plan-template.md,*,skip,,Template placeholder / example criteria
 test-strategy-template.md,*,skip,,Template heading
 REQUIREMENTS.md,*,internal,,Spec of ShopLab; behaviour confirmed by unit + API + UI tests
+REQUIREMENTS-LOANLAB.md,*,internal,,"Spec of LoanLab (fictional training domain, no real-bank rule); behaviour confirmed by unit + Playwright + Robot tests on 2026-11-14"
 README.md,*,internal,,Setup instructions tested on this machine
 M03-test-process-and-defects.md,*,skip,,Example criteria / lab / quiz
 M05-automation-strategy.md,*,skip,,Example roadmap / ROI worked example
@@ -81,3 +82,9 @@ M11-robot-framework-fundamentals.md,keyword นี้ไม่บันทึก
 SA1-test-design.md,*,skip,,Assessment design (rubric weights)
 SA3-automate-checkout.md,*,skip,,Assessment design (time / tools)
 assessment-keys.md,*,internal,,"Money values computed with practice-app/src/pricing.js; grader results from tools/grade_suite.py runs; Robot-suite weaknesses observed in this repo"
+# --- CL-012: audit report and master curriculum (broad rule first, then the lines the text itself marks as unchecked) ---
+2026-11-10-content-audit-report.md,*,skip,,Audit report: quotes original text and records findings; its evidence is listed in section 8
+02-master-curriculum.md,*,skip,,Structure / mapping / course-practice row; sourced statements carry an inline REF and are picked up automatically
+02-master-curriculum.md,ยังไม่ตรวจ,todo,,Marked in the text as not yet checked against an official source
+02-master-curriculum.md,ยังไม่ได้ตรวจ,todo,,Marked in the text as not yet checked against an official source
+02-master-curriculum.md,ยังไม่ได้เปิดอ่าน,todo,,Marked in the text as not yet read

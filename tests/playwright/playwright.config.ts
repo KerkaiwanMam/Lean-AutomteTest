@@ -8,6 +8,7 @@ import { env } from './src/config/env';
  *   setup  – resets the database once (and enables bug mode when BUG_MODE=1)
  *   api    – fast API/contract tests (no browser)
  *   ui     – browser tests (Chromium by default; set PW_CHANNEL=chrome to use installed Chrome)
+ *   loanlab, loanlab-eod – LoanLab API + UI tests; the EOD tests run last and serially
  *   visual – screenshot comparison, opt-in (npm run test:visual)
  */
 export default defineConfig({
@@ -50,6 +51,21 @@ export default defineConfig({
       name: 'ui-admin',
       testMatch: /admin\.spec\.ts/,
       dependencies: ['ui'],
+      use: { ...devices['Desktop Chrome'], channel: process.env.PW_CHANNEL || undefined },
+    },
+    // LoanLab (lending & payment module). Every test builds its own customer + loan, so this project is fully parallel.
+    {
+      name: 'loanlab',
+      testMatch: /tests[\\/]loanlab[\\/].*\.spec\.ts/,
+      dependencies: ['setup'],
+      use: { ...devices['Desktop Chrome'], channel: process.env.PW_CHANNEL || undefined },
+    },
+    {
+      // End-of-day tests change SYSTEM-WIDE state (business date, EOD). They start only after `loanlab` has
+      // finished and run serially, so no payment-then-reversal test is cut in half — a test-isolation design decision.
+      name: 'loanlab-eod',
+      testMatch: /tests[\\/]loanlab-eod[\\/].*\.spec\.ts/,
+      dependencies: ['loanlab'],
       use: { ...devices['Desktop Chrome'], channel: process.env.PW_CHANNEL || undefined },
     },
     // Opt-in (VISUAL=1): screenshot baselines are OS/font specific — generate them where CI runs.

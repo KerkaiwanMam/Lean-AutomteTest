@@ -54,7 +54,8 @@ jobs:
           npx --prefix tests/playwright playwright install --with-deps chromium
       - name: Run Playwright (shard ${{ matrix.shard }})
         working-directory: tests/playwright
-        run: npx playwright test --project=api --project=ui --project=ui-admin --shard=${{ matrix.shard }}
+        # loanlab-eod depends on loanlab, so inside each shard (own ShopLab instance) the EOD tests still run last
+        run: npx playwright test --project=api --project=ui --project=ui-admin --project=loanlab --project=loanlab-eod --shard=${{ matrix.shard }}
         env:
           CI: 'true'
       - name: Upload report

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LoanLab — Account Overview</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/loanlab/loanlab.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <h1 data-testid="page-title">Account Overview</h1>
+    <p class="muted">Business date: <strong data-testid="business-date">—</strong></p>
+    <p id="load-error" class="alert error hidden" role="alert" data-testid="load-error"></p>
+    <p id="no-accounts" class="alert info hidden" data-testid="no-accounts">You have no lending account yet.</p>
+    <div id="accounts" class="stack" data-testid="accounts"></div>
+
+    <section id="officer-panel" class="card hidden" style="margin-top:1.5rem" data-testid="officer-panel">
+      <div class="ll-account-head">
+        <h2>End of day</h2>
+        <button class="btn small" type="button" id="run-eod" data-testid="run-eod">Run EOD for <span data-testid="eod-date">—</span></button>
+      </div>
+      <p id="eod-message" class="alert success hidden" role="status" data-testid="eod-message"></p>
+      <div style="overflow-x:auto">
+        <table class="ll-table" data-testid="eod-table">
+          <thead><tr><th>Business date</th><th>Next date</th><th class="right-align">Settled</th><th class="right-align">Payments</th><th class="right-align">Reversals</th><th>Reconciliation</th><th class="right-align">Breaks</th></tr></thead>
+          <tbody id="eod-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/loanlab/loanlab.js"></script>
+  <script>
+  (async () => {
+    const { api, money, esc, errMsg } = window.SL;
+    const { status, showAlert } = window.LL;
+    const user = await window.LL.start('accounts');
+    const officer = user.role === 'admin';
+
+    function loanRow(l, account) {
+      const payable = account.status === 'ACTIVE' && l.status === 'ACTIVE';
+      return `
+        <tr data-testid="loan-row" data-loan-id="${l.id}">
+          <td data-testid="loan-no">${esc(l.loanNo)}</td>
+          <td class="right-align" data-testid="loan-principal">${money(l.principal)}</td>
+          <td class="right-align" data-testid="loan-outstanding">${money(l.outstanding)}</td>
+          <td>${status(l.status, 'loan-status')}</td>
+          <td><div class="ll-actions">
+            ${payable
+              ? `<a class="btn small primary" href="/loanlab/payment?loanId=${l.id}" data-testid="pay-link">Pay</a>`
+              : '<span class="muted" data-testid="pay-unavailable">Payment not available</span>'}
+            <a class="btn small" href="/loanlab/history?loanId=${l.id}" data-testid="history-link">History</a>
+          </div></td>
+        </tr>`;
+    }
+
+    async function loadAccounts() {
+      const r = await api(`/loanlab/accounts${officer ? '?all=1' : ''}`);
+      if (!r.ok) return showAlert(document.getElementById('load-error'), errMsg(r));
+      document.querySelector('[data-testid="business-date"]').textContent = r.data.businessDate;
+      document.querySelector('[data-testid="eod-date"]').textContent = r.data.businessDate;
+      document.getElementById('no-accounts').classList.toggle('hidden', r.data.items.length > 0);
+      document.getElementById('accounts').innerHTML = r.data.items.map((a) => `
+        <section class="card" data-testid="account-card" data-account-id="${a.id}">
+          <div class="ll-account-head">
+            <h2 data-testid="account-no">${esc(a.accountNo)}</h2>
+            ${status(a.status, 'account-status')}
+            <span data-testid="account-holder">${esc(a.holderName)}</span>
+            ${officer ? `<span class="tag" data-testid="account-username">${esc(a.username)}</span>` : ''}
+          </div>
+          ${a.loans.length ? `
+            <div style="overflow-x:auto"><table class="ll-table" data-testid="loans-table">
+              <thead><tr><th>Loan no.</th><th class="right-align">Principal</th><th class="right-align">Outstanding</th><th>Status</th><th><span class="hidden">Actions</span></th></tr></thead>
+              <tbody>${a.loans.map((l) => loanRow(l, a)).join('')}</tbody>
+            </table></div>` : '<p class="muted" data-testid="no-loans">No loan under this account.</p>'}
+        </section>`).join('');
+    }
+
+    async function loadEodRuns() {
+      const r = await api('/loanlab/eod-runs');
+      if (!r.ok) return;
+      document.getElementById('eod-body').innerHTML = r.data.items.slice(0, 5).map((e) => `
+        <tr data-testid="eod-row">
+          <td data-testid="eod-business-date">${esc(e.businessDate)}</td>
+          <td data-testid="eod-next-date">${esc(e.nextBusinessDate)}</td>
+          <td class="right-align" data-testid="eod-settled">${e.settledCount}</td>
+          <td class="right-align">${money(e.paymentsTotal)}</td>
+          <td class="right-align">${money(e.reversalsTotal)}</td>
+          <td>${status(e.status, 'eod-status')}</td>
+          <td class="right-align" data-testid="eod-breaks">${e.breaks.length}</td>
+        </tr>`).join('');
+    }
+
+    await loadAccounts();
+    if (officer) {
+      document.getElementById('officer-panel').classList.remove('hidden');
+      await loadEodRuns();
+      const btn = document.getElementById('run-eod');
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const r = await api('/loanlab/eod', { method: 'POST' });
+        btn.disabled = false;
+        showAlert(document.getElementById('eod-message'), r.ok
+          ? `EOD for ${r.data.businessDate} finished: ${r.data.status}. Business date is now ${r.data.nextBusinessDate}.`
+          : errMsg(r));
+        await Promise.all([loadAccounts(), loadEodRuns()]);
+      });
+    }
+  })();
+  </script>
+</body>
+</html>

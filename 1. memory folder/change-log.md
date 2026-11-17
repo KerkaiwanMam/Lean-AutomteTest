@@ -5,6 +5,103 @@
 
 ---
 
+## 2026-11-16 — CL-014 · งานต่อเนื่องของ LoanLab (ยังไม่เสร็จ — หยุดเพราะ usage limit)
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `.github/workflows/test.yml` job `playwright` | `--project=api --project=ui --project=ui-admin` | เพิ่ม `--project=loanlab --project=loanlab-eod` | ให้ reference tests ของ LoanLab รันบน CI | – |
+
+**ยังไม่ได้ยืนยัน:** ยังไม่ได้รันคำสั่งแบบ `--shard` บนเครื่องนี้ และยังไม่ได้ push จึงยังไม่เคยรันบน CI · ยังไม่ได้ commit
+**ยังไม่ได้เริ่ม:** หน้าจอ officer (สร้าง Account, เปิด Loan, เปลี่ยนสถานะ) พร้อม Playwright test · request ของ LoanLab ใน Postman collection (newman ติดตั้งในเครื่องแล้ว) · หน้า Transfer ยังต้องการกฎจากผู้ใช้
+
+---
+
+## 2026-11-16 — CL-013 · สร้าง LoanLab (โมดูลฝึก Retail Lending & Payment) ใน practice-app
+
+**ที่มา:** gap G-1 / ข้อเสนอ P0-1 ของรายงาน audit (CL-012) — Roadmap ใช้โดเมน Banking แต่ไม่มีระบบฝึก ทำให้ Lab 6.4, Lab 12.4 และ 20.B ติดสถานะ ⛔
+**การยืนยัน requirement:** คำถามเปิด 8 ข้อของ Appendix A หมวด C ไม่ได้ตัดสินเอง — เสนอคำตอบทีละข้อและผู้ใช้ยืนยันเมื่อ 2026-11-11 · ผู้ใช้เลือกตามข้อเสนอ 7 ข้อ และเลือกต่างจากข้อเสนอ 1 ข้อ คือ Q5 **อนุญาต partial reversal** · คำตอบทั้งหมดอยู่ใน `practice-app/REQUIREMENTS-LOANLAB.md` หมวด 9 เท่านั้น ไม่ได้ใส่ใน Appendix A
+**ขอบเขต:** โค้ดและเอกสารของระบบฝึก + แถวสถานะใน master curriculum — **ไม่ได้แก้ข้อความสอนใน 22 modules** · ไม่ได้ใช้เนื้อหาใดจาก `sunline-eps-tests` · ยังไม่ได้ commit
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `practice-app/REQUIREMENTS-LOANLAB.md` (ใหม่) | – | SRS ของ LoanLab: LL-ACC 7 ข้อ, LL-LOAN 6, LL-PAY 11 + decision table, LL-REV 10 + state table, LL-EOD 9, LL-SEC 4, LL-RPT 5, LL-TST 7 · ทุกข้อระบุที่มา (REQ/ASM ของ Appendix A, Q1–Q8 หรือ design) · หมวด 9 = คำตอบที่ยืนยันแล้ว | ต้องมี test basis ที่ไม่กำกวมก่อนสร้างระบบ | INP-001 (Roadmap Ch 2, 16), Appendix A |
+| 2 | ผลของ Q5 ต่อข้อสมมติเดิม | ASM-01: สถานะ `POSTED`, `REVERSED` · ASM-02: reversal คืนยอดเท่ากับรายการเดิม | เพิ่มสถานะ `PARTIALLY_REVERSED` · reversal คืนยอดเท่ากับจำนวนที่ reverse · ใช้ `reference` ของคำขอระบุ duplicate (LL-REV-03, LL-REV-09 — **ผู้ใช้ยืนยันเมื่อ 2026-11-16** ที่มาในไฟล์ requirement เปลี่ยนจาก `design` เป็น `Q5+`) | ผู้ใช้เลือกให้ reverse บางส่วนได้ จึง reverse จำนวนเท่ากันสองครั้งอาจตั้งใจทั้งคู่ | – |
+| 3 | `practice-app/src/loanlab/` (ใหม่): `rules.js`, `schema.js`, `service.js` | – | กฎเป็น pure function (เงินเป็นสตางค์จำนวนเต็ม) · ตาราง `ll_*` 5 ตาราง + seed · service ทำงานใน transaction เดียว | แยกกฎออกจาก I/O เพื่อ unit test ได้ ตามแบบ `pricing.js` | – |
+| 4 | `practice-app/src/routes/loanlab.js`, `loanlab-testing.js` (ใหม่) · `server.js`, `db.js` | – | REST API 14 endpoints ใต้ `/api/loanlab/*` · test hooks 6 ตัวใต้ `/api/test/loanlab/*` ปิดเมื่อ `NODE_ENV=production` · `POST /api/test/reset` reset LoanLab ด้วย · ฐานข้อมูลเดิมที่ยังไม่มีตาราง LoanLab ถูกเติมให้โดยไม่ลบข้อมูล ShopLab | ข้อกำหนด testability ของ Appendix A หมวด D | – |
+| 5 | `practice-app/src/config.js`, `routes/testing.js` | Bug catalogue มีชุดเดียว (`BUG-01..13`) | เพิ่ม `LOANLAB_BUGS` (`LL-BUG-01..13`) แยกชุด · `bugMode` และ `GRADING_BUGS` ใช้ได้กับทั้งสองชุด · `?reveal=1` เพิ่ม field `loanlabBugs` | ชุดของ ShopLab และคะแนนที่นับจากชุดนั้นต้องไม่เปลี่ยน | – |
+| 6 | `practice-app/src/openapi.js` | 26 paths | 44 paths: เพิ่ม schema 10 ตัวและ path ของ LoanLab กับ test hooks | contract test และหน้า `/api-docs` | – |
+| 7 | `practice-app/public/loanlab/` (ใหม่) | – | 5 หน้า: account overview, payment, payment history, transaction detail, reverse transaction + `loanlab.js`, `loanlab.css` · ใช้หน้า `/login` เดิม (`?next=/loanlab/`) · `data-testid` ทุก element ที่โต้ตอบได้ | หน้าจอตาม Roadmap Ch 5 · **ไม่ได้แก้หน้าและ CSS ของ ShopLab** เพื่อไม่ให้ visual baseline เปลี่ยน | INP-001 |
+| 8 | `practice-app/test/loanlab-rules.test.js`, `loanlab-service.test.js` (ใหม่) | unit tests 16 ข้อ | 69 ข้อ (เพิ่ม 45 ข้อของกฎ และ 8 ข้อของ service บน SQLite ชั่วคราว) | Done criteria: unit test ของกฎ payment และ reversal | – |
+| 9 | `tests/playwright/` (ใหม่): `src/api/LoanLabApi.ts`, `src/fixtures/loanlab.ts`, `src/pages/LoanLabPages.ts`, `src/data/loanlab.ts`, `tests/loanlab/*.spec.ts` 4 ไฟล์, `tests/loanlab-eod/eod.api.spec.ts` · แก้ `playwright.config.ts`, `package.json` | 110 tests | 162 tests: project `loanlab` (47 ข้อ รันขนาน) และ `loanlab-eod` (5 ข้อ รันหลังสุดแบบ serial) · script `npm run test:loanlab` | business date และ EOD เป็น state ร่วมของระบบ จึงแยก project แบบเดียวกับ `ui-admin` | – |
+| 10 | `tests/robot/` (ใหม่): `resources/api/loanlab_api.resource`, `resources/pages/loanlab_page.resource`, `tests/loanlab/loanlab_acceptance.robot` · `.pabotsuitenames` เปลี่ยนเพราะมี suite ใหม่ | 45 tests | 51 tests: acceptance test แบบ BDD ผ่าน UI 1 ข้อ + API 5 ข้อ อยู่ในไฟล์เดียวเพื่อให้ปลอดภัยกับ pabot | Done criteria: acceptance test อย่างน้อย 1 ข้อ | – |
+| 11 | `tools/grade_suite.py` | รับเฉพาะ `BUG-01..13` | รับ `LL-BUG-01..13` และ `--bugs loanlab` · `--bugs all` ยังหมายถึงชุด ShopLab เท่าเดิม | วัด detection rate ของ LoanLab ทีละบั๊ก | – |
+| 12 | `docs/instructor/bug-catalogue.md` | มีเฉพาะ ShopLab | เพิ่มหมวด "⚠️ Spoiler — LoanLab Bug Catalogue" 13 แถว + teaching tips | เฉลยสำหรับผู้สอน แยกหมวดและติดป้าย spoiler | – |
+| 13 | `docs/02-master-curriculum.md` Practice Systems | LoanLab "**ยังไม่ได้สร้าง**" | "พร้อมใช้ (v1 สร้าง 2026-11-14 · ยังไม่ได้ทดลองกับผู้เรียน)" + ข้อจำกัดของ v1 | สถานะจริง | – |
+| 14 | เช่นเดียวกัน Lab 6.4 | "⛔ Blocked — ต้องมี LoanLab · ใช้ Lab 6.3 แทนชั่วคราว" | "พร้อมทำบน LoanLab ยกเว้นหน้า Transfer ซึ่ง LoanLab v1 ไม่มี" + reference spec | มี 5 จาก 6 หน้าของ Roadmap · Transfer อยู่นอก Appendix A | – |
+| 15 | เช่นเดียวกัน Lab 12.4 | "⛔ Blocked — ต้องมี LoanLab" | "พร้อมทำบน LoanLab" + reference suite | สถานะจริง | – |
+| 16 | เช่นเดียวกัน 20.B และตารางภาพรวม Ch 20 | "⛔ Blocked" · "⛔" | "🆕 Drafted — LoanLab v1 ครอบคลุมทั้ง 7 modules ..." · "🆕 บางส่วน" | ระบบพร้อม แต่ยังไม่ได้ทดลองกับผู้เรียน จึงไม่ใช้ ✅ | – |
+| 17 | เช่นเดียวกัน Lab 8.5, Lab 10.5, หัวบท Ch 20, เกณฑ์ผ่าน 20.7, Open Items ข้อ 1 | ข้อความ "เมื่อมี LoanLab" / "กำหนดเมื่อสร้างชุดบั๊ก" | ชี้ไปที่ reference ของ LoanLab · เกณฑ์ที่เสนอ 10 จาก 13 "รอผู้สอนยืนยัน" | ให้ตรงสถานะจริง · เกณฑ์ผ่านเป็นการตัดสินใจของผู้สอน | – |
+| 18 | เช่นเดียวกัน Appendix A | สถานะ "ระบบฝึกที่ยังไม่ได้สร้าง" · หมวด B "(ต้องยืนยันก่อนสร้างระบบ)" · หัวข้อ E "ระหว่างที่ยังไม่มี LoanLab" | ชี้ไปที่ requirement ฉบับยืนยันพร้อมคำเตือน spoiler · "(ฉบับร่างก่อน requirement review)" · "(สำหรับผู้เรียนที่ฝึกบน ShopLab มาก่อน)" · **หมวด A–D ไม่เปลี่ยน และหมวด C ยังไม่มีคำตอบ** | หมวด C ต้องคงเป็นโจทย์ของ Lab 2.6 | – |
+| 19 | `README.md` | ไม่กล่าวถึง LoanLab · "unit tests ของ pricing (12 tests)" | เพิ่มลิงก์ requirement และย่อหน้า LoanLab · แก้คำอธิบาย unit tests | ผู้เรียนต้องหาทางเข้าได้ · ตัวเลขเดิมไม่ตรงแล้ว | – |
+| 20 | `4. script folder/_common.py`, `content_inventory.py` | ตรวจเฉพาะ `practice-app/REQUIREMENTS.md` | รวม `REQUIREMENTS-LOANLAB.md` ใน links, text lint, claim extraction และ inventory | ไฟล์ requirement ใหม่ต้องผ่านเครื่องมือชุดเดียวกัน | – |
+| 21 | `fact-check-verdicts.csv` · `glossary.md` · `project-context.md` | – | rule `internal` ของ `REQUIREMENTS-LOANLAB.md` และหมายเหตุของ bug catalogue · glossary: แก้ LoanLab, เพิ่ม Business date, EOD, Reversal · project-context: แถว LoanLab และวิธีรันบนเครื่องนี้ | – | – |
+
+**ผลตรวจหลังแก้ (รันจริงบนเครื่องนี้ Windows, Node 24.12, Chrome ที่ติดตั้งในเครื่อง):**
+- `npm test --prefix practice-app` — 69 ผ่าน 0 ล้ม
+- `npx playwright test` (ต้องตั้ง `PW_CHANNEL=chrome` เพราะเครื่องนี้ไม่มี Chromium ของ Playwright) — 162 ผ่าน: ของ ShopLab เดิม 110 ข้อไม่ได้แก้ และ LoanLab 52 ข้อ
+- `robot --outputdir results tests` (`BROWSER_CHANNEL=chrome`) — 51 ผ่าน: เดิม 45 + LoanLab 6 · `pabot --processes 4 --exclude legacy` — 50 ผ่าน
+- `tools/grade_suite.py --bugs loanlab` (เปิดบั๊กทีละตัว): Playwright `loanlab` + `loanlab-eod` จับได้ 13/13 · Robot `tests/loanlab` จับได้ 13/13 · baseline เขียวทั้งคู่
+- `NODE_ENV=production`: test hooks ทั้งของ ShopLab และ LoanLab ตอบ 404 · `/api/loanlab/accounts` ตอบ 401 เมื่อไม่ login
+- ตรวจหน้าเว็บในเบราว์เซอร์: login → account overview → ชำระต่ำกว่าขั้นต่ำ (ถูกปฏิเสธ) → ชำระปิดหนี้ 300.00 (Loan เป็น `CLOSED`)
+- `run_all.py` ผ่านทั้ง 6 ขั้น — links เสีย 0 · text lint 0 · fact-check queue 427 claims, `todo` 9 รายการเท่ากับก่อนแก้ (ไม่มีรายการของ LoanLab)
+- `compare_versions.py`: master curriculum similarity 98.8% ไม่มีหัวข้อหายหรือสลับลำดับ · bug catalogue มีแต่ส่วนที่เพิ่ม
+
+**แหล่งอ้างอิง:** ไม่มีแหล่งภายนอกเพิ่ม — กฎทั้งหมดมาจาก Roadmap (INP-001), Appendix A และคำยืนยันของผู้ใช้ · LoanLab เป็นโดเมนสมมติ ไม่ได้อ้างกฎของธนาคารจริงแห่งใด
+
+**สิ่งที่ไม่ได้ทำและไม่ได้ยืนยัน:** ไม่มีหน้า Transfer (Roadmap Ch 5 ระบุไว้ แต่อยู่นอก Appendix A) · UI ไม่มีหน้าสำหรับสร้าง Account, เปิด Loan และเปลี่ยนสถานะ (ทำได้ผ่าน API) · CI (`.github/workflows/test.yml`) ยังรันเฉพาะ project `api`, `ui`, `ui-admin` ของ Playwright — suite ของ Robot จะถูก pabot รันเองเพราะอยู่ใต้ `tests/` · ยังไม่ได้รันบน Linux/CI และ Docker · Postman collection ไม่มี request ของ LoanLab · ยังไม่ได้ทดลองกับผู้เรียน · เกณฑ์ผ่าน 10 จาก 13 เป็นข้อเสนอ
+
+**ข้อผิดพลาดระหว่างทำที่แก้แล้ว:** (1) ข้อความบั๊กใน `config.js` มี apostrophe ที่ไม่ได้ escape ทำให้แอป start ไม่ได้ — พบจาก smoke test แรก (2) patch ของ `playwright.config.ts` รอบแรกทำให้ regex ของ project เหลือ `[\/]` ซึ่งไม่ตรงกับ path บน Windows — แก้เป็น `[\\/]` ก่อนรัน (3) pabot รอบแรกล้ม 50 ข้อเพราะเรียก `robot.exe` ของ Python นอก venv — ไม่เกี่ยวกับโค้ด แก้โดยใส่ `Scripts` ของ venv ใน PATH
+
+---
+
+## 2026-11-10 — CL-012 · Content audit เทียบ Roadmap 16 Chapters + Master Curriculum v2.0
+
+**ที่มา:** ผู้ใช้ส่ง Roadmap (`quality-engineering-test-automation-roadmap-revised.md`) และขอให้ audit เนื้อหาปัจจุบันก่อนรวมหลักสูตร
+**ขอบเขตของรอบนี้:** สร้างเอกสารใหม่ 2 ฉบับและปรับเครื่องมือ — **ไม่ได้แก้ข้อความสอนใน 22 modules** (ข้อเสนอแก้ 14 รายการอยู่ในรายงาน รออนุมัติ)
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `2. reference folder/inputs/` (ใหม่) | – | สำเนา Roadmap ต้นฉบับ ไม่แก้ไข (INP-001) | ใช้เป็นเกณฑ์เทียบและให้ script อ่านได้ | – |
+| 2 | `docs/audit/2026-11-10-content-audit-report.md` (ใหม่) | – | Content inventory · audit 149 แถวราย Chapter (Complete 71, Partial 47, Missing 19, Needs Correction 5, Outdated 3, Misplaced 2, Duplicate 2) · รายการแก้ AC-01..AC-14 · gap analysis · improvement proposal · technical validation | Phase 1, 2, 3, 5 ของคำขอ | REF-097..REF-125 |
+| 3 | `docs/02-master-curriculum.md` (ใหม่) | – | 6 Parts, 20 Chapters (Roadmap 16 + 4 บท: Automation Strategy, Test Data & Environment, Non-functional, แยก Testing AI) · แต่ละบทมี 8 ส่วน · content map 189 แถว (✅ 124, ✏️ 11, 🆕 37, 📝 16, ⛔ 1) · Appendix A ร่างข้อกำหนด LoanLab · Appendix B mapping 22 modules · Reading list 6 หมวด | Phase 4, 6 | REF-097..REF-125 |
+| 4 | เนื้อหาที่แก้จาก module เดิม (เขียนไว้ใน master curriculum เท่านั้น) | M01 §4: 4 test levels และ test types แบบ Functional/Non-functional/Structural/Change-related | 5 test levels และ 4 test types ตาม CTFL v4.0.1 · confirmation/regression แยกหัวข้อ | syllabus ที่ module อ้างเปลี่ยนการจัดกลุ่ม (AC-01, AC-02) | REF-097 |
+| 5 | เช่นเดียวกัน | M01 §5: STLC 6 ขั้น | เพิ่ม test process 7 กลุ่มกิจกรรมของ ISTQB | หัวบทอ้าง CTFL แต่ใช้แบบจำลองอื่น (AC-03) | REF-097 |
+| 6 | เช่นเดียวกัน | M02 §5: 0-switch → all invalid → 1-switch | all states · valid transitions (0-switch) · all transitions | ชื่อเกณฑ์ตาม syllabus (AC-04) | REF-097 |
+| 7 | เช่นเดียวกัน | M11 §4: "command line > variable file/section > resource" | command line > Variable section > resource และ variable files ที่ import | ไม่ตรง User Guide (AC-05) | REF-106 |
+| 8 | เช่นเดียวกัน | M12 §2: argument "เป็น string เสมอ (ถ้าไม่มี type hint)" · quiz: "Robot 4+" | ตัวแปรส่งตามชนิดจริง · แปลงตาม type hint หรือ default value ตั้งแต่ RF 3.1 | ไม่ตรง User Guide (AC-06, AC-07) | REF-107 |
+| 9 | เช่นเดียวกัน | M12 §6: `result.longname` | `result.full_name` | RF 7.0 เพิ่ม `full_name` มาแทน (AC-08) | REF-074 |
+| 10 | เช่นเดียวกัน | M18 §5: cache `~/.cache/ms-playwright` · M18 §3: worker ≈ จำนวน CPU core | ไม่ cache browser binaries · เริ่มที่ 1 worker แล้วขยายด้วย sharding | ไม่ตรงคำแนะนำของ Playwright (AC-09, AC-10) | REF-098 |
+| 11 | เช่นเดียวกัน | overview §8: Python 3.10+ · §3: "~140 ชั่วโมง" | Python 3.11+ · 158 ชม. (170 รวม SA) | README ของ Browser library · ผลรวมจริงของตาราง (AC-11, AC-14) | REF-109 |
+| 12 | เช่นเดียวกัน | M17 §1 ไม่มีนิยาม flaky ของ Playwright · M10 §4 ไม่มี "หนึ่งบัญชีต่อ worker" | เพิ่มทั้งสองข้อ | เติมให้ตรงเอกสาร (AC-12, AC-13) | REF-102, REF-103 |
+| 13 | `4. script folder/content_inventory.py` (ใหม่) | – | รายการไฟล์เนื้อหาทั้งหมดพร้อมขนาดและสัญญาณโครงสร้าง | ขั้น inventory ก่อน audit | – |
+| 14 | `4. script folder/roadmap_coverage.py` (ใหม่) | – | ค้นคำของหัวข้อ Roadmap 203 หัวข้อใน modules (หรือ `--corpus` อื่น) → `1. memory folder/roadmap-coverage.csv` | สัญญาณเชิงกลรอบแรก — ไม่ใช่สถานะ | – |
+| 15 | `4. script folder/md_toc.py` (ใหม่) | – | สร้างและตรวจ TOC ระหว่าง marker | Table of Contents ของ master curriculum | – |
+| 16 | `audit_structure.py` | ตรวจได้เฉพาะ module | เพิ่ม `--curriculum`: ทุกบทมี 8 ส่วนตามลำดับ, objectives ≥ 3, ทุกแถว content map มีสถานะ | ตรวจโครงสร้างเอกสารใหม่ | – |
+| 17 | `check_links.py` | ลิงก์ที่มี `%20` ถูกรายงานว่าเสีย | ถอดรหัส URL ก่อนตรวจไฟล์ | โฟลเดอร์ของโครงการมีช่องว่างในชื่อ | – |
+| 18 | `extract_claims.py`, `apply_verdicts.py` | claim ที่มี REF กำกับในบรรทัดยังต้องเขียน rule ทีละข้อ | เก็บ REF ในบรรทัดเป็น inline citation · verified อัตโนมัติเมื่อทุกแหล่งเป็น verified ใน `references.md` · ถ้าแหล่งยังเป็น candidate คงเป็น todo พร้อมชื่อแหล่ง | เอกสารใหม่อ้าง REF ในบรรทัด | – |
+| 19 | `run_all.py` | 4 ขั้น | 6 ขั้น (เพิ่ม structure audit และ TOC ของ master curriculum) | – | – |
+| 20 | `references.md` | 60 แหล่ง | 89 แถว: เพิ่ม REF-097..REF-125 (29 แหล่ง: 24 เปิดอ่านหรือดึงข้อความโดยตรง, 4 เล่มตรวจเฉพาะบรรณานุกรมผ่านผลค้นหา, 1 candidate) · REF-074 เปลี่ยนเป็นอ่านจากต้นฉบับ · เพิ่มหมวด Project inputs และ "ค้นหาแล้วไม่พบ" | Phase 5 | – |
+| 21 | `glossary.md` | 33 คำ | เพิ่ม 6 คำ (Test condition, Product/Project risk, First-run pass rate, Golden dataset, Facade, LoanLab) | คำใหม่ใน master curriculum | REF-097 |
+| 22 | `fact-check-verdicts.csv` | – | เพิ่ม rule ของเอกสารใหม่ 2 ฉบับ | – | – |
+
+**ผลตรวจหลังแก้ (รันจริง):** `run_all.py` ผ่านทั้ง 6 ขั้น — modules 22/22 · master curriculum 20/20 บท · TOC ตรง · broken links 0 · text lint 0 (แก้ 6 จุดที่พบระหว่างทาง) · fact-check queue 396 claims: verified 91 (69 จาก inline citation), corrected 12, internal 24, skip 260, **todo 9**
+**todo 9 รายการ:** 4 รายการคือข้อความที่เอกสารระบุเองว่ายังไม่ตรวจ (Use Case Testing, protocol ของ Playwright, Trace Viewer, เครื่องมือ AI evaluation) · 5 รายการอ้างแหล่งที่ยังเป็น candidate หรือ partially verified (REF-021, REF-023, REF-041, REF-044, REF-082)
+**ความครบถ้วนเทียบ Roadmap:** `roadmap_coverage.py --corpus docs/02-master-curriculum.md` → 203 หัวข้อ ไม่มีหัวข้อใดที่หาคำไม่พบ (เป็นสัญญาณจากคำค้น ไม่ใช่หลักฐานว่าเนื้อหาครบ) · หลักคิด 6 ข้อ วิธีสอน 6 ขั้น และเกณฑ์ประเมิน 7 ข้อของ Roadmap ถูกคงไว้ในหัวข้อ Learning Philosophy
+**สิ่งที่ไม่ได้ทำและไม่ได้ยืนยัน:** ไม่ได้รันชุดทดสอบซ้ำ · Docker และ k6 ยังไม่เคยรัน · หนังสือตรวจเฉพาะบรรณานุกรม · หนังสือ 2 เล่มที่ผู้ใช้ระบุค้นไม่พบ · ระบบฝึก Banking (LoanLab) และระบบที่มี LLM ยังไม่มี · ชั่วโมงเรียน 187 ชม. เป็นการประมาณ
+**ข้อผิดพลาดระหว่างทำที่แก้แล้ว:** patch ของ `extract_claims.py` และ `apply_verdicts.py` รอบแรกเขียน `\b` ใน regex กลายเป็นอักขระ backspace ทำให้ inline citation ได้ 0 รายการ — พบจากผลรันและแก้แล้ว (หลังแก้ได้ 69) · rule ที่ไม่ถูกใช้ 10 ข้อใน `apply_verdicts.py` มีอยู่ก่อนรอบนี้ (ตรวจกับ HEAD แล้วได้ 10 เท่ากัน)
+
+---
+
 ## 2026-11-10 — CL-011 · Skills Assessments 1–4 + grader วัดการจับบั๊ก
 
 | # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |

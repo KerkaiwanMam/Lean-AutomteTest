@@ -5,6 +5,7 @@ const { DatabaseSync } = require('node:sqlite');
 const seed = require('./seed-data');
 const { hashPassword } = require('./security');
 const { quote } = require('./pricing');
+const loanlab = require('./loanlab/schema');
 
 const DATA_DIR = process.env.SHOPLAB_DATA_DIR || path.join(__dirname, '..', 'data');
 const DB_PATH = path.join(DATA_DIR, 'shoplab.db');
@@ -122,7 +123,9 @@ function orderNo(id, createdAt) {
 
 function reset() {
   db.exec('PRAGMA foreign_keys = OFF;');
+  db.exec(loanlab.DROP); // LoanLab tables reference users, so they go first
   db.exec(SCHEMA);
+  db.exec(loanlab.CREATE);
   db.exec('PRAGMA foreign_keys = ON;');
   db.exec('BEGIN');
   try {
@@ -164,6 +167,7 @@ function reset() {
 
     const insReview = db.prepare('INSERT INTO reviews (product_id, user_id, rating, comment, created_at) VALUES (?, ?, ?, ?, ?)');
     for (const r of seed.reviews) insReview.run(productBySku(r.sku).id, userId(r.user), r.rating, r.comment, r.created_at);
+    loanlab.seed(db);
     db.exec('COMMIT');
   } catch (err) {
     db.exec('ROLLBACK');
@@ -173,9 +177,26 @@ function reset() {
   for (const f of fs.readdirSync(UPLOAD_DIR)) fs.rmSync(path.join(UPLOAD_DIR, f), { force: true });
 }
 
-function ensureSeeded() {
-  const hasUsers = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='users'").get();
-  if (!hasUsers) reset();
+/** Restores only the LoanLab tables to their seed data; ShopLab data is left as it is. */
+function resetLoanLab() {
+  db.exec('PRAGMA foreign_keys = OFF;');
+  db.exec(loanlab.DROP);
+  db.exec(loanlab.CREATE);
+  db.exec('PRAGMA foreign_keys = ON;');
+  db.exec('BEGIN');
+  try {
+    loanlab.seed(db);
+    db.exec('COMMIT');
+  } catch (err) {
+    db.exec('ROLLBACK');
+    throw err;
+  }
 }
 
-module.exports = { db, reset, ensureSeeded, orderNo, DB_PATH, UPLOAD_DIR };
+function ensureSeeded() {
+  const hasTable = (name) => db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?").get(name);
+  if (!hasTable('users')) reset();
+  else if (!hasTable('ll_accounts')) resetLoanLab(); // database created before LoanLab existed
+}
+
+module.exports = { db, reset, resetLoanLab, ensureSeeded, orderNo, DB_PATH, UPLOAD_DIR };

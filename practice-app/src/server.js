@@ -23,7 +23,10 @@ api.use(chaos);
 api.use(authenticate);
 api.get('/health', (_req, res) => res.json({ status: 'ok', app: 'ShopLab', version: pkg.version, time: new Date().toISOString() }));
 api.get('/openapi.json', (_req, res) => res.json(openapi));
-if (!IS_PROD) api.use(require('./routes/testing'));
+if (!IS_PROD) {
+  api.use(require('./routes/testing'));
+  api.use(require('./routes/loanlab-testing'));
+}
 api.use(require('./routes/auth'));
 api.use(require('./routes/users'));
 api.use(require('./routes/products'));
@@ -31,6 +34,7 @@ api.use(require('./routes/cart'));
 api.use(require('./routes/orders'));
 api.use(require('./routes/admin'));
 api.use(require('./routes/lab'));
+api.use(require('./routes/loanlab'));
 api.use((req, res) => fail(res, 404, 'NOT_FOUND', `No route for ${req.method} ${req.baseUrl}${req.path}`));
 app.use('/api', api);
 
@@ -51,6 +55,7 @@ app.use((err, req, res, _next) => {
 function start(port = PORT) {
   return app.listen(port, () => {
     console.log(`ShopLab running at http://localhost:${port}`);
+    console.log(`  LoanLab  : http://localhost:${port}/loanlab/ (lending & payment practice module)`);
     console.log(`  API docs : http://localhost:${port}/api-docs`);
     console.log(`  Bug mode : ${require('./config').get().bugMode ? 'ON' : 'off'}`);
     console.log(`  Test hooks ${IS_PROD ? 'DISABLED (production)' : 'enabled: POST /api/test/reset, /api/test/config'}`);

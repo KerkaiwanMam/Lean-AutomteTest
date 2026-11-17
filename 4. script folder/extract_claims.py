@@ -3,6 +3,7 @@
 Usage:  python "4. script folder/extract_claims.py" [paths...]
 Writes/updates  "1. memory folder/fact-check-queue.csv"  (columns: id,file,line,category,claim,status,ref_ids,note)
 Existing status/ref_ids/note are kept when the same claim is found again, so the queue can be worked on over time.
+REF ids written on the same line as a claim (inline citations) are stored in ref_ids; apply_verdicts.py uses them.
 """
 from __future__ import annotations
 
@@ -38,7 +39,7 @@ def extract(path):
             continue
         for cat, pattern in CATEGORIES:
             if re.search(pattern, s, re.I):
-                yield no, cat, re.sub(r"\s+", " ", s)[:300]
+                yield no, cat, re.sub(r"\s+", " ", s)[:300], sorted(set(re.findall(r"\bREF-\d+\b", s)))
                 break
 
 
@@ -49,11 +50,12 @@ def main(argv):
             old = {r["id"]: r for r in csv.DictReader(f)}
     rows = []
     for path in iter_markdown(argv or None):
-        for no, cat, text in extract(path):
+        for no, cat, text, refs in extract(path):
             cid = claim_id(rel(path), text)
             prev = old.get(cid, {})
             rows.append({"id": cid, "file": rel(path), "line": no, "category": cat, "claim": text,
-                         "status": prev.get("status", "todo"), "ref_ids": prev.get("ref_ids", ""), "note": prev.get("note", "")})
+                         "status": prev.get("status", "todo"), "ref_ids": prev.get("ref_ids") or ";".join(refs),
+                         "note": prev.get("note", "")})
     QUEUE.parent.mkdir(parents=True, exist_ok=True)
     with QUEUE.open("w", encoding="utf-8-sig", newline="") as f:   # BOM so Excel shows Thai correctly
         w = csv.DictWriter(f, fieldnames=FIELDS)

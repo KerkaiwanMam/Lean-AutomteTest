@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LoanLab — Transaction Detail</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/loanlab/loanlab.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <p><a id="back-to-history" href="/loanlab/" data-testid="back-to-history">← Payment history</a></p>
+    <h1 data-testid="page-title">Transaction Detail</h1>
+    <p id="txn-not-found" class="alert error hidden" role="alert" data-testid="txn-not-found"></p>
+
+    <section id="txn-card" class="card hidden ll-narrow" data-testid="txn-detail">
+      <dl class="ll-facts">
+        <dt>Reference</dt><dd data-testid="txn-ref"></dd>
+        <dt>Type</dt><dd data-testid="txn-type"></dd>
+        <dt>Status</dt><dd id="txn-status"></dd>
+        <dt>Amount</dt><dd data-testid="txn-amount"></dd>
+        <dt>Loan no.</dt><dd data-testid="txn-loan-no"></dd>
+        <dt>Business date</dt><dd data-testid="txn-business-date"></dd>
+        <dt>Settlement</dt><dd data-testid="txn-settlement"></dd>
+        <dt>Balance after</dt><dd data-testid="txn-balance-after"></dd>
+      </dl>
+      <dl id="payment-facts" class="ll-facts hidden" style="margin-top:.4rem">
+        <dt>Reversed amount</dt><dd data-testid="txn-reversed-amount"></dd>
+        <dt>Still reversible</dt><dd data-testid="txn-reversible-amount"></dd>
+      </dl>
+      <dl id="reversal-facts" class="ll-facts hidden" style="margin-top:.4rem">
+        <dt>Original transaction</dt><dd><a id="original-link" href="#" data-testid="txn-original-ref"></a></dd>
+        <dt>Reversal reference</dt><dd data-testid="txn-reference"></dd>
+        <dt>Reason</dt><dd data-testid="txn-reason"></dd>
+      </dl>
+      <p id="reverse-line" class="hidden" style="margin-bottom:0"><a class="btn danger small" id="reverse-link" href="#" data-testid="reverse-link">Reverse this payment</a></p>
+    </section>
+
+    <section id="reversals-card" class="card hidden" style="margin-top:1rem" data-testid="reversals">
+      <h2 style="margin-top:0">Reversals of this payment</h2>
+      <div style="overflow-x:auto">
+        <table class="ll-table" data-testid="reversals-table">
+          <thead><tr><th>Reference</th><th class="right-align">Amount</th><th>Business date</th><th>Reversal reference</th><th>Reason</th></tr></thead>
+          <tbody id="reversals-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/loanlab/loanlab.js"></script>
+  <script>
+  (async () => {
+    const { api, money, qs, esc, errMsg } = window.SL;
+    const { status, settlementText, showAlert } = window.LL;
+    const user = await window.LL.start('accounts');
+    const r = await api(`/loanlab/transactions/${Number(qs('id'))}`);
+    if (!r.ok) return showAlert(document.getElementById('txn-not-found'), r.status === 404 ? 'Transaction not found' : errMsg(r));
+    const t = r.data;
+    const text = (testid, value) => { document.querySelector(`[data-testid="${testid}"]`).textContent = value; };
+
+    document.getElementById('back-to-history').href = `/loanlab/history?loanId=${t.loanId}`;
+    text('txn-ref', t.ref);
+    text('txn-type', t.type);
+    document.getElementById('txn-status').innerHTML = status(t.status, 'txn-status');
+    text('txn-amount', money(t.amount));
+    text('txn-loan-no', t.loanNo);
+    text('txn-business-date', t.businessDate);
+    text('txn-settlement', settlementText(t));
+    text('txn-balance-after', money(t.balanceAfter));
+
+    if (t.type === 'PAYMENT') {
+      text('txn-reversed-amount', money(t.reversedAmount));
+      text('txn-reversible-amount', money(t.reversibleAmount));
+      document.getElementById('payment-facts').classList.remove('hidden');
+      if (t.reversals.length) {
+        document.getElementById('reversals-body').innerHTML = t.reversals.map((v) => `
+          <tr data-testid="reversal-row" data-txn-id="${v.id}">
+            <td><a href="/loanlab/transaction?id=${v.id}" data-testid="reversal-ref">${esc(v.ref)}</a></td>
+            <td class="right-align" data-testid="reversal-amount">${money(v.amount)}</td>
+            <td>${esc(v.businessDate)}</td>
+            <td data-testid="reversal-reference">${esc(v.reference)}</td>
+            <td data-testid="reversal-reason">${esc(v.reason)}</td>
+          </tr>`).join('');
+        document.getElementById('reversals-card').classList.remove('hidden');
+      }
+      if (user.role === 'admin' && t.reversibleToday) {
+        document.getElementById('reverse-link').href = `/loanlab/reverse?id=${t.id}`;
+        document.getElementById('reverse-line').classList.remove('hidden');
+      }
+    } else {
+      const link = document.getElementById('original-link');
+      link.textContent = t.originalRef;
+      link.href = `/loanlab/transaction?id=${t.originalTransactionId}`;
+      text('txn-reference', t.reference);
+      text('txn-reason', t.reason);
+      document.getElementById('reversal-facts').classList.remove('hidden');
+    }
+    document.getElementById('txn-card').classList.remove('hidden');
+  })();
+  </script>
+</body>
+</html>

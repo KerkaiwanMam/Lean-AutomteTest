@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import re
 import sys
+from urllib.parse import unquote
 
 from _common import iter_markdown, rel
 
@@ -26,7 +27,7 @@ def main(argv):
                     continue
                 if target.startswith(("#", "mailto:")):
                     continue
-                file_part = target.split("#", 1)[0]
+                file_part = unquote(target.split("#", 1)[0])   # "2.%20reference%20folder" → real folder name
                 if file_part and not (path.parent / file_part).exists():
                     broken.append(f"{rel(path)}:{no}: {target}")
     for b in broken:

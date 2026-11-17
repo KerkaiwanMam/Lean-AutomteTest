@@ -1,10 +1,11 @@
-datasources:aa97f1c7625ef9511eaef885b3c813ee99fcc6e4
+datasources:070d1919a0fda1379d88940a69e68650745420b2
 commandlineoptions:c7eed3a27bd3cae0d43a236ccfa68c4fc93f160c
 suitesfrom:no-suites-from-option
-file:700323c444a75c92ac804b1b33da873b4b662a53
+file:5cadb0caccf67a9bc481bff2726182f210ce2167
 --suite Tests.Api.Orders Api
 --suite Tests.Api.Products Api
 --suite Tests.Db.Database Checks
+--suite Tests.Loanlab.Loanlab Acceptance
 --suite Tests.Ui.01 Login
 --suite Tests.Ui.02 Catalog
 --suite Tests.Ui.03 Cart Pricing

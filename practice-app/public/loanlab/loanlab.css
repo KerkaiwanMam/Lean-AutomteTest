@@ -1,0 +1,17 @@
+/* LoanLab additions. Kept out of /css/style.css so ShopLab pages (and their visual baselines) stay untouched. */
+.site-header.loanlab { background: #0b3b3c; }
+.status.ACTIVE, .status.POSTED, .status.BALANCED { background: #e2f5e8; color: #14522a; }
+.status.FROZEN, .status.PARTIALLY_REVERSED { background: #fff4d6; color: #7a5200; }
+.status.CLOSED, .status.REVERSED { background: #f1f1f1; color: #555; }
+.status.OUT_OF_BALANCE { background: #fdecec; color: #8a1c1c; }
+.ll-table { width: 100%; border-collapse: collapse; }
+.ll-table th, .ll-table td { padding: .5rem .6rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+.ll-table th.right-align, .ll-table td.right-align { text-align: right; font-variant-numeric: tabular-nums; }
+.ll-account-head { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: baseline; margin-bottom: .5rem; }
+.ll-account-head h2 { margin: 0; }
+.ll-facts { display: grid; grid-template-columns: max-content 1fr; gap: .4rem 1.25rem; margin: 0; }
+.ll-facts dt { color: var(--muted); }
+.ll-facts dd { margin: 0; font-variant-numeric: tabular-nums; }
+.ll-narrow { max-width: 560px; }
+.ll-chip { background: rgba(255, 255, 255, .14); border-radius: 999px; padding: .15rem .6rem; font-size: .85rem; }
+.ll-actions { display: flex; gap: .4rem; flex-wrap: wrap; }

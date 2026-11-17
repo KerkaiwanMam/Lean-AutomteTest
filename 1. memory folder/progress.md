@@ -1,6 +1,6 @@
 # Progress & Backlog
 
-_Last updated: 2026-11-10 (CL-011)_
+_Last updated: 2026-11-16 (CL-013)_
 
 ## Status
 | Item | Status |
@@ -9,6 +9,29 @@ _Last updated: 2026-11-10 (CL-011)_
 | ShopLab + reference tests | ✅ green (Playwright 110, Robot 45, unit 12, Newman 29) · Bug Mode 13/13 caught |
 | Content workflow & scripts | ✅ set up (CL-002) |
 | Fact-check rounds 1-2 | done (CL-003, CL-010): queue 105 claims, todo 0 (22 verified, 12 corrected, 10 internal, 61 skip) · references: 60 total — 46 verified, 4 partially verified, 2 superseded, 8 candidate (6 books not opened, Google flaky blog, Marick origin) |
+| Content audit vs 16-chapter roadmap | ✅ done (CL-012): `docs/audit/2026-11-10-content-audit-report.md` — 149 rows: Complete 71, Partial 47, Missing 19, Needs Correction 5, Outdated 3, Misplaced 2, Duplicate 2 |
+| Master Curriculum v2.0 | 🟡 draft for approval (CL-012): `docs/02-master-curriculum.md` — 20 chapters; content-map rows ✅ 124 · ✏️ 11 · 🆕 38 · 📝 16 · ⛔ 0 (after CL-013; was 🆕 37 · ⛔ 1) · modules M01–M22 not yet edited or renumbered |
+| LoanLab practice module | ✅ built, not committed (CL-013): `practice-app/REQUIREMENTS-LOANLAB.md` (59 requirements, 8 open questions confirmed by the user on 2026-11-11) · API 14 endpoints + 6 test hooks · 5 pages · 13 seeded bugs `LL-BUG-01..13` · unit 69 green · Playwright 162 green (LoanLab 52) · Robot 51 green (LoanLab 6), pabot 50 green · each LoanLab reference suite detects 13/13 bugs one at a time · not yet run on CI/Linux, not piloted with learners |
+
+## Open decisions for the user (from CL-013)
+- Commit the LoanLab work? (nothing is committed or pushed)
+- Capstone pass mark on LoanLab: proposed 10 of 13 seeded bugs, same as ShopLab
+- Review the `design`-level rules in `REQUIREMENTS-LOANLAB.md` that were not part of the 8 confirmed answers (the rule "reversal `reference` identifies a duplicate" was confirmed by the user on 2026-11-16 and is no longer open) — remaining: officer may pay on a customer's behalf, principal range 1,000–1,000,000, check order of payment and reversal errors
+- Add the Playwright projects `loanlab` and `loanlab-eod` to `.github/workflows/test.yml`? (the Robot LoanLab suite is picked up by the existing pabot job automatically)
+- Build a Transfer page? Roadmap Ch 5 lists it; it is outside Appendix A, so LoanLab v1 has none and Lab 6.4 says so
+- Master curriculum Appendix A stays a draft on purpose (section C is the Lab 2.6 exercise): ASM-01 and ASM-02 there and the state-transition paragraph in Ch 2 (§2.5, "POSTED → REVERSED เป็น valid transition เดียว") now differ from the built system because partial reversal was chosen — keep as the pre-review draft, or reword without giving the answer away?
+
+## Open decisions for the user (from CL-012)
+- Approve the 20-chapter structure (4 chapters added to the roadmap's 16)?
+- Apply corrections AC-01..AC-14 to the module files? (texts are ready in the audit report, section 3)
+- ~~Build the banking practice system "LoanLab" (master curriculum Appendix A)?~~ built in CL-013
+- Bibliographic data for *Designing Data & AI Sovereignty* and *Software-Architekturmuster, Antimuster und Fallstricke* (not found by title)
+
+## Backlog from the audit (priority order)
+- **P0** apply AC-01..AC-14 · ~~build LoanLab~~ done (CL-013) · confirm structure
+- **LoanLab follow-ups** LoanLab projects in CI · Postman requests for LoanLab · officer UI for account/loan administration · Transfer page (if wanted) · run on Linux/Docker · pilot Lab 6.4, 12.4 and the banking capstone with learners
+- **P1** write Ch 19 (Testing AI-based Applications) labs — needs an LLM-backed practice app and a vetted evaluation tool · fill Ch 3 gaps (Python file I/O, modules, exceptions, tuple/set; TS interface; JWT, OAuth, HTTPS, XML, Linux) · the 16 "📝 To write" subchapters listed in the master curriculum's Open Items
+- **P2** Docker fundamentals with a real run · GitLab CI example pipeline · JSON validation and data-driven API tests in the Robot suite · rename module files to the new chapter numbers
 
 ## Backlog (priority order)
 ### P0
