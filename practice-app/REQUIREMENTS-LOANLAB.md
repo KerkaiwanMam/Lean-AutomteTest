@@ -148,6 +148,7 @@
 | LL-RPT-03 | Transaction detail ของ `PAYMENT` แสดง reversed amount, ยอดที่ยัง reverse ได้ และรายการ reversal ทั้งหมดของมัน · ของ `REVERSAL` แสดงเลขอ้างอิงรายการเดิม, reference และ reason | REQ-RPT-01, Q5 |
 | LL-RPT-04 | Payment status ที่แสดง: `POSTED`, `PARTIALLY_REVERSED`, `REVERSED` · settlement แสดง "Pending settlement" เมื่อยังไม่ผ่าน EOD และวันที่ settle เมื่อผ่านแล้ว | REQ-RPT-01, ASM-01 (แก้ตาม Q5) |
 | LL-RPT-05 | Account overview แสดง business date, Account พร้อมสถานะ และ Loan พร้อม outstanding และสถานะ | REQ-RPT-01, REQ-ACC-01 |
+| LL-RPT-06 | หน้า Back Office (`/loanlab/officer`, Officer เท่านั้น) แสดง Account ของลูกค้าทุกคน · สร้าง Account (LL-ACC-01..03), เปลี่ยนสถานะได้เฉพาะ transition ที่อนุญาต (LL-ACC-04..06) และเปิด Loan ใต้ Account ที่ `ACTIVE` (LL-LOAN-01..03) · customer เปิดหน้านี้แล้วเห็นข้อความปฏิเสธ ไม่เห็นข้อมูล | REQ-ACC-01, Q6, design |
 
 ## 8. Testability — LL-TST
 

@@ -20,7 +20,9 @@ export default defineConfig({
   timeout: 30_000,
   expect: { timeout: 5_000 },
   reporter: process.env.CI
-    ? [['list'], ['html', { open: 'never' }], ['junit', { outputFile: 'test-results/junit.xml' }]]
+    // 'github' turns every failure (and flaky retry) into a workflow annotation with the test name and error,
+    // readable on the run page without downloading artifacts
+    ? [['list'], ['github'], ['html', { open: 'never' }], ['junit', { outputFile: 'test-results/junit.xml' }]]
     : [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: env.baseURL,

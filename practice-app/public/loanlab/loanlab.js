@@ -22,6 +22,7 @@ window.LL = (() => {
           <a class="brand" href="/loanlab/" data-testid="brand">🏦 LoanLab</a>
           <nav aria-label="Main">
             ${link('/loanlab/', 'Accounts', 'accounts')}
+            ${user && user.role === 'admin' ? link('/loanlab/officer', 'Back Office', 'officer') : ''}
             ${link('/api-docs', 'API Docs', 'api')}
             ${link('/', 'ShopLab', 'shoplab')}
           </nav>

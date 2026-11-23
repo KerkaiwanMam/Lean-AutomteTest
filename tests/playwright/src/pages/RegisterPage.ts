@@ -20,6 +20,17 @@ export class RegisterPage extends BasePage {
     this.error = page.getByTestId('register-error');
   }
 
+  /**
+   * The page script wires its field listeners (avatar check, password strength) only after the header and
+   * GET /api/meta/register have loaded. The interest checkboxes come from that same response, so once one is
+   * in the DOM the listeners are attached. Without this wait, setInputFiles right after goto can fire the
+   * change event before anyone listens — an intermittent failure seen on slow CI runners.
+   */
+  async goto(query = ''): Promise<void> {
+    await super.goto(query);
+    await this.page.locator('[data-testid^="interest-"]').first().waitFor({ state: 'attached' });
+  }
+
   fieldError(field: string): Locator {
     return this.page.getByTestId(`error-${field}`);
   }
