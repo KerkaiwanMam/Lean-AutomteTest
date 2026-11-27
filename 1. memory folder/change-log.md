@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-11-23 — CL-015 · LoanLab back office, Postman, และแก้ test ของ ShopLab ที่ล้มแบบสุ่ม
+
+**ที่มา:** งานที่ค้างจาก CL-014 · PR #1 (`feat/loanlab`) ถูก merge เข้า `main` แล้ว (`562ffb4`) · งานรอบนี้อยู่บน branch `feat/loanlab-officer`
+**ผล CI ของ CL-014 บน GitHub (อ่านจาก Actions API แบบสาธารณะ):** 6 รอบบน commit `562ffb4` ผ่าน 4 ล้ม 2 — ทุกครั้งที่ล้มคือ job `playwright (2/2)` ขั้น "Run Playwright" ส่วน unit, robot, newman และ shard 1/2 ผ่านทุกรอบ · log ของ job อ่านไม่ได้ถ้าไม่ได้ sign in จึง**ยืนยันไม่ได้ว่า test ใดล้ม**
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `practice-app/public/loanlab/officer.html` (ใหม่) · `loanlab.js` | งานของ officer ทำได้ผ่าน API เท่านั้น | หน้า Back Office `/loanlab/officer`: รายการ Account ทุกคน, สร้าง Account, เปลี่ยนสถานะ (select แสดงเฉพาะ transition ที่อนุญาต), เปิด Loan ใต้ Account ที่ `ACTIVE` · ลิงก์ "Back Office" ใน header แสดงเฉพาะ officer | ปิด follow-up "officer UI" · ใช้ API เดิมทั้งหมด ไม่ได้แก้ server | LL-ACC-01..06, LL-LOAN-01..03 |
+| 2 | `practice-app/REQUIREMENTS-LOANLAB.md` | – | เพิ่ม LL-RPT-06 (หน้า Back Office) | requirement ของหน้าใหม่ | – |
+| 3 | `tests/playwright/tests/loanlab/officer.ui.spec.ts` (ใหม่) | – | 3 tests: สร้าง Account → ACTIVE → เปิด Loan (ตรวจซ้ำผ่าน API) · ปิด Account ที่มียอดถูกปฏิเสธ · customer ไม่เห็นลิงก์และข้อมูล | reference test ของหน้าใหม่ | – |
+| 4 | `tests/postman/ShopLab.postman_collection.json` | 13 requests | 22 requests: folder "06 LoanLab" (test hook, ชำระต่ำกว่าขั้นต่ำ, ชำระ 500, customer reverse = 403, officer partial reversal, duplicate = 409, ยอดไม่เปลี่ยน, history) · ตัวแปรใหม่ 6 ตัว · เพิ่มต่อท้ายโดยไม่จัดรูปแบบส่วนเดิมใหม่ | ปิด follow-up "Postman" · job `api-newman` ของ CI รันชุดนี้อยู่แล้ว | LL-PAY-06, LL-REV-01, LL-REV-07, LL-REV-09, LL-RPT-01 |
+| 5 | `tests/playwright/playwright.config.ts` | CI reporter: list, html, junit | เพิ่ม `github` reporter | ทำให้ test ที่ล้มหรือ flaky ขึ้นเป็น annotation ที่อ่านได้จากหน้า run โดยไม่ต้องโหลด artifact — แก้ปัญหาที่หาสาเหตุ CI ล้มไม่ได้รอบนี้ | – |
+| 6 | `tests/playwright/src/pages/RegisterPage.ts` (ShopLab) | `goto()` ของ BasePage | `goto()` รอจน checkbox interest จาก `/api/meta/register` อยู่ใน DOM | test `non-image avatar is rejected on the client` ล้ม 1 ครั้งในการรันเต็มชุดบนเครื่องนี้: หน้า register ผูก listener ของช่อง avatar หลังโหลด header และ meta แต่ test ใส่ไฟล์ทันทีหลัง goto (race) · เป็นตัวเต็งของ CI shard 2/2 ที่ล้ม แต่ยังพิสูจน์ไม่ได้ | – |
+| 7 | `docs/02-master-curriculum.md` Open Items ข้อ 1 · `README.md` | "reference tests ของ LoanLab ยังไม่อยู่ใน CI" · README ไม่มี back office | "อยู่ใน CI แล้ว (2026-11-17)" · README เพิ่ม `/loanlab/officer` | สถานะจริง | – |
+
+**ผลตรวจหลังแก้ (รันจริงบนเครื่องนี้):**
+- unit 69 ผ่าน
+- Playwright เต็มชุด 165 ผ่าน (`PW_CHANNEL=chrome`) · ก่อนแก้ข้อ 6 รอบหนึ่งได้ 158 ผ่าน 1 ล้ม (registration avatar)
+- ทำซ้ำคำสั่งของ CI shard 2/2 (`CI=true`, 2 workers, retry 1) 5 รอบ — ผ่านทุกรอบ จึงทำซ้ำอาการของ CI บนเครื่องนี้ไม่ได้
+- `loanlab` `--repeat-each=5` แบบ CI — 251 ผ่าน · `registration.spec` `--repeat-each=10` 6 workers หลังแก้ — 71 ผ่าน
+- Robot 51 ผ่าน · newman 22 requests 47 assertions ผ่าน 0 ล้ม
+- หน้า Back Office เปิดในเบราว์เซอร์ด้วยบัญชี admin แสดงครบ ไม่มี error ของหน้านั้นใน console
+- `run_all.py` ผ่านทั้ง 6 ขั้น · fact-check `todo` 9 รายการเท่าเดิม
+
+**ยังไม่ได้ทำ:** หน้า Transfer (ต้องการกฎจากผู้ใช้) · ยืนยันสาเหตุ CI shard 2/2 ต้องรอ run ถัดไปที่มี `github` reporter · ยังไม่ได้ทดลองกับผู้เรียน
+
+---
+
 ## 2026-11-16 — CL-014 · งานต่อเนื่องของ LoanLab (ยังไม่เสร็จ — หยุดเพราะ usage limit)
 
 | # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |

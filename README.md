@@ -35,7 +35,7 @@ npm start           # http://localhost:3000
 - Docker: `docker build -t shoplab ./practice-app && docker run --rm -p 3000:3000 shoplab`
 
 **LoanLab** — โมดูลฝึก Retail Lending & Payment ในแอปเดียวกัน (ระบบสมมติเพื่อการเรียน ไม่ได้อ้างอิงธนาคารจริง)
-- `/loanlab/` account overview → payment → payment history → transaction detail → reverse transaction · API: `/api/loanlab/*` (ดู `/api-docs`)
+- `/loanlab/` account overview → payment → payment history → transaction detail → reverse transaction · `/loanlab/officer` back office สำหรับ officer (สร้างบัญชี เปลี่ยนสถานะ เปิดสินเชื่อ) · API: `/api/loanlab/*` (ดู `/api-docs`)
 - ใช้บัญชีชุดเดียวกับ ShopLab: `jane` มีสินเชื่อ 3 สัญญาพร้อมประวัติ · `admin` ทำหน้าที่ officer (reverse และรัน EOD)
 - Test hooks: `POST /api/test/loanlab/accounts` (สร้างบัญชีและสินเชื่อในสถานะที่ต้องการ) · `/api/test/loanlab/business-date` · `/api/test/loanlab/eod`
 - Bug Mode ใช้สวิตช์เดียวกับ ShopLab และมีบั๊กของ LoanLab อีก 13 ตัว (`LL-BUG-01` ถึง `LL-BUG-13`)

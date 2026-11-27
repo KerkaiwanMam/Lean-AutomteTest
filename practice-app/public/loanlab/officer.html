@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LoanLab — Back Office</title>
+  <link rel="icon" href="/img/logo.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/loanlab/loanlab.css">
+</head>
+<body>
+  <div id="app-header"></div>
+  <main>
+    <h1 data-testid="page-title">Back Office</h1>
+    <p id="officer-forbidden" class="alert error hidden" role="alert" data-testid="officer-forbidden">Only an officer can use the back office.</p>
+
+    <div id="officer-content" class="hidden">
+      <p class="muted">Business date: <strong data-testid="business-date">—</strong></p>
+
+      <div class="row" style="align-items:stretch">
+        <form id="account-form" class="card grow" data-testid="account-form" novalidate>
+          <h2 style="margin-top:0">Create account</h2>
+          <div id="account-error" class="alert error hidden" role="alert" data-testid="account-error"></div>
+          <div class="field">
+            <label for="account-username">Customer username</label>
+            <input id="account-username" name="username" type="text" autocomplete="off" data-testid="account-username">
+            <span class="field-error" data-testid="error-username"></span>
+          </div>
+          <div class="field">
+            <label for="account-holder">Holder name</label>
+            <input id="account-holder" name="holderName" type="text" autocomplete="off" maxlength="100" data-testid="account-holder">
+            <span class="field-error" data-testid="error-holderName"></span>
+          </div>
+          <button class="btn primary" type="submit" data-testid="create-account">Create account</button>
+        </form>
+
+        <form id="loan-form" class="card grow" data-testid="loan-form" novalidate>
+          <h2 style="margin-top:0">Open loan</h2>
+          <div id="loan-error" class="alert error hidden" role="alert" data-testid="loan-error"></div>
+          <div class="field">
+            <label for="loan-account">Account</label>
+            <select id="loan-account" name="accountId" data-testid="loan-account"></select>
+            <span class="field-error" data-testid="error-accountId"></span>
+          </div>
+          <div class="field">
+            <label for="loan-principal">Principal (THB)</label>
+            <input id="loan-principal" name="principal" type="text" inputmode="decimal" autocomplete="off" data-testid="loan-principal">
+            <span class="hint">1,000.00 to 1,000,000.00</span>
+            <span class="field-error" data-testid="error-principal"></span>
+          </div>
+          <button class="btn primary" type="submit" data-testid="open-loan">Open loan</button>
+        </form>
+      </div>
+
+      <p id="officer-message" class="alert success hidden" role="status" style="margin-top:1rem" data-testid="officer-message"></p>
+
+      <section class="card" style="margin-top:1rem">
+        <h2 style="margin-top:0">All accounts</h2>
+        <div style="overflow-x:auto">
+          <table class="ll-table" data-testid="officer-accounts-table">
+            <thead><tr><th>Account no.</th><th>Customer</th><th>Holder</th><th>Status</th><th class="right-align">Loans</th><th class="right-align">Outstanding</th><th>Change status</th></tr></thead>
+            <tbody id="officer-accounts-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/loanlab/loanlab.js"></script>
+  <script>
+  (async () => {
+    const { api, money, esc, errMsg, showFieldErrors } = window.SL;
+    const { status, showAlert, parseAmount } = window.LL;
+    // Account state machine (REQUIREMENTS-LOANLAB.md LL-ACC-04) — the select offers only allowed targets
+    const NEXT = { PENDING: ['ACTIVE'], ACTIVE: ['FROZEN', 'CLOSED'], FROZEN: ['ACTIVE', 'CLOSED'], CLOSED: [] };
+    const user = await window.LL.start('officer');
+    if (user.role !== 'admin') return document.getElementById('officer-forbidden').classList.remove('hidden');
+    document.getElementById('officer-content').classList.remove('hidden');
+
+    const message = document.getElementById('officer-message');
+    const tbody = document.getElementById('officer-accounts-body');
+    const accountSelect = document.getElementById('loan-account');
+
+    function statusControl(a) {
+      if (!NEXT[a.status].length) return '<span class="muted" data-testid="no-transition">Final status</span>';
+      return `<div class="ll-actions">
+        <select data-testid="status-select" aria-label="New status for ${esc(a.accountNo)}">${NEXT[a.status].map((s) => `<option>${s}</option>`).join('')}</select>
+        <button class="btn small" type="button" data-testid="apply-status">Apply</button>
+      </div>`;
+    }
+
+    async function load() {
+      const r = await api('/loanlab/accounts?all=1');
+      if (!r.ok) return showAlert(message, errMsg(r));
+      document.querySelector('[data-testid="business-date"]').textContent = r.data.businessDate;
+      tbody.innerHTML = r.data.items.map((a) => `
+        <tr data-testid="officer-account-row" data-account-id="${a.id}">
+          <td data-testid="officer-account-no">${esc(a.accountNo)}</td>
+          <td data-testid="officer-account-username">${esc(a.username)}</td>
+          <td>${esc(a.holderName)}</td>
+          <td>${status(a.status, 'officer-account-status')}</td>
+          <td class="right-align" data-testid="officer-account-loans">${a.loans.length}</td>
+          <td class="right-align">${money(a.loans.reduce((s, l) => s + l.outstanding, 0))}</td>
+          <td>${statusControl(a)}</td>
+        </tr>`).join('');
+      const active = r.data.items.filter((a) => a.status === 'ACTIVE');
+      const selected = accountSelect.value;
+      accountSelect.innerHTML = '<option value="">Select an ACTIVE account</option>'
+        + active.map((a) => `<option value="${a.id}">${esc(a.accountNo)} — ${esc(a.holderName)}</option>`).join('');
+      if (active.some((a) => String(a.id) === selected)) accountSelect.value = selected;
+    }
+
+    tbody.addEventListener('click', async (e) => {
+      if (!e.target.matches('[data-testid="apply-status"]')) return;
+      const row = e.target.closest('tr');
+      const next = row.querySelector('[data-testid="status-select"]').value;
+      const r = await api(`/loanlab/accounts/${row.dataset.accountId}/status`, { method: 'PATCH', body: { status: next } });
+      showAlert(message, r.ok ? `${r.data.accountNo} is now ${r.data.status}.` : errMsg(r));
+      message.className = `alert ${r.ok ? 'success' : 'error'}`;
+      await load();
+    });
+
+    const accountForm = document.getElementById('account-form');
+    accountForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const accountError = document.getElementById('account-error');
+      showAlert(accountError, '');
+      const username = accountForm.username.value.trim();
+      const holderName = accountForm.holderName.value.trim();
+      const errors = {};
+      if (!username) errors.username = 'Customer username is required';
+      if (holderName.length < 2) errors.holderName = 'Holder name must be 2-100 characters';
+      showFieldErrors(accountForm, errors);
+      if (Object.keys(errors).length) return;
+      const r = await api('/loanlab/accounts', { method: 'POST', body: { username, holderName } });
+      if (!r.ok) return showAlert(accountError, errMsg(r));
+      accountForm.reset();
+      message.className = 'alert success';
+      showAlert(message, `Account ${r.data.accountNo} created with status ${r.data.status}.`);
+      await load();
+    });
+
+    const loanForm = document.getElementById('loan-form');
+    loanForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const loanError = document.getElementById('loan-error');
+      showAlert(loanError, '');
+      const accountId = Number(loanForm.accountId.value);
+      const principal = parseAmount(loanForm.principal.value);
+      const errors = {};
+      if (!accountId) errors.accountId = 'Select an ACTIVE account';
+      if (principal === null || principal < 1000 || principal > 1000000) errors.principal = 'Principal must be between 1,000.00 and 1,000,000.00';
+      showFieldErrors(loanForm, errors);
+      if (Object.keys(errors).length) return;
+      const r = await api('/loanlab/loans', { method: 'POST', body: { accountId, principal } });
+      if (!r.ok) return showAlert(loanError, errMsg(r));
+      loanForm.principal.value = '';
+      message.className = 'alert success';
+      showAlert(message, `Loan ${r.data.loanNo} opened under ${r.data.accountNo} with ${money(r.data.principal)} outstanding.`);
+      await load();
+    });
+
+    await load();
+  })();
+  </script>
+</body>
+</html>

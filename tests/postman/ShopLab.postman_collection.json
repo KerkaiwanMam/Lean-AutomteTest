@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "ShopLab API",
-    "description": "Postman collection for ShopLab (Module 13). Run in Postman or with Newman:\n  newman run tests/postman/ShopLab.postman_collection.json -e tests/postman/local.postman_environment.json\nRequests are ordered: Setup -> Auth -> Products -> Cart -> Orders -> Negative.",
+    "description": "Postman collection for ShopLab (Module 13). Run in Postman or with Newman:\n  newman run tests/postman/ShopLab.postman_collection.json -e tests/postman/local.postman_environment.json\nRequests are ordered: Setup -> Auth -> Products -> Cart -> Orders -> Negative -> LoanLab.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -172,6 +172,106 @@
           "request": { "method": "GET", "url": "{{baseUrl}}/api/products?pageSize=51" }
         }
       ]
+    },
+    {
+      "name": "06 LoanLab",
+      "description": "LoanLab lending & payment module (fictional training domain). Rules: practice-app/REQUIREMENTS-LOANLAB.md. Runs after 01 Auth, so {{token}} is the test customer from 00 Setup.",
+      "item": [
+        {
+          "name": "Create loan for the test customer (test hook)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "const body = pm.response.json();",
+            "pm.test('ACTIVE account, 10,000.00 outstanding', () => {",
+            "  pm.expect(body.account.status).to.eql('ACTIVE');",
+            "  pm.expect(body.loan.outstanding).to.eql(10000);",
+            "});",
+            "pm.collectionVariables.set('loanId', body.loan.id);"
+          ] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"username\":\"{{username}}\",\"outstanding\":10000}" }, "url": "{{baseUrl}}/api/test/loanlab/accounts" }
+        },
+        {
+          "name": "Pay 499.99 -> 400 BELOW_MINIMUM",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('400', () => pm.response.to.have.status(400));",
+            "pm.test('BELOW_MINIMUM (LL-PAY-06)', () => pm.expect(pm.response.json().error.code).to.eql('BELOW_MINIMUM'));"
+          ] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\"amount\":499.99}" }, "url": "{{baseUrl}}/api/loanlab/loans/{{loanId}}/payments" }
+        },
+        {
+          "name": "Pay 500.00 (minimum)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "const body = pm.response.json();",
+            "pm.test('balance 9,500.00, loan ACTIVE', () => {",
+            "  pm.expect(body.loan.outstanding).to.eql(9500);",
+            "  pm.expect(body.loan.status).to.eql('ACTIVE');",
+            "});",
+            "pm.test('POSTED payment PM-YYYYMMDD-NNNNNN', () => {",
+            "  pm.expect(body.transaction.status).to.eql('POSTED');",
+            "  pm.expect(body.transaction.ref).to.match(/^PM-\\d{8}-\\d{6}$/);",
+            "});",
+            "pm.collectionVariables.set('txnId', body.transaction.id);"
+          ] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\"amount\":500}" }, "url": "{{baseUrl}}/api/loanlab/loans/{{loanId}}/payments" }
+        },
+        {
+          "name": "Customer reverse -> 403",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('403 (LL-REV-01)', () => pm.response.to.have.status(403));"
+          ] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\"originalTransactionId\":{{txnId}},\"reference\":\"NM-CUSTOMER-TRY\",\"reason\":\"Customer tries to undo\"}" }, "url": "{{baseUrl}}/api/loanlab/reversals" }
+        },
+        {
+          "name": "Officer login (admin)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.collectionVariables.set('officerToken', pm.response.json().token);"
+          ] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"username\":\"{{officerUser}}\",\"password\":\"{{officerPass}}\"}" }, "url": "{{baseUrl}}/api/auth/login" }
+        },
+        {
+          "name": "Officer partial reversal 200.00",
+          "event": [{ "listen": "prerequest", "script": { "exec": [
+            "// a new reference per run: the reference identifies a duplicate (LL-REV-09)",
+            "pm.collectionVariables.set('reversalRef', 'NM-' + Date.now());"
+          ] } }, { "listen": "test", "script": { "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "const body = pm.response.json();",
+            "pm.test('payment PARTIALLY_REVERSED, 300.00 still reversible', () => {",
+            "  pm.expect(body.original.status).to.eql('PARTIALLY_REVERSED');",
+            "  pm.expect(body.original.reversibleAmount).to.eql(300);",
+            "});",
+            "pm.test('balance restored by 200.00 (LL-REV-07)', () => pm.expect(body.loan.outstanding).to.eql(9700));"
+          ] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{officerToken}}" }], "body": { "mode": "raw", "raw": "{\"originalTransactionId\":{{txnId}},\"reference\":\"{{reversalRef}}\",\"reason\":\"Posted to the wrong loan\",\"amount\":200}" }, "url": "{{baseUrl}}/api/loanlab/reversals" }
+        },
+        {
+          "name": "Same reversal again -> 409 DUPLICATE_REVERSAL",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('409', () => pm.response.to.have.status(409));",
+            "pm.test('DUPLICATE_REVERSAL (LL-REV-09)', () => pm.expect(pm.response.json().error.code).to.eql('DUPLICATE_REVERSAL'));"
+          ] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{officerToken}}" }], "body": { "mode": "raw", "raw": "{\"originalTransactionId\":{{txnId}},\"reference\":\"{{reversalRef}}\",\"reason\":\"Posted to the wrong loan\",\"amount\":200}" }, "url": "{{baseUrl}}/api/loanlab/reversals" }
+        },
+        {
+          "name": "Balance unchanged after the duplicate",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('outstanding still 9,700.00', () => pm.expect(pm.response.json().outstanding).to.eql(9700));"
+          ] } }],
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/loanlab/loans/{{loanId}}" }
+        },
+        {
+          "name": "History newest first",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const types = pm.response.json().items.map((t) => t.type);",
+            "pm.test('reversal then payment (LL-RPT-01)', () => pm.expect(types).to.eql(['REVERSAL', 'PAYMENT']));"
+          ] } }],
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/api/loanlab/loans/{{loanId}}/transactions" }
+        }
+      ]
     }
   ],
   "variable": [
@@ -179,6 +279,12 @@
     { "key": "username", "value": "" },
     { "key": "password", "value": "" },
     { "key": "hubId", "value": "" },
-    { "key": "orderId", "value": "" }
+    { "key": "orderId", "value": "" },
+    { "key": "loanId", "value": "" },
+    { "key": "txnId", "value": "" },
+    { "key": "reversalRef", "value": "" },
+    { "key": "officerToken", "value": "" },
+    { "key": "officerUser", "value": "admin" },
+    { "key": "officerPass", "value": "Admin123!" }
   ]
 }
