@@ -14,7 +14,7 @@ _Last updated: 2026-11-23 (CL-015)_
 | LoanLab practice module | ✅ merged to `main` via PR #1 (CL-013, CL-014) · back office page + Postman folder + CI reporter on branch `feat/loanlab-officer` (CL-015) · local: unit 69, Playwright 165, Robot 51, newman 47 assertions all green · CI on `main`: 4 of 6 runs green, `playwright (2/2)` failed twice — cause not confirmed (logs need sign-in); likely the ShopLab registration avatar race fixed in CL-015 · not piloted with learners |
 
 ## Open decisions for the user (from CL-013)
-- Merge `feat/loanlab-officer` (CL-015) after its CI run; if `playwright (2/2)` still fails, the new `github` reporter annotations name the test
+- ~~Merge `feat/loanlab-officer`~~ merged as PR #2 (2026-11-27), CI green on the PR and on main · if `playwright (2/2)` fails again, the `github` reporter annotations name the test
 - Capstone pass mark on LoanLab: proposed 10 of 13 seeded bugs, same as ShopLab
 - Review the `design`-level rules in `REQUIREMENTS-LOANLAB.md` that were not part of the 8 confirmed answers (the rule "reversal `reference` identifies a duplicate" was confirmed by the user on 2026-11-16 and is no longer open) — remaining: officer may pay on a customer's behalf, principal range 1,000–1,000,000, check order of payment and reversal errors
 - Build a Transfer page? Roadmap Ch 5 lists it; outside Appendix A. Needs rules first: source/target (own loan accounts only? other customers?), limits, fees, effect on EOD

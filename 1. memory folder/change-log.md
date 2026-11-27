@@ -29,7 +29,9 @@
 - หน้า Back Office เปิดในเบราว์เซอร์ด้วยบัญชี admin แสดงครบ ไม่มี error ของหน้านั้นใน console
 - `run_all.py` ผ่านทั้ง 6 ขั้น · fact-check `todo` 9 รายการเท่าเดิม
 
-**ยังไม่ได้ทำ:** หน้า Transfer (ต้องการกฎจากผู้ใช้) · ยืนยันสาเหตุ CI shard 2/2 ต้องรอ run ถัดไปที่มี `github` reporter · ยังไม่ได้ทดลองกับผู้เรียน
+**ผล CI หลัง merge (PR #2 → `main` `de3d025`, 2026-11-27):** run ของ PR และของ push เข้า `main` ผ่านทุก job (unit, api-newman, robot, playwright 1/2 และ 2/2) · `github` reporter ทำงาน — annotation ของ shard 2/2 แจ้ง 143 passed ไม่มี flaky · ก่อนหน้านั้น `main` ผ่าน 7 รอบติดกัน (19–27 พ.ย.) จึงยังสรุปไม่ได้ว่าการแก้ race ของหน้า register คือสาเหตุ แต่ถ้าล้มอีก annotation จะบอกชื่อ test · ข้อสังเกต: shard 1/2 ได้ 23 tests ส่วน 2/2 ได้ 143 (แบ่งไม่สมดุล)
+
+**ยังไม่ได้ทำ:** หน้า Transfer (ต้องการกฎจากผู้ใช้) · ยังไม่ได้ทดลองกับผู้เรียน
 
 ---
 
