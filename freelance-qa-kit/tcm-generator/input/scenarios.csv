@@ -1,0 +1,6 @@
+﻿scenario_id,feature,title,negative,priority,test_type,automation,user_story,test_data,cond:customer,cond:lead_days,cond:slot,cond:deposit,ST-01,ST-02,ST-03,ST-04,ST-05,ST-06,ST-07
+,BOOKING,สมาชิกจองช่วงเวลาว่างล่วงหน้า 1 วัน ไม่ต้องมัดจำ,N,High,Smoke,Automatable,US-01,บริการ ทำเล็บเจล 590 บาท; เบอร์ 0812345678,member,1,free,not required,x,x,x,x,x,,x
+,BOOKING,จองได้ที่ขอบบน 30 วันล่วงหน้า,N,High,Functional,Automatable,US-01,บริการ ทำเล็บเจล 590 บาท; เบอร์ 0812345678,member,30,free,not required,x,x,x,x,x,,x
+,BOOKING,ปฏิเสธการจองเกิน 30 วันล่วงหน้า,Y,High,Functional,Automatable,US-01,บริการ ทำเล็บเจล 590 บาท,member,31,free,not required,x,x,x|วันที่เกิน 30 วันเลือกไม่ได้ และแสดงข้อความ "จองล่วงหน้าได้ไม่เกิน 30 วัน",,,,
+,BOOKING,ปฏิเสธการจองช่วงเวลาที่ถูกจองแล้ว,Y,High,Functional,Manual,US-01,ช่วงเวลา 10:00 ที่ customer A จองไว้แล้ว,member,1,taken,not required,x,x,x|ช่วงเวลาแสดงเป็น "ไม่ว่าง" และเลือกไม่ได้,,x|server ตอบ 409 และไม่สร้างการจองซ้ำ (ส่ง request ตรงผ่าน Postman),,
+,BOOKING,ลูกค้าใหม่จองวันเดียวกันและจ่ายมัดจำ,N,High,Regression,Automatable,US-03,บริการ ต่อขนตา 1200 บาท; บัตรทดสอบ 4242 4242 4242 4242,new,0,free,required,x,x,x,x,x,x,x

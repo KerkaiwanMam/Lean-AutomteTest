@@ -14,6 +14,9 @@ window.LL = (() => {
   async function renderHeader(active) {
     const host = document.getElementById('app-header');
     const [user, cfg] = await Promise.all([me(), config()]);
+    // the system business date drives payments, reversals and EOD, so it is shown on every page
+    const dateRes = user ? await api('/loanlab/business-date') : null;
+    const businessDate = dateRes && dateRes.ok ? dateRes.data.businessDate : null;
     const link = (href, label, id) => `<a href="${href}" data-testid="nav-${id}" ${active === id ? 'class="active" aria-current="page"' : ''}>${label}</a>`;
     host.innerHTML = `
       ${cfg.bugMode ? '<div class="bug-banner" data-testid="bug-banner">BUG MODE is ON — intentional defects are active</div>' : ''}
@@ -28,6 +31,7 @@ window.LL = (() => {
           </nav>
           <div class="right">
             ${user ? `
+              ${businessDate ? `<span class="ll-chip date" data-testid="nav-business-date" title="System business date">📅 ${esc(businessDate)}</span>` : ''}
               <span class="ll-chip" data-testid="nav-role">${user.role === 'admin' ? 'Officer' : 'Customer'}</span>
               <span class="linkish" data-testid="nav-username" title="${esc(user.email)}">👤 ${esc(user.username)}</span>
               <button class="linkish" data-testid="nav-logout" type="button">Logout</button>` : `

@@ -13,6 +13,7 @@ Python 3 standard library only. Run from the repository root.
 | `text_lint.py` | 2 | Duplicate English/Thai words, non-canonical term spelling (uses `3. asset folder/glossary.md`), trailing spaces |
 | `extract_claims.py` | 1 | Builds/updates `1. memory folder/fact-check-queue.csv` — keeps status/ref_ids between runs |
 | `apply_verdicts.py` | 1, 4 | Applies `1. memory folder/fact-check-verdicts.csv` (rules matched by file + text snippet, so they survive edits) and lists remaining `todo` · a claim with `REF-xxx` on its own line is verified automatically when every cited source is verified in `references.md` |
+| `exam_bank.py` | 2, 3 | Final exam bank (`docs/instructor/final-exam/`): `check` (format, answers, REF ids, blueprint quotas, excluded AC topics, bare option letters) · `stats` · `build --seed N` draws a 60-question form with shuffled options into the git-ignored `exam-forms/` |
 | `compare_versions.py` | 3 | Original vs edited: word counts, headings added/removed, section order, links/REF IDs, similarity, `--diff` |
 | `prompt-templates/` | 1, 3 | Reusable prompts: fact-check a claim, review narrative flow |
 
@@ -24,6 +25,7 @@ python "4. script folder/content_inventory.py" --md
 python "4. script folder/roadmap_coverage.py" --corpus docs/02-master-curriculum.md
 python "4. script folder/md_toc.py" docs/02-master-curriculum.md        # after editing headings
 python "4. script folder/extract_claims.py" && python "4. script folder/apply_verdicts.py"
+python "4. script folder/exam_bank.py" check && python "4. script folder/exam_bank.py" build --seed 2027
 ```
 
 Fact-check queue statuses: `todo` → `verified` / `corrected` / `outdated` / `unverifiable` / `skip` (not a factual claim).

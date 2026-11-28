@@ -16,6 +16,7 @@ STEPS = [
     ("Links", ["check_links.py"], True),
     ("Text lint", ["text_lint.py"], True),
     ("Fact-check queue", ["extract_claims.py"], True),
+    ("Final exam bank", ["exam_bank.py", "check"], False),
 ]
 
 

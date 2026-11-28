@@ -5,6 +5,151 @@
 
 ---
 
+## 2026-11-28 — CL-022 · TCM generator + เปลี่ยนชื่อ test run log
+
+**ที่มา:** ผู้ใช้สั่ง "สร้างเลย" ตามข้อเสนอใน CL-021 · ใช้แนวคิดทั่วไปจากเทมเพลตภายนอก **โดยไม่คัดลอกเนื้อหา lookup หรือชื่อบุคคล** · ตัวอย่างข้อมูลเป็นเว็บจองคิวร้านทำเล็บ (ชุดเดียวกับเทมเพลต 03/04)
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `freelance-qa-kit/tcm-generator/tcm_build.py` (ใหม่, stdlib) | ไม่มี | อ่าน `conditions.csv` (Test Coverage Matrix), `steps.csv` (คลัง step), `scenarios.csv` (scenario + step matrix ติ๊ก `x` / `x\|expected`) → เขียน `test-cases.csv` (1 แถว/step + คอลัมน์ execution), `import-generic.csv`, `test-data-prep.csv`, `coverage.md`, `playwright/*.spec.ts` (`test.fixme` + `test.step`) · `--check` ตรวจอย่างเดียว | แก้จุดอ่อนของเทมเพลตแบบสูตร: ไม่ต้องใช้ Excel 365, เพิ่มแถว/คอลัมน์ได้, expected ต่อ scenario × step, ตรวจ condition ที่ยังไม่ถูกทดสอบ, มีคอลัมน์ผลการรัน | ISTQB CTFL v4.0.1 บทที่ 4 (EP, BVA, decision table) |
+| 2 | `templates/05-tcm.csv` | ชื่อ "TCM" = Test Case Management | `templates/05-test-run-log.csv` (เนื้อหาเหมือนเดิม) · อัปเดตลิงก์ใน `README.md`, `04-test-cases.md` (เพิ่มหมายเหตุคำศัพท์), `08-report-coverage-matrix.md` | ในงานองค์กร TCM = Test Coverage Matrix · ไม่ให้ชื่อชนกัน | CL-021 |
+| 3 | `freelance-qa-kit/README.md` | ไม่มีแถว generator | เพิ่มแถว `tcm-generator/` | – | – |
+
+**ตรวจหลังแก้ (รันจริง):** ตัวอย่าง → 5 scenario, 26 step, 0 warning, coverage 10/10 ค่า · CSV ทั้ง 3 ไฟล์ไม่มีแถวคอลัมน์ไม่ครบ · expected override ของ negative case 3 จุดถูกต้อง · input ผิด 5 แบบ (enum, ค่า condition ไม่มี, ไม่มี step, เครื่องหมายผิด, ค่า condition ไม่ถูกใช้) → 5 error + 2 warning, exit 1 · spec ที่สร้าง: `tsc` ผ่าน, `playwright --list` 4 test, รันแล้ว 4 skipped (fixme) · `check_links.py freelance-qa-kit` 0 broken · ไม่มีการอ้าง `05-tcm` เหลือ
+**ไม่ได้ทำ:** ยังไม่ได้ลอง import `import-generic.csv` เข้า Jira/Xray/TestRail จริง · ยังไม่ได้ commit
+
+---
+
+## 2026-11-28 — CL-021 · ศึกษาเทมเพลต TCM ภายนอก (ไม่มีการแก้ไฟล์ใน repo)
+
+**ที่มา:** ผู้ใช้ส่งไฟล์ xlsx เทมเพลต TCM and Test Cases (V2.0) จากนอก repo ให้ศึกษาเพื่อนำมาใช้และต่อยอด · อ่านด้วย openpyxl ใน scratchpad ครบ 11 ชีต (คำแนะนำ, coverage matrix ของ condition, E2E scenario, step matrix, expected result, ตัวรวม test case, รูปแบบ import เข้า Jira 2 แบบ, revision, lookup)
+**การตัดสินใจ:** เป็นเทมเพลตมาตรฐานภายในองค์กร มีรายชื่อระบบภายในและชื่อผู้จัดทำ → **ไม่คัดลอกเนื้อหา รายการ lookup หรือชื่อบุคคลเข้า repo** (repo มี remote บน GitHub) · นำเฉพาะ *แนวคิดทั่วไป* มาใช้ (condition list → scenario → step matrix แบบติ๊ก x → expected ต่อ step → แตกเป็น 1 แถวต่อ step → export เข้าเครื่องมือจัดการ test)
+**ข้อสังเกตที่สำคัญต่อ kit (CL-020):** ในเทมเพลตนี้ "TCM" หมายถึง **Test Coverage Matrix** ขณะที่ `freelance-qa-kit/templates/05-tcm.csv` ใช้ TCM = Test Case Management — ควรปรับชื่อให้ไม่สับสน (รอผู้ใช้ตัดสินใจพร้อมงานต่อยอด)
+**ไม่ได้ทำ:** ยังไม่ได้แก้ kit หรือสร้าง script ใหม่ · ไม่ได้เพิ่มใน `references.md` เพราะเป็นเอกสารภายใน ไม่ใช่แหล่งอ้างอิงสาธารณะ
+
+---
+
+## 2026-11-28 — CL-021 · ภาคเสริม M01b: 10 ประเภทการทดสอบในงานจริง + reference test ของ CSV interface
+
+**ที่มา:** ผู้ใช้ส่งรายการ 10 ประเภท (Functional, UI, API, Database, Batch Process, File Interface, Integration, End-to-End, Regression, Automation) ถามว่ามีในเอกสารแล้วหรือยัง และขอให้ใส่รายละเอียด ตัวอย่าง และการประยุกต์ใช้ให้ครบ
+**ผลตรวจก่อนแก้:** มีบางส่วนกระจายอยู่ — Functional/Regression (M01 §4, ย่อ), UI (M04, M07–M12), API (M13), Database (M14), Integration/E2E (M01 §4 ตาราง level, master Ch 1 §1.E), Automation (M05) · **Batch Process** มีเพียง 1 บรรทัด (M12 Real-world notes, M16 §2) และ **File Interface** มีเพียง 1 บรรทัด (M14 §5) · ไม่มีที่ใดอธิบายว่า 10 คำนี้อยู่คนละมิติของ ISTQB
+**การตัดสินใจ (Claude ตัดสินตามที่ได้รับมอบ):** เขียนเป็นภาคเสริม `M01b` แทนการขยาย M01 — M01 เป็นบทพื้นฐาน 4 ชม. ถ้าเพิ่ม 10 หัวข้อเชิงลึกจะยาวเกือบ 5 เท่า · ไม่เปลี่ยนเลข module เดิม (ไม่กระทบลิงก์และ master curriculum) · test ใหม่อยู่ใน project `ui-admin` เพราะแก้ข้อมูลสินค้าที่ test อื่นนับ
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `docs/modules/M01b-test-types-in-practice.md` (ใหม่) | ไม่มี | โมดูลเต็มรูปแบบ: §0 แผนที่ 10 ประเภท ↔ มิติของ ISTQB (test type / ช่องทาง / test level / change-related / tool) · §1–10 ทุกประเภทมี นิยาม → checklist → ตัวอย่าง ShopLab/LoanLab → การประยุกต์ใช้ → ข้อผิดพลาดที่พบบ่อย → โมดูลที่เรียนต่อ · §11 worked example ฟีเจอร์ชำระหนี้ผ่าน 10 มุมมอง · Lab 4 ชุด · quiz 9 ข้อพร้อมเฉลย · checklist · real-world notes | ผู้ใช้ขอรายละเอียดครบทุกประเภท · Batch และ File Interface ยังไม่มีเนื้อหา | REF-097, REF-126, REF-127 |
+| 2 | M01b §0 | – | ระบุว่า UI/API/DB/Batch/File ไม่ใช่ test type ใน syllabus (การจัดกลุ่มของหลักสูตร) · E2E ไม่ใช่ test level แยก · Regression เป็น change-related testing · Automation เป็นวิธีรัน | กันผู้เรียนตอบผิดเมื่อถูกถามตามภาษา ISTQB | REF-097 §2.2.1–2.2.3, §5.1.6, §6 |
+| 3 | M01b §4 SQL | – | query reconciliation (ledger = outstanding) และ integrity (reversal ชี้ PAYMENT ที่มีจริง) | รันกับ `practice-app/data/shoplab.db` แบบ read-only ได้ 0 แถวทั้งคู่ (17 loans) | – |
+| 4 | M01b §5 Batch | – | checklist 9 ด้าน + test B-01..B-06 ของ LoanLab EOD + ขั้นตอน 6 ขั้น · ระบุว่า EOD รันใน transaction เดียว (`atomic()` ใน `service.js`) | นิยามจาก IBM · checklist เป็นแนวปฏิบัติของหลักสูตร (IBM ไม่ได้กล่าวถึง restart/rerun) | REF-127 |
+| 5 | M01b §6 File interface | – | กฎ CSV ตาม RFC 4180 (ระบุว่าเป็น Informational) · checklist 8 ด้าน · FI-01..FI-05 · ข้อสังเกต 4 ข้อเทียบโค้ด import/export กับ RFC · ตัวอย่าง fixed-width พร้อม header/trailer (ไฟล์สมมติ) | ข้อสังเกตข้อ 4 (เลขบรรทัดผิดเมื่อมีบรรทัดว่าง) ทดลองกับ API จริงแล้ว: แถวผิดบรรทัด 3 ได้ `line: 2` — ไม่ได้แก้แอป ใช้เป็นโจทย์ bug report ใน Lab 01b.3 | REF-126 |
+| 6 | `tests/playwright/tests/ui/file-interface.admin.spec.ts` (ใหม่) | REQ-ADM-03 (import/export CSV) ไม่มี test เลย | 5 tests: แถวถูก/ผิดพร้อมเลขบรรทัด, import ซ้ำ = update, ขาดคอลัมน์ = 400, ไม่มีไฟล์/ไม่ใช่ admin, export มี BOM + quoting ตาม RFC 4180 + จำนวน field เท่ากันทุกบรรทัด · soft-delete สินค้าที่สร้างหลังจบแต่ละ test | เป็นคำตอบอ้างอิงของ Lab 01b.3 และปิดช่องว่าง coverage | REF-126 |
+| 7 | `docs/modules/M01-testing-fundamentals.md` §4 | – | กล่องลิงก์ไป M01b ก่อนหัวข้อ Static vs Dynamic | ให้ผู้เรียนเจอภาคเสริมจากบทหลัก | – |
+| 8 | `docs/01-course-overview.md` | หัวข้อ "22 Modules · ~140 ชั่วโมง" | เพิ่มแถว M01b (6 ชม., P1) · หัวข้อ "22 Modules + ภาคเสริม M01b · ~140 ชั่วโมง ไม่รวมภาคเสริม" | ตารางโครงสร้างตรงกับไฟล์จริง | – |
+| 9 | `docs/02-master-curriculum.md` content map 1.E · `README.md` ตาราง Level 1 | "M01 §4 + บทนี้" | "M01 §4, M01b (10 ประเภทในงานจริง) + บทนี้" · ลิงก์ M01b ใน README | – | – |
+| 10 | `2. reference folder/references.md` | – | เพิ่ม REF-126 (RFC 4180), REF-127 (IBM batch processing) · REF-097 เพิ่มสิ่งที่อ่านซ้ำ 2026-11-28 (§2.2.1–2.2.3, §3.1.3, §5.1.6–5.1.7, §6.1–6.2) | อ่านต้นฉบับใน session นี้ (CTFL ด้วย pdftotext) | REF-097, REF-126, REF-127 |
+| 11 | `1. memory folder/fact-check-verdicts.csv` | – | 24 rules ของ M01b | claim ใหม่ 39 ข้อ → todo ของ M01b = 0 | REF-097, REF-126 |
+
+**แหล่งที่ลองแล้วใช้ไม่ได้:** ISTQB Glossary (glossary.istqb.org) — ทุกหน้าตอบ 200 แต่เนื้อหาว่าง (น่าจะเป็นแอป JavaScript) จึงไม่ได้อ้างนิยามจาก glossary
+**ตรวจหลังแก้ (รันจริง):** `run_all.py` ผ่านทั้ง 7 ขั้น (structure 23 modules · M01b: 5 objectives, 4 labs, quiz 9 = เฉลย 9) · `compare_versions.py` M01 เดิม → ใหม่: similarity 98.2% เพิ่มเฉพาะลิงก์ · `tsc --noEmit` ผ่าน · test ใหม่ 5 ผ่าน · project `ui-admin` (admin.spec + test ใหม่) `--repeat-each=5` ผ่าน 55/55 · project `api` ผ่านเมื่อรันตามลำดับ dependency
+**ไม่ผ่าน / ข้อจำกัด:** (1) รันชุด `api + ui + ui-admin` ตามลำดับ 3 รอบ แต่ละรอบล้ม 1 test คนละตัว — `admin.spec` สร้างสินค้า (รอบ 1), `catalog.spec` cart badge (รอบ 2), `auth.spec` required fields (รอบ 3) ทั้งสองตัวหลังอยู่ใน project `ui` ซึ่งไม่มีไฟล์ที่แก้ และ admin.spec ผ่านเมื่อรันซ้ำ 5 รอบ จึงน่าจะเป็นความไม่เสถียรของเครื่องนี้ (server ใช้ร่วมกับ session อื่น) — ยังไม่ได้พิสูจน์สาเหตุ (2) ต้องรันด้วย `PW_CHANNEL=chrome` เพราะ chromium headless shell ของ Playwright รุ่นนี้ไม่ได้ติดตั้งในเครื่อง (3) รันชุดทั้งหมดกับ server ที่เปิดค้างอยู่ — `global.setup` reset ข้อมูลของ server นั้น (4) Robot ไม่ได้รัน เพราะไม่ได้แก้ (5) ยังไม่ได้ commit
+
+---
+
+## 2026-11-28 — CL-020 · Freelance Pre-launch QA Kit (เทมเพลต + Playwright smoke)
+
+**ที่มา:** ผู้ใช้ต้องการทำงาน freelance/startup ตรวจเว็บที่สร้างด้วย AI ก่อนเปิดใช้ และขอเทมเพลต TCM, scenario, test case, intake form, checklist ตามความเสี่ยง, รายงาน 3 ชิ้น และ Playwright smoke test · **ตำแหน่ง (Claude ตัดสินตามที่ได้รับมอบ):** โฟลเดอร์ใหม่ `freelance-qa-kit/` แยกจากเนื้อหาหลักสูตร (`docs/templates/` ยังเป็นเทมเพลตของคอร์ส ไม่ได้แก้) · ไม่ได้แก้ ShopLab, LoanLab หรือ test เดิม
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `freelance-qa-kit/templates/01`–`08` (ใหม่) | ไม่มี | intake form, risk checklist (A–H), scenarios + exploratory charter, test cases, `05-tcm.csv` (UTF-8 BOM, 19 คอลัมน์), executive summary (Go/No-Go), findings (severity 4 ระดับ + prompt สั่ง AI แก้), coverage matrix | ใช้ ID เชื่อม R → SC → TC → F เพื่อ traceability · เขียน test case เฉพาะ risk สูงเพื่อไม่ให้เกินเวลา | ISTQB CTFL v4.0.1 §4.4.2, 5.2, 5.5 (อ่านในรอบวิจัย CL นี้ — ยังไม่ได้เพิ่มใน `references.md`) |
+| 2 | `freelance-qa-kit/playwright-smoke/` (ใหม่) | ไม่มี | 5 spec: smoke, responsive 375px, axe A/AA, security-basics (secret scan รวม Supabase `service_role`, headers/cookies แบบรายงาน, HTTPS redirect, stack trace), critical-flow + access control/IDOR ตัวอย่าง · ตั้งค่าผ่าน `.env` (`process.loadEnvFile`, ไม่มี dotenv) | ใช้ซ้ำกับทุกลูกค้าโดยไม่แก้ไฟล์ test | Playwright docs (best practices, retries, accessibility) |
+| 3 | `smoke.spec.ts` ระหว่างตรวจ | นับ console "Failed to load resource" และ `net::ERR_ABORTED` เป็นปัญหา → 4/4 หน้า ShopLab fail | ไม่นับสองกรณีนี้ ตัดสินปัญหาเครือข่ายจาก status ของ response (5xx, asset 404) | 401 จาก `/api/me` ของผู้ไม่ล็อกอินและ request ที่ถูกยกเลิกตอน redirect เป็นพฤติกรรมปกติ (false positive) | – |
+| 4 | `playwright.config.ts` | ใช้ Chromium ที่ bundle มา (เครื่องนี้ยังไม่ได้ดาวน์โหลด build 1254) | รองรับ `PW_CHANNEL=chrome` | เหมือน config หลักของคอร์ส ไม่ต้องดาวน์โหลด browser | – |
+
+**ตรวจหลังแก้ (รันจริง):** `tsc --noEmit` ผ่าน · กับ ShopLab บนเครื่อง (port 3001, Chrome): **18 ผ่าน, 2 ข้าม** (IDOR ไม่ได้ตั้ง URL, HTTPS ข้ามบน localhost) · `/a11y.html` → a11y test fail ถูกต้อง 6 violation · pattern secret ตรวจกับข้อความตัวอย่าง (แยก `service_role` จาก `anon` ได้) · CSV 6 แถว 19 คอลัมน์ครบ · `check_links.py freelance-qa-kit` 0 broken · ระหว่างตรวจใช้ junction `node_modules` ชี้ไป `tests/playwright/node_modules` แล้วลบออก
+**ไม่ได้ทำ:** project `mobile-safari` (ยังไม่ได้ติดตั้ง WebKit) · ยังไม่ได้ลองกับเว็บที่สร้างด้วย AI จริง · แพ็กเกจ เพดานเวลา และรายการจุดอ่อนของเว็บ AI เป็นการออกแบบ ยังไม่ผ่านการวัดจากงานจริง · ยังไม่ได้ commit
+
+---
+
+## 2026-11-28 — CL-019 · ปรับ UX/UI ของหน้า LoanLab + accessibility test
+
+**ที่มา:** ผู้ใช้ "อยากให้ปรับปรุงหน้า uxui ให้เรียบร้อย" · **ขอบเขต (Claude ตัดสินตามที่ได้รับมอบ):** แก้เฉพาะหน้า LoanLab 6 หน้า · **ไม่แตะหน้าและ CSS ของ ShopLab** เพราะหน้าเหล่านั้นเป็นเป้าหมายของ lab, locator ของผู้เรียน และ visual baseline อยู่แล้ว · ทุก `data-testid` เดิมคงอยู่ · ไม่ได้แก้ server หรือ API
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `public/loanlab/loanlab.css` ตาราง | เลขสัญญา เลขอ้างอิง เงิน และวันที่ตัดกลางคำ ("LN-" / "000002") | ทุก cell เป็น `nowrap` ตารางเลื่อนแนวนอนภายในการ์ด (`.ll-scroll`) · คอลัมน์ข้อความยาว (reason, holder) ใช้ `.ll-wrap` · หัวตารางสีอ่อนลง · select ในตารางกว้างตามเนื้อหา | อ่านเลขอ้างอิงได้ทั้งก้อน · หน้า Back Office เดิม select ถูกตัดเหลือ "FROZ" | – |
+| 2 | เช่นเดียวกัน `.ll-facts` | คอลัมน์ป้ายกว้างตามเนื้อหา `<dl>` หลายก้อนในการ์ดเดียวไม่ตรงกัน | คอลัมน์ป้ายกว้างคงที่ 10.5rem (มือถือ 8.5rem) | ข้อมูลในหน้า Transaction Detail, Payment และ Reverse เรียงตรงกัน | – |
+| 3 | เช่นเดียวกัน layout | footer ลอยกลางจอในหน้าที่เนื้อหาสั้น | body เป็น flex column ให้ footer อยู่ล่างสุด (มีผลเฉพาะหน้า LoanLab ที่โหลดไฟล์นี้) | – | – |
+| 4 | `index.html` Account Overview | ข้อความ "Payment not available" ดันปุ่ม History ลงบรรทัดใหม่ | ป้ายสั้น "Not payable" ในแถวเดียวกับปุ่ม พร้อม tooltip บอกเหตุผล (Loan ปิดแล้ว / Account เป็น FROZEN ฯลฯ) | แถวสูงเท่ากัน อ่านง่าย · `data-testid="pay-unavailable"` คงเดิม | – |
+| 5 | `loanlab.js` header | business date อยู่เฉพาะบางหน้า | ชิป 📅 business date ใน header ทุกหน้า (`data-testid="nav-business-date"`) · หน้า overview อัปเดตชิปหลังรัน EOD | วันทำการเป็นตัวกำหนดการชำระ reverse และ EOD ผู้ใช้ควรเห็นตลอด | LL-EOD-01 |
+| 6 | `payment.html` | ไม่บอกช่วงยอดที่รับได้ใต้ช่อง amount | hint ใต้ช่อง (`data-testid="amount-hint"`, `aria-describedby`): "From ฿500.00 up to ฿x (full balance)" หรือ "Pay exactly ฿x to close the loan" เมื่อยอดต่ำกว่า 500 | ลดการกรอกผิดก่อนส่ง · ข้อความตาม LL-PAY-06 | LL-PAY-06 |
+| 7 | `officer.html` | ฟอร์ม 2 ใบเป็น flex row | grid 2 คอลัมน์ที่ยุบเป็นคอลัมน์เดียวบนจอแคบ · ชื่อ holder ตัดบรรทัดได้ | – | – |
+| 8 | `transaction.html`, `history.html`, `officer.html`, `index.html` | `style="overflow-x:auto"` และ margin แบบ inline | ใช้ class ใน `loanlab.css` | style อยู่ที่เดียว | – |
+| 9 | `tests/playwright/tests/loanlab/accessibility.ui.spec.ts` (ใหม่) | ไม่มี a11y test ของ LoanLab | axe-core WCAG 2.1 AA: 6 หน้า (customer 4, officer 2) ต้องไม่มี violation ระดับ serious/critical | ใช้เกณฑ์เดียวกับหน้าหลักของ ShopLab | REQ-NFR-02 |
+
+**ตรวจหลังแก้ (รันจริง):** ภาพหน้าจอในเบราว์เซอร์ที่ 1280px, 685px และ 375px (มือถือ) — ไม่มี horizontal scroll ระดับหน้า (`scrollWidth` 375 = `innerWidth` 375) · Playwright เต็มชุด 165 ผ่าน · a11y spec ใหม่ 3 ผ่าน · Robot `tests/loanlab` 6 ผ่าน · `run_all.py` ผ่านทุกขั้น
+**แก้เพิ่มหลังผู้ใช้แจ้ง "เปิดหน้าอื่นไม่ได้" (2026-11-28):** (1) ต้นเหตุหลักคือ server ไม่ได้รัน — Claude ปิด preview server ตอนจบรอบก่อน จึงเปิดหน้าใดไม่ได้เลย · ตรวจด้วยการเรียกทุกหน้าและทุกลิงก์ภายในแอปผ่าน HTTP: ทุกหน้าได้ 200 (ยกเว้น `/api/admin/products/export.csv` = 401 ซึ่งถูกต้องเพราะต้องเป็น admin) และคลิกตามเส้นทางจริง ShopLab → LoanLab → login → Account Overview → History → Transaction → Back Office ได้ครบ (2) **`public/js/common.js`:** header ของ ShopLab ไม่มีลิงก์ไป LoanLab ต้องพิมพ์ URL เอง → เพิ่มลิงก์ "LoanLab" / "LoanLab สินเชื่อ" (`data-testid="nav-loanlab"`) ไม่มี test ใดนับลิงก์ใน header และยังไม่มี visual baseline ที่ commit ไว้ · Playwright 167 ผ่าน · Robot (ไม่รวม legacy) 50 ผ่าน
+**ไม่ได้ทำ:** header บนมือถือยังกินพื้นที่ 4 แถว เพราะใช้ CSS ของ header ร่วมกับ ShopLab (แก้แล้วจะกระทบ ShopLab) · ยังไม่ได้ commit
+
+---
+
+## 2026-11-28 — CL-018 · คลังข้อสอบ Final Exam (90 ข้อ) + `exam_bank.py`
+
+**ที่มา:** ผู้ใช้ "Final exam bank" (backlog P1 ข้อ 7) · การออกแบบ blueprint, ขอบเขตที่ยกเว้น และเกณฑ์จบเป็นการตัดสินใจของ Claude ตามที่ผู้ใช้มอบไว้ (2026-11-28) — ผู้ใช้เปลี่ยนได้
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `docs/instructor/final-exam/` (ใหม่) | M22 §3 กำหนด "60 ข้อ, 90 นาที, ผ่าน 75%" แต่ไม่มีข้อสอบ | 6 ไฟล์ bank-A…F รวม 90 ข้อ (A 21 · B 15 · C 15 · D 12 · E 15 · F 12) ทุกข้อมี area/module/chapter/K-level/type/answer + เหตุผลที่อธิบายตัวลวง + อ้างอิงหัวข้อโมดูล/REF + README (blueprint, รูปแบบ, การให้คะแนน) | คลัง 1.5 เท่าของชุดสอบ ให้สุ่มได้หลายชุดและสอบซ่อมได้ · K-level แบบ ISTQB เน้น K3 เพราะเป็นหลักสูตรสายปฏิบัติ (K1 6 · K2 38 · K3 37 · K4 9) · ข้อ multi 5 ข้อ ให้คะแนนแบบต้องถูกครบ | REF-006, 007, 020, 022, 023, 027, 068, 069, 070, 072, 076, 081, 087, 088, 089, 090, 093, 094 |
+| 2 | ขอบเขตข้อสอบ | – | ไม่มีข้อในหัวข้อ AC-01..AC-14 และ Ch 19 | เนื้อหาโมดูลยังไม่ได้แก้ตาม audit — ถ้าออกข้อสอบตามเอกสารทางการ ข้อสอบจะขัดกับสิ่งที่ผู้เรียนอ่าน · ถ้าออกตามโมดูล เฉลยจะผิดตามมาตรฐาน · `exam_bank.py check` เตือนเมื่อแตะหัวข้อเหล่านี้ | audit report §3 |
+| 3 | ข้อ LoanLab F-06..F-12 | – | ทุก stem เขียน "ตามกฎของ LoanLab" + หมายเหตุหัวไฟล์ว่าเป็นระบบสมมติ · แจก REQUIREMENTS-LOANLAB.md ระหว่างสอบได้ | ห้ามนำเสนอกฎสมมติเป็นกฎธนาคารจริง (memory) · วัดการประยุกต์กฎ ไม่ใช่การท่อง | REQUIREMENTS-LOANLAB.md LL-PAY-05/06/11, LL-REV-04/07/09/10, LL-EOD-04 |
+| 4 | `4. script folder/exam_bank.py` (ใหม่) | ไม่มี | `check` (ID, metadata, A–D, จำนวนคำตอบตามชนิด, เหตุผล+อ้างอิง, REF ใน references.md, module มีจริง, โควตา 1.5×, สัดส่วน K-level, หัวข้อที่ยกเว้น, ตัวอักษรตัวเลือกที่ไม่ได้เขียนว่า "ข้อ X") · `stats` · `build --seed N` สุ่มตามโควตา สลับตัวเลือก และแก้ตัวอักษรในตัวเลือก/เหตุผลให้ตรง | สร้างชุดสอบซ้ำได้ด้วย seed และตรวจคลังทุกครั้งที่แก้ · ระหว่างทดสอบพบว่าเหตุผล E-03 เขียน "(A, C)" ซึ่งสลับแล้วจะผิด → เพิ่มกติกา bare-letter และแก้ข้อความเป็น "ข้อ A, C" | – |
+| 5 | `run_all.py`, script README | 6 ขั้น | เพิ่มขั้น "Final exam bank" | ตรวจคลังทุกครั้งที่รัน workflow | – |
+| 6 | `.gitignore` | – | `exam-forms/` | ชุดสอบและเฉลยที่สร้างแล้วต้องไม่ถูก commit ลง repo สาธารณะ | – |
+| 7 | `fact-check-verdicts.csv` | ไม่มีกฎสำหรับ final-exam | bank-*.md = `internal`, final-exam/README.md = `skip` | ตัวลวงในข้อสอบเป็นข้อความผิดโดยตั้งใจ ไม่ใช่ claim ของหลักสูตร (extract_claims ดึงไป 68 แถว) · ความถูกต้องของเฉลยตรวจด้วยขั้นที่ 3 แทน · todo ของคิวกลับเป็น 9 เท่าเดิม | – |
+| 8 | M22 §3 | "เกณฑ์ผ่าน 75%" | "เกณฑ์ผ่าน 75% (45 จาก 60 ข้อ)" + ลิงก์คลังข้อสอบสำหรับผู้สอน | ให้ผู้สอนหาคลังได้จากโมดูล | – |
+| 9 | `01-course-overview.md` §5 เกณฑ์จบ | "คะแนนรวม ≥ 75% และ Capstone ต้องจับบั๊ก … ≥ 10 จาก 13 ตัว" | เพิ่ม "และผ่าน Final Exam (ทฤษฎี 60 ข้อ) ≥ 75% ตาม M22" | M22 Skills checklist กำหนด "Final exam ≥ 75%" อยู่แล้ว แต่ตารางน้ำหนักคะแนนไม่มี final exam — ใช้เป็นเงื่อนไขผ่าน/ไม่ผ่าน ไม่เปลี่ยนน้ำหนัก 15/25/25/35 | – |
+| 10 | `README.md` | แถว instructor มีแค่ bug-catalogue | เพิ่มแถวคลังข้อสอบ + exam_bank.py · โครงสร้างโฟลเดอร์ `instructor/` | ให้ค้นเจอ | – |
+
+**Verification (ขั้นที่ 3):**
+- `exam_bank.py check`: 90 ข้อ · 0 errors · 0 warnings · `run_all.py`: ทุกขั้น PASS (text lint พบ "รหัสรหัส" ใน D-03 → เขียนใหม่เป็น "เข้ารหัส (encrypt) รหัสผ่าน")
+- สร้างชุดสอบ seed 1–50: ทุกชุด 60 ข้อไม่ซ้ำ และคำตอบหลังสลับชี้ไปที่ข้อความคำตอบเดิมทุกข้อ (0 mismatch) · ตรวจด้วยตาว่าเหตุผลของ E-03/D-07 ถูกแก้ตัวอักษรตามการสลับ
+- รัน LoanLab API บนเครื่อง (test hooks): F-06 `BELOW_MINIMUM` · F-07 499.99 `BELOW_MINIMUM`, 500.00 ผ่าน, 10,000.00 ผ่านและปิดสัญญา, 10,000.01 `OVERPAYMENT` · F-08 reverse 400 ผ่าน, 700 `EXCEEDS_REVERSIBLE_AMOUNT`, รายการเดิม `PARTIALLY_REVERSED` · F-09 `ACCOUNT_NOT_ACTIVE` · F-10 EOD ศุกร์ 2026-01-09 → P1 settle 2026-01-12, P2 (reverse ครบ) null · F-12 `DUPLICATE_REVERSAL` / สำเร็จเมื่อ reference ต่าง / `ALREADY_REVERSED` — ตรงเฉลยทั้งหมด · reset ข้อมูล LoanLab หลังทดสอบ (business date กลับเป็น 2026-01-05)
+- C-04: หน้า `/lab` มีปุ่ม "Start" และ "Start progress" จริง · หัวข้อ § ที่อ้างในเหตุผลตรวจกับหัวข้อจริงของ M09–M22 แล้วแก้ให้ตรง (เช่น D-06 → M11 §6, D-12 → M17 §6)
+
+**ยังไม่ได้ทำ:** ทดลองกับผู้เรียน (ความยาก, ค่าอำนาจจำแนก) · ผู้ตรวจภาษาไทย · ยังไม่ได้ commit
+
+---
+
+## 2026-11-28 — CL-017 · ตัดสินใจเรื่องค้างของ LoanLab (ผู้ใช้มอบให้ตัดสิน)
+
+**ที่มา:** ผู้ใช้ 2026-11-28 — "อยากให้นายตัดสินใจในสิ่งที่สมควรทำ เพื่อให้เกิดประสิทธิภาพสูงสุดและพัฒนาให้ดียิ่งขึ้น" · การตัดสินใจทั้งหมดในรายการนี้เป็นของผู้สร้างระบบ (Claude) ตามที่ได้รับมอบ
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `docs/02-master-curriculum.md` Lab 6.4 | "พร้อมทำบน LoanLab ยกเว้นหน้า Transfer ซึ่ง LoanLab v1 ไม่มี" | รายการหน้าใช้ Payment และ Back Office · หน้า Transfer ของ Roadmap ใช้หน้า Back Office แทน พร้อมเหตุผล · เพิ่ม reference `officer.ui.spec.ts` | **ตัดสินใจไม่สร้างหน้า Transfer:** LoanLab เป็นโดเมนสินเชื่อ การโอนต้องมีบัญชีเงินฝากซึ่งเป็นโดเมนใหม่ทั้งก้อน ได้ทักษะ automation เพิ่มน้อย ส่วนหน้า Back Office ฝึก form, select ที่เปลี่ยนตาม state และการยืนยันผลผ่าน API ได้ครบกว่า | INP-001 |
+| 2 | เช่นเดียวกัน Practice Systems และ Open Items ข้อ 1 | "ไม่มีหน้า Transfer" · "(รอกฎจากผู้สอน)" | "ไม่มีหน้า Transfer โดยตั้งใจ ... เพิ่มได้ภายหลังถ้าขยายไปมีบัญชีเงินฝาก" · ตัด Lab 6.4 ออกจากคอลัมน์ผล | สถานะตามการตัดสินใจ | – |
+| 3 | เช่นเดียวกัน §2.5 ย่อหน้า "State transition ของรายการชำระ" | "(สถานะเป็นข้อสมมติของหลักสูตรใน Appendix A): `POSTED` → reverse → `REVERSED` เป็น valid transition เดียว ..." | ระบุว่าอิง**ข้อสมมติฉบับร่าง** ASM-01 และให้เทียบกับ `REQUIREMENTS-LOANLAB.md` §4 หลังทำ Lab 2.6 โดยไม่บอกคำตอบ | ข้อความเดิมขัดกับระบบที่สร้างจริง (มี partial reversal) ผู้เรียนที่ใช้เป็น oracle กับ LoanLab จะได้ผลผิด · **Appendix A หมวด B คงเป็นฉบับร่างโดยตั้งใจ** เพราะเป็นโจทย์ของ Lab 2.6 | – |
+| 4 | `practice-app/REQUIREMENTS-LOANLAB.md` หัวเอกสารและหมวด 0 | "รายละเอียดระดับ `design` ข้ออื่น ... รอการ review" · ขอบเขตไม่กล่าวถึง Transfer | "รับเป็นกฎของ v1 เมื่อ 2026-11-28 (เจ้าของหลักสูตรมอบให้ผู้สร้างระบบตัดสิน · ทุกข้อมี test รองรับ)" · เพิ่ม "บัญชีเงินฝากกับการโอนเงิน" ในรายการนอกขอบเขต | **ตัดสินใจรับกฎระดับ design ทั้งหมด** เพราะสอดคล้องกันและมี unit/API/UI test ยืนยันแล้ว · ป้ายที่มายังเป็น `design` ตามจริง | – |
+| 5 | CI shard (ไม่ได้แก้ไฟล์) | – | – | **ตัดสินใจไม่ปรับ workflow:** ตรวจแล้วพบว่า Playwright เก็บ project ที่มี dependent (`ui` → `ui-admin`, `loanlab` → `loanlab-eod`) ไว้ใน shard เดียวกันทั้งสาย จึงได้ shard 1/2 = 23 tests, 2/2 = 143 tests · ถ้าแยก `ui-admin` กับ `loanlab-eod` ไปรันเป็นขั้นที่สองด้วย `--no-deps` จะได้ 78 กับ 77 tests แต่ต้องเพิ่มขั้นใน workflow และแยกโฟลเดอร์ report/`test-results` ไม่ให้ขั้นที่สองลบ trace ของขั้นแรก · เวลาที่ประหยัดได้ราว 20 วินาทีต่อ run ขณะที่เวลาส่วนใหญ่ของ job อยู่ที่การติดตั้ง และ workflow นี้เป็นสื่อการสอนของ M18 ที่ควรอ่านง่าย · บันทึกไว้เป็นตัวอย่าง trade-off ของ sharding กับ project dependencies | – |
+
+**ตรวจ:** `run_all.py` หลังแก้ผ่านทั้ง 6 ขั้น · fact-check `todo` 9 รายการเท่าเดิม
+
+---
+
+## 2026-11-28 — CL-016 · ยืนยันเกณฑ์ผ่าน capstone ของ LoanLab
+
+**ที่มา:** ผู้ใช้ตัดสินใจเมื่อ 2026-11-28 — "ใช้เกณฑ์ 10 จาก 13 ตามที่เสนอ"
+
+| # | จุดที่แก้ | เดิม | ใหม่ | เหตุผล | อ้างอิง |
+|---|---|---|---|---|---|
+| 1 | `docs/02-master-curriculum.md` §20.7 เกณฑ์ผ่าน | "LoanLab: ชุดบั๊กมี 13 ตัว เกณฑ์ที่เสนอคือ 10 จาก 13 ตัวเท่ากับ ShopLab — รอผู้สอนยืนยัน" | "LoanLab: 10 จาก 13 ตัวของชุด `LL-BUG-01` ถึง `LL-BUG-13` วัดด้วย `tools/grade_suite.py --bugs loanlab` — ผู้สอนยืนยันเมื่อ 2026-11-28" | ผู้ใช้ยืนยัน | – |
+| 2 | เช่นเดียวกัน Open Items ข้อ 1 | "· เกณฑ์ detection rate ของ LoanLab รอยืนยัน" และคอลัมน์ผล "Ch 20 (เกณฑ์ผ่าน)" | ตัดออก | ไม่ค้างแล้ว | – |
+| 3 | `docs/instructor/bug-catalogue.md` หมวด LoanLab | – | เพิ่มบรรทัด "Capstone pass mark (LoanLab): detection ≥ 10 จาก 13" พร้อมวิธีวัด | ผู้สอนใช้ไฟล์นี้ให้คะแนน | – |
+
+**ตรวจ:** `run_all.py` หลังแก้ผ่านทั้ง 6 ขั้น · fact-check `todo` 9 รายการเท่าเดิม
+
+---
+
 ## 2026-11-23 — CL-015 · LoanLab back office, Postman, และแก้ test ของ ShopLab ที่ล้มแบบสุ่ม
 
 **ที่มา:** งานที่ค้างจาก CL-014 · PR #1 (`feat/loanlab`) ถูก merge เข้า `main` แล้ว (`562ffb4`) · งานรอบนี้อยู่บน branch `feat/loanlab-officer`

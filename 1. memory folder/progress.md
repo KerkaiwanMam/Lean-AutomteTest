@@ -1,24 +1,27 @@
 # Progress & Backlog
 
-_Last updated: 2026-11-23 (CL-015)_
+_Last updated: 2026-11-28 (CL-021)_
 
 ## Status
 | Item | Status |
 |---|---|
 | Course v1.0 (22 modules) | ✅ written · structure audit 22/22 |
+| M01b Test Types in Practice (supplement) | ✅ written (CL-021) · 10 test types incl. Batch Process + File Interface (new topics) · structure audit 23/23 · new Playwright `file-interface.admin.spec.ts` 5 tests green · not piloted with learners · not committed |
 | ShopLab + reference tests | ✅ green (Playwright 110, Robot 45, unit 12, Newman 29) · Bug Mode 13/13 caught |
 | Content workflow & scripts | ✅ set up (CL-002) |
 | Fact-check rounds 1-2 | done (CL-003, CL-010): queue 105 claims, todo 0 (22 verified, 12 corrected, 10 internal, 61 skip) · references: 60 total — 46 verified, 4 partially verified, 2 superseded, 8 candidate (6 books not opened, Google flaky blog, Marick origin) |
 | Content audit vs 16-chapter roadmap | ✅ done (CL-012): `docs/audit/2026-11-10-content-audit-report.md` — 149 rows: Complete 71, Partial 47, Missing 19, Needs Correction 5, Outdated 3, Misplaced 2, Duplicate 2 |
 | Master Curriculum v2.0 | 🟡 draft for approval (CL-012): `docs/02-master-curriculum.md` — 20 chapters; content-map rows ✅ 124 · ✏️ 11 · 🆕 38 · 📝 16 · ⛔ 0 (after CL-013; was 🆕 37 · ⛔ 1) · modules M01–M22 not yet edited or renumbered |
-| LoanLab practice module | ✅ merged to `main` via PR #1 (CL-013, CL-014) · back office page + Postman folder + CI reporter on branch `feat/loanlab-officer` (CL-015) · local: unit 69, Playwright 165, Robot 51, newman 47 assertions all green · CI on `main`: 4 of 6 runs green, `playwright (2/2)` failed twice — cause not confirmed (logs need sign-in); likely the ShopLab registration avatar race fixed in CL-015 · not piloted with learners |
+| LoanLab practice module | ✅ merged to `main` via PR #1 (CL-013, CL-014) · back office page + Postman folder + CI reporter on branch `feat/loanlab-officer` (CL-015) · local: unit 69, Playwright 165, Robot 51, newman 47 assertions all green · CI on `main`: 4 of 6 runs green, `playwright (2/2)` failed twice — cause not confirmed (logs need sign-in); likely the ShopLab registration avatar race fixed in CL-015 · not piloted with learners · UX/UI polish of the 6 LoanLab pages + axe a11y spec (CL-019, not committed) |
+| Research report: test automation at leading companies | ✅ `reports/Test automation บริษัทชั้นนำ SDET.md` + notes in `research_notes/` · sources not yet added to `references.md` |
+| Freelance Pre-launch QA Kit | ✅ draft (CL-020): `freelance-qa-kit/` — 8 templates + Playwright smoke kit (18 pass / 2 skip on ShopLab) + `tcm-generator/` (CL-022: Test Coverage Matrix + step matrix → test cases, coverage, import CSV, Playwright skeletons) · mobile-safari not run · not tried on a real AI-built site · not committed |
 
 ## Open decisions for the user (from CL-013)
 - ~~Merge `feat/loanlab-officer`~~ merged as PR #2 (2026-11-27), CI green on the PR and on main · if `playwright (2/2)` fails again, the `github` reporter annotations name the test
-- Capstone pass mark on LoanLab: proposed 10 of 13 seeded bugs, same as ShopLab
-- Review the `design`-level rules in `REQUIREMENTS-LOANLAB.md` that were not part of the 8 confirmed answers (the rule "reversal `reference` identifies a duplicate" was confirmed by the user on 2026-11-16 and is no longer open) — remaining: officer may pay on a customer's behalf, principal range 1,000–1,000,000, check order of payment and reversal errors
-- Build a Transfer page? Roadmap Ch 5 lists it; outside Appendix A. Needs rules first: source/target (own loan accounts only? other customers?), limits, fees, effect on EOD
-- Master curriculum Appendix A stays a draft on purpose (section C is the Lab 2.6 exercise): ASM-01 and ASM-02 there and the state-transition paragraph in Ch 2 (§2.5, "POSTED → REVERSED เป็น valid transition เดียว") now differ from the built system because partial reversal was chosen — keep as the pre-review draft, or reword without giving the answer away?
+- ~~Capstone pass mark on LoanLab~~ confirmed by the user on 2026-11-28: 10 of 13 seeded bugs, same as ShopLab (CL-016)
+- ~~Review the `design`-level rules~~ accepted as v1 rules on 2026-11-28 (decision delegated to Claude, CL-017)
+- ~~Build a Transfer page?~~ decided not to (CL-017): LoanLab is a lending domain with no deposit accounts; Lab 6.4 uses the Back Office page instead
+- ~~Appendix A vs built system~~ (CL-017): Appendix A section B stays the pre-review draft on purpose; the Ch 2 §2.5 state-transition paragraph now says it follows the draft and points to REQUIREMENTS-LOANLAB.md §4 after Lab 2.6
 
 ## Open decisions for the user (from CL-012)
 - Approve the 20-chapter structure (4 chapters added to the roadmap's 16)?
@@ -28,7 +31,7 @@ _Last updated: 2026-11-23 (CL-015)_
 
 ## Backlog from the audit (priority order)
 - **P0** apply AC-01..AC-14 · ~~build LoanLab~~ done (CL-013) · confirm structure
-- **LoanLab follow-ups** ~~CI~~ (CL-014) · ~~Postman~~ · ~~officer UI~~ (CL-015) · Transfer page (needs rules) · confirm the CI shard 2/2 cause · run in Docker · pilot Lab 6.4, 12.4 and the banking capstone with learners
+- **LoanLab follow-ups** ~~CI~~ (CL-014) · ~~Postman~~ · ~~officer UI~~ (CL-015) · ~~Transfer~~ not built (CL-017) · CI shard imbalance known and accepted (CL-017) · run in Docker · pilot Lab 6.4, 12.4 and the banking capstone with learners
 - **P1** write Ch 19 (Testing AI-based Applications) labs — needs an LLM-backed practice app and a vetted evaluation tool · fill Ch 3 gaps (Python file I/O, modules, exceptions, tuple/set; TS interface; JWT, OAuth, HTTPS, XML, Linux) · the 16 "📝 To write" subchapters listed in the master curriculum's Open Items
 - **P2** Docker fundamentals with a real run · GitLab CI example pipeline · JSON validation and data-driven API tests in the Robot suite · rename module files to the new chapter numbers
 
@@ -42,7 +45,7 @@ _Last updated: 2026-11-23 (CL-015)_
 4. ~~Fact-check round 2~~ done (CL-010). Left over: open the 6 books (REF-040..044, 047) to check bibliographic data and the Myers quote wording; get the Kuhn 2004 PDF to check the >70% figure before re-adding it; read the TMMi Model document; have a native-Thai QA reviewer read the course
 5. ~~Files that labs say the instructor provides~~ ✅ done (CL-005): `flaky.spec.ts` (+ solution), `bad-checkout.spec.ts`, `pricing.csv` (+ solution), `docs/instructor/exercise-keys.md`
 6. ~~Skills Assessments 1–4~~ done (CL-011): docs/assessments/ + tools/grade_suite.py + GRADING_BUGS mode + SA2 auto-checked challenge + instructor key. Left: try the grader on a Robot suite; pilot the rubrics on real learner work
-7. Final exam question bank (60 questions, M22)
+7. ~~Final exam question bank~~ done (CL-018): `docs/instructor/final-exam/` 90 questions (form = 60, pass 45) + `4. script folder/exam_bank.py` (check / stats / build --seed). Left: pilot with learners (difficulty, discrimination); add questions on AC-01..14 topics and Ch 19 after those are written/corrected
 8. Lab solution guides for instructors
 9. Native Thai QA reviewer pass (language + practice fit)
 
