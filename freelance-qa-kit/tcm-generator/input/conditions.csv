@@ -1,0 +1,11 @@
+﻿dimension,value,technique,risk_id,note
+customer,new,EP,R-04,สมัครใหม่ ยังไม่เคยจอง
+customer,member,EP,R-04,สมาชิกที่เคยจองแล้ว
+lead_days,0,BVA,R-01,จองวันเดียวกัน (ขอบล่าง)
+lead_days,1,BVA,R-01,
+lead_days,30,BVA,R-01,จองล่วงหน้าได้สูงสุด 30 วัน (ขอบบน)
+lead_days,31,BVA,R-01,เกินขอบบน → ต้องถูกปฏิเสธ
+slot,free,EP,R-01,
+slot,taken,EP,R-01,มีคนจองช่วงนี้แล้ว
+deposit,required,Decision table,R-03,บริการราคาเกิน 1000 บาท ต้องจ่ายมัดจำ
+deposit,not required,Decision table,R-03,

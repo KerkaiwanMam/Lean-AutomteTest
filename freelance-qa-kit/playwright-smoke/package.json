@@ -1,0 +1,20 @@
+{
+  "name": "prelaunch-smoke-kit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reusable pre-launch smoke checks for AI-built / vibe-coded websites (Playwright + axe-core).",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:mobile": "playwright test --project=mobile-safari",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
+  }
+}
