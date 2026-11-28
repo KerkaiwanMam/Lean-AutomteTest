@@ -53,7 +53,9 @@ BUG_MODE=1 npx playwright test           # PowerShell: $env:BUG_MODE="1"; npx pl
 - "test X fail เฉพาะใน CI ช่วงกลางคืน" — สาเหตุที่เป็นไปได้ 3 ข้อ + วิธีพิสูจน์
 - "ออกแบบ BVA ของ REQ-ORD-04" · "วาด state table ของบัญชีผู้ใช้"
 - "review โค้ด test ต่อไปนี้ หา smell 5 จุด"
-เกณฑ์ผ่าน 75%
+เกณฑ์ผ่าน 75% (45 จาก 60 ข้อ)
+
+> 👩‍🏫 ผู้สอน: คลังข้อสอบ 90 ข้อพร้อมเหตุผลและเครื่องมือสุ่มชุดสอบอยู่ที่ [instructor/final-exam/](../instructor/final-exam/README.md) (⚠️ spoiler)
 
 ## 📖 4. Presentation (15 นาที + Q&A 10 นาที)
 1. Context & strategy (risk) — 2 นาที

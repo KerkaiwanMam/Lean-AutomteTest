@@ -211,7 +211,7 @@
 | **LoanLab** (`practice-app/`, หน้าเว็บ `/loanlab/`, API `/api/loanlab/*`) — Retail Lending & Payment: Account, Loan, Payment, Reversal, EOD, Security, Reporting พร้อม test hooks และ Bug Mode 13 บั๊ก (`LL-BUG-01` ถึง `LL-BUG-13`) · requirement ฉบับยืนยัน: [`practice-app/REQUIREMENTS-LOANLAB.md`](../practice-app/REQUIREMENTS-LOANLAB.md) | พร้อมใช้ (v1 สร้าง 2026-11-14 · ยังไม่ได้ทดลองกับผู้เรียน) | Workshop ภาคออกแบบของ Ch 1, 2, 4 · automation ของ Ch 6, 8, 10, 12 · capstone โดเมน Banking ของ Ch 20 |
 | ระบบที่มี LLM สำหรับ Ch 19 | **ยังไม่มี** | Ch 19 |
 
-LoanLab อยู่ในแอปเดียวกับ ShopLab และใช้บัญชีผู้ใช้ชุดเดียวกัน (admin ทำหน้าที่ officer) เป็นระบบสมมติเพื่อการเรียน ไม่ได้อ้างอิงกฎของธนาคารจริงแห่งใด · ข้อจำกัดของ v1: ไม่มีหน้า Transfer, ไม่มีดอกเบี้ย ค่าธรรมเนียม และปฏิทินวันหยุด · ผู้เรียนที่ฝึกบน ShopLab มาก่อนใช้ตารางเทียบใน [Appendix A](#appendix-a-loanlab-domain-specification-draft) เพื่อย้ายแนวคิดเดิม (กฎทางการเงิน, state machine, การย้อนรายการ, สิทธิ์เข้าถึง) มาสู่โดเมน Banking
+LoanLab อยู่ในแอปเดียวกับ ShopLab และใช้บัญชีผู้ใช้ชุดเดียวกัน (admin ทำหน้าที่ officer) เป็นระบบสมมติเพื่อการเรียน ไม่ได้อ้างอิงกฎของธนาคารจริงแห่งใด · ข้อจำกัดของ v1: ไม่มีหน้า Transfer (เป็นโดเมนสินเชื่อ ไม่มีบัญชีเงินฝาก), ไม่มีดอกเบี้ย ค่าธรรมเนียม และปฏิทินวันหยุด · ผู้เรียนที่ฝึกบน ShopLab มาก่อนใช้ตารางเทียบใน [Appendix A](#appendix-a-loanlab-domain-specification-draft) เพื่อย้ายแนวคิดเดิม (กฎทางการเงิน, state machine, การย้อนรายการ, สิทธิ์เข้าถึง) มาสู่โดเมน Banking
 
 ---
 
@@ -238,7 +238,7 @@ LoanLab อยู่ในแอปเดียวกับ ShopLab และใ
 | 1.B | Seven testing principles | M01 §2 | ✅ Ready |
 | 1.C | QA, QC, Testing · Verification กับ Validation · Quality Engineering | M01 §3 + บทนี้ | 🆕 Drafted |
 | 1.D | SDLC models และผลต่อการทดสอบ | บทนี้ | 🆕 Drafted |
-| 1.E | Test levels และ test types | M01 §4 + บทนี้ | ✏️ Fix (AC-01, AC-02) |
+| 1.E | Test levels และ test types | M01 §4, M01b (10 ประเภทในงานจริง) + บทนี้ | ✏️ Fix (AC-01, AC-02) |
 | 1.F | Static testing และ review | บทนี้ | 🆕 Drafted |
 | 1.G | Test process | M01 §5 + บทนี้ | ✏️ Fix (AC-03) |
 | 1.H | Agile testing, 3 Amigos, BDD | M04 §1–2 | ✅ Ready |
@@ -423,7 +423,7 @@ ISTQB CTFL Syllabus v4.0.1 บทที่ 1, 2, 3, 5 (REF-097) · Crispin แ�
 
 **BVA ของจำนวนเงิน** (สมมติหน่วยย่อยสุดคือ 0.01 บาท ซึ่งต้องยืนยันกับ requirement): 499.99 · 500.00 · 10,000.00 · 10,000.01
 
-**State transition ของรายการชำระ** (สถานะเป็นข้อสมมติของหลักสูตรใน Appendix A): `POSTED` → reverse → `REVERSED` เป็น valid transition เดียว · invalid ที่ต้องพยายามทำ: reverse รายการที่เป็น `REVERSED` แล้ว (duplicate reversal) และ reverse โดยไม่อ้างรายการเดิม
+**State transition ของรายการชำระ** (ตาม**ข้อสมมติฉบับร่าง** ASM-01 ใน Appendix A ก่อน requirement review): `POSTED` → reverse → `REVERSED` เป็น valid transition เดียว · invalid ที่ต้องพยายามทำ: reverse รายการที่เป็น `REVERSED` แล้ว (duplicate reversal) และ reverse โดยไม่อ้างรายการเดิม · หลังทำ Lab 2.6 ให้เทียบ state table ของตัวเองกับฉบับยืนยันใน `practice-app/REQUIREMENTS-LOANLAB.md` §4 ซึ่งเป็นสิ่งที่ LoanLab ทำจริง — ส่วนที่ต่างคือผลของ requirement review และเป็นตัวอย่างว่าทำไม test design ต้องรอ requirement ที่ยืนยันแล้ว
 
 ### 2.6 Workshop / Hands-on Lab
 
@@ -773,7 +773,7 @@ await expect(row).toContainText('REVERSED');
 | 6.1 | Locator challenge 15 element ใน Elements Lab | M07 Lab 07.1 |
 | 6.2 | Elements Lab: iframe, แท็บใหม่, shadow DOM, drag and drop, table, upload, download, infinite scroll | M10 Lab 10.4 |
 | 6.3 | UI suite ของ ShopLab: login, catalog, cart, checkout, order history | M09 Lab 09.2 + reference suite |
-| 6.4 | **Internet Banking UI ตาม Roadmap** (Login, Account Overview, Transfer, Payment History, Transaction Detail, Reverse Transaction) | พร้อมทำบน LoanLab (`/loanlab/`) ยกเว้นหน้า Transfer ซึ่ง LoanLab v1 ไม่มี · reference: `tests/playwright/tests/loanlab/payment-flow.ui.spec.ts` |
+| 6.4 | **Internet Banking UI ตาม Roadmap** (Login, Account Overview, Payment, Payment History, Transaction Detail, Reverse Transaction, Back Office) | พร้อมทำบน LoanLab (`/loanlab/`) · หน้า **Transfer** ของ Roadmap ใช้หน้า **Back Office** (`/loanlab/officer`) แทน: LoanLab เป็นโดเมนสินเชื่อซึ่งไม่มีบัญชีเงินฝากให้โอน และหน้า Back Office ฝึก form, select ที่เปลี่ยนตาม state และการยืนยันผลผ่าน API ได้ครบกว่า · reference: `tests/playwright/tests/loanlab/payment-flow.ui.spec.ts`, `officer.ui.spec.ts` |
 
 ### 6.7 Engineering Assignment & Deliverables
 
@@ -1941,7 +1941,7 @@ OWASP Top 10 for LLM Applications 2025 (REF-110) · NIST AI RMF 1.0 และ AI
 
 ### 20.7 Engineering Assignment & Deliverables
 
-**Final Deliverable:** Banking Automation Framework สำหรับ portfolio ตามรายการ 11 ข้อข้างต้น · **เกณฑ์ผ่าน:** คะแนนรวมไม่ต่ำกว่า 70 และ detection rate ตามเกณฑ์ของระบบฝึก (ShopLab: 10 จาก 13 ตัว · LoanLab: ชุดบั๊กมี 13 ตัว เกณฑ์ที่เสนอคือ 10 จาก 13 ตัวเท่ากับ ShopLab — รอผู้สอนยืนยัน)
+**Final Deliverable:** Banking Automation Framework สำหรับ portfolio ตามรายการ 11 ข้อข้างต้น · **เกณฑ์ผ่าน:** คะแนนรวมไม่ต่ำกว่า 70 และ detection rate ตามเกณฑ์ของระบบฝึก (ShopLab: 10 จาก 13 ตัว · LoanLab: 10 จาก 13 ตัวของชุด `LL-BUG-01` ถึง `LL-BUG-13` วัดด้วย `tools/grade_suite.py --bugs loanlab` — ผู้สอนยืนยันเมื่อ 2026-11-28)
 
 **ทางเลือก ShopLab:** ผู้เรียนที่ทำ capstone บน ShopLab ตาม M22 ยังวัดผลได้ครบ และควรทำส่วนออกแบบของโดเมน Banking (strategy, test design, testability review, evaluation set จาก Ch 1, 2, 4, 19) เป็นภาคผนวกของ portfolio
 
@@ -2119,7 +2119,7 @@ Forsgren, Humble และ Kim, *Accelerate* (REF-046) · Crispin และ Greg
 
 | # | รายการ | ผลต่อหลักสูตร |
 |---|---|---|
-| 1 | LoanLab v1 สร้างแล้ว (2026-11-14) แต่ยังไม่ได้ทดลองกับผู้เรียน · ไม่มีหน้า Transfer (รอกฎจากผู้สอน) · reference tests ของ LoanLab อยู่ใน CI แล้ว (2026-11-17) · เกณฑ์ detection rate ของ LoanLab รอยืนยัน · Appendix A คงเป็นฉบับร่างโดยตั้งใจ จึงมีบางข้อต่างจาก requirement ฉบับยืนยัน | Lab 6.4 (Transfer), Ch 20 (เกณฑ์ผ่าน), Lab 2.6 |
+| 1 | LoanLab v1 สร้างแล้ว (2026-11-14) แต่ยังไม่ได้ทดลองกับผู้เรียน · ไม่มีหน้า Transfer โดยตั้งใจ (Lab 6.4 ใช้หน้า Back Office แทน — เพิ่มได้ภายหลังถ้าขยาย LoanLab ไปมีบัญชีเงินฝาก) · reference tests ของ LoanLab อยู่ใน CI แล้ว (2026-11-17) · Appendix A คงเป็นฉบับร่างโดยตั้งใจ จึงมีบางข้อต่างจาก requirement ฉบับยืนยัน | Lab 6.4, Lab 2.6 |
 | 2 | ไม่มีระบบที่มี LLM และยังไม่ได้ตรวจเครื่องมือ evaluation | Lab 19.3, 19.4 |
 | 3 | หัวข้อ 📝 To write: 3.G, 3.H, 3.L, 3.M, 9.D, 10.E, 11.G, 11.J, 12.F, 13.C, 13.D, 15.D, 15.I, 19.E, 19.J, 20.D | ต้องเขียนโดยอ้างเอกสารที่เปิดอ่านจริง |
 | 4 | รายการ ✏️ Fix 14 ข้อยังไม่ได้แก้ในไฟล์ module | เนื้อหาใน module ขัดกับบทนี้จนกว่าจะแก้ |

@@ -82,9 +82,41 @@ M11-robot-framework-fundamentals.md,keyword นี้ไม่บันทึก
 SA1-test-design.md,*,skip,,Assessment design (rubric weights)
 SA3-automate-checkout.md,*,skip,,Assessment design (time / tools)
 assessment-keys.md,*,internal,,"Money values computed with practice-app/src/pricing.js; grader results from tools/grade_suite.py runs; Robot-suite weaknesses observed in this repo"
+bank-A-foundations.md,*,internal,,"Final exam question: wrong options are deliberate distractors, not claims; keys and rationales checked by exam_bank.py check, against the cited module sections, and LoanLab answers run against the local API on 2026-11-28 (CL-018)"
+bank-B-automation-foundations.md,*,internal,,"Final exam question: wrong options are deliberate distractors, not claims; keys and rationales checked by exam_bank.py check, against the cited module sections, and LoanLab answers run against the local API on 2026-11-28 (CL-018)"
+bank-C-playwright-architecture.md,*,internal,,"Final exam question: wrong options are deliberate distractors, not claims; keys and rationales checked by exam_bank.py check, against the cited module sections, and LoanLab answers run against the local API on 2026-11-28 (CL-018)"
+bank-D-robot-framework.md,*,internal,,"Final exam question: wrong options are deliberate distractors, not claims; keys and rationales checked by exam_bank.py check, against the cited module sections, and LoanLab answers run against the local API on 2026-11-28 (CL-018)"
+bank-E-engineering-ops.md,*,internal,,"Final exam question: wrong options are deliberate distractors, not claims; keys and rationales checked by exam_bank.py check, against the cited module sections, and LoanLab answers run against the local API on 2026-11-28 (CL-018)"
+bank-F-leadership-ai-banking.md,*,internal,,"Final exam question: wrong options are deliberate distractors, not claims; keys and rationales checked by exam_bank.py check, against the cited module sections, and LoanLab answers run against the local API on 2026-11-28 (CL-018)"
+final-exam/README.md,*,skip,,Exam design (blueprint, quotas, scoring) — course-design choice (CL-018)
 # --- CL-012: audit report and master curriculum (broad rule first, then the lines the text itself marks as unchecked) ---
 2026-11-10-content-audit-report.md,*,skip,,Audit report: quotes original text and records findings; its evidence is listed in section 8
 02-master-curriculum.md,*,skip,,Structure / mapping / course-practice row; sourced statements carry an inline REF and are picked up automatically
 02-master-curriculum.md,ยังไม่ตรวจ,todo,,Marked in the text as not yet checked against an official source
 02-master-curriculum.md,ยังไม่ได้ตรวจ,todo,,Marked in the text as not yet checked against an official source
 02-master-curriculum.md,ยังไม่ได้เปิดอ่าน,todo,,Marked in the text as not yet read
+# --- M01b Test Types in Practice (CL-021, 2026-11-28) ---
+M01b-test-types-in-practice.md,*,internal,,"LoanLab/ShopLab examples checked against REQUIREMENTS-LOANLAB.md, REQUIREMENTS.md, practice-app source and the local API on 2026-11-28 (SQL queries run read-only; blank-line CSV behaviour reproduced); checklists without REF are course practice (CL-021)"
+M01b-test-types-in-practice.md,"ISTQB CTFL v4.0.1 §2.2, §5.1.6–5.1.7, §6.2",verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF)
+M01b-test-types-in-practice.md,บอกว่าแต่ละประเภทอยู่ในมิติใด,skip,,Learning objective
+M01b-test-types-in-practice.md,รายการ 10 ประเภทเป็นภาษาที่ใช้ในงานจริง,verified,REF-097,"CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): §2.2.1 levels, §2.2.2 types, §2.2.3, §6"
+M01b-test-types-in-practice.md,ISTQB จัดไว้ที่ไหน,skip,,Table header
+M01b-test-types-in-practice.md,**Test type** (§2.2.2),verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): four test types
+M01b-test-types-in-practice.md,component integration testing และ system integration testing (§2.2.1),verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): five test levels
+M01b-test-types-in-practice.md,functional testing of end-to-end,verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): §2.2.1 system testing wording; §5.1.6 top layer end-to-end
+M01b-test-types-in-practice.md,**Change-related testing**,verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): §2.2.3 separate from the four types
+M01b-test-types-in-practice.md,ตอนสัมภาษณ์,verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): §2.2.2 lists four types; §2.2.3 separate
+M01b-test-types-in-practice.md,§2.2.2 ระบุวัตถุ,verified,REF-097,"CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): completeness, correctness, appropriateness"
+M01b-test-types-in-practice.md,functional testing มีวัตถุประสงค์หลัก 3 ข้อ,skip,,Quiz question
+M01b-test-types-in-practice.md,"**Functional completeness, functional correctness, functional appropriateness**",verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF)
+M01b-test-types-in-practice.md,ทดสอบระบบผ่านหน้าจอแบบที่ผู้ใช้เห็น,verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): §2.2.2 ISO/IEC 25010 list includes usability (interaction capability)
+M01b-test-types-in-practice.md,ทดสอบโดยเรียก API (เช่น HTTP/REST),verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): §5.1.7 Q2 contains API testing
+M01b-test-types-in-practice.md,แบ่งเป็นสองระดับ,verified,REF-097,"CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): §2.2.1 component integration (strategies bottom-up, top-down, big-bang) and system integration (environment similar to operational)"
+M01b-test-types-in-practice.md,incorrect interface specifications,verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): §3.1.3 typical defects easier/cheaper to find through static testing
+M01b-test-types-in-practice.md,ทดสอบกระบวนการทางธุรกิจหนึ่งเส้นทาง,verified,REF-097,"CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): §2.2.1, §5.1.6"
+M01b-test-types-in-practice.md,(CTFL v4.0.1 §2.2.3 — REF-097),verified,REF-097,"CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): confirmation, regression, impact analysis, automation, CI"
+M01b-test-types-in-practice.md,ประโยชน์และความเสี่ยงตาม CTFL v4.0.1 §6.2,verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): six benefits; risks paraphrased (table lists six of them)
+M01b-test-types-in-practice.md,syllabus ระบุความเสี่ยงไว้มากกว่า,verified,REF-097,CTFL v4.0.1 text re-read 2026-11-28 (pdftotext of the official PDF): §6.2 risk list
+M01b-test-types-in-practice.md,ยกประโยชน์ 2 ข้อและความเสี่ยง 2 ข้อ,skip,,Quiz question
+M01b-test-types-in-practice.md,มี header บรรทัดแรกได้ (optional),verified,REF-126,RFC 4180 §2 rules 3-4 read 2026-11-28
+M01b-test-types-in-practice.md,ทุกบรรทัดยาวเท่ากันตาม layout,internal,,"Fictional practice file; 50000 + 125050 = 175050 satang = 1,750.50 baht"

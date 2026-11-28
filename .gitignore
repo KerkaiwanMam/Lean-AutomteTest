@@ -15,3 +15,6 @@ tests/robot/output.xml
 
 # grader output (tools/grade_suite.py)
 grading/
+
+# generated final-exam forms + keys (4. script folder/exam_bank.py build) — never commit to the public repo
+exam-forms/

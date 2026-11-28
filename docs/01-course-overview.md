@@ -27,11 +27,12 @@
 7. **ทดสอบ non-functional** เบื้องต้น: performance (k6), accessibility (axe), visual, security (OWASP)
 8. **วางกลยุทธ์คุณภาพ** วัดผลด้วย metrics และสื่อสารกับทีม/ผู้บริหารได้ในฐานะ QA Lead
 
-## 3. โครงสร้างหลักสูตร (5 Levels · 22 Modules · ~140 ชั่วโมง)
+## 3. โครงสร้างหลักสูตร (5 Levels · 22 Modules + ภาคเสริม M01b · ~140 ชั่วโมง ไม่รวมภาคเสริม)
 
 | Level | Module | ชื่อ | ชม.* | ความสำคัญ |
 |---|---|---|---|---|
 | **1 Foundations** | [M01](modules/M01-testing-fundamentals.md) | Software Testing Fundamentals | 4 | P0 |
+| | [M01b](modules/M01b-test-types-in-practice.md) | ภาคเสริม: Test Types in Practice — 10 ประเภทการทดสอบในงานจริง | 6 | P1 |
 | | [M02](modules/M02-test-design-techniques.md) | Test Design Techniques | 8 | P0 |
 | | [M03](modules/M03-test-process-and-defects.md) | Test Process, Documentation & Defect Management | 5 | P0 |
 | | [M04](modules/M04-agile-devops-test-pyramid.md) | Agile, DevOps & Test Pyramid | 4 | P0 |
@@ -81,7 +82,7 @@
 | [Skills Assessments](assessments/README.md) (4 ครั้ง) | 25% | งานปฏิบัติจับเวลา เหมือน Practical Exam · SA3 ตรวจด้วย grader ที่วัดว่า test จับบั๊กได้กี่ตัว |
 | Capstone Project | 35% | สร้าง framework ครบวงจร + นำเสนอ (ดู M22) |
 
-**เกณฑ์จบหลักสูตร:** คะแนนรวม ≥ 75% และ Capstone ต้องจับบั๊กใน Bug Mode ได้ ≥ 10 จาก 13 ตัว
+**เกณฑ์จบหลักสูตร:** คะแนนรวม ≥ 75% · Capstone ต้องจับบั๊กใน Bug Mode ได้ ≥ 10 จาก 13 ตัว · และผ่าน Final Exam (ทฤษฎี 60 ข้อ) ≥ 75% ตาม M22
 
 ## 6. Competency Matrix (ใช้ประเมินตนเอง / ใช้ในการสัมภาษณ์งาน)
 

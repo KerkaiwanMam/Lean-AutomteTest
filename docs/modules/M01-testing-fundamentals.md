@@ -66,6 +66,8 @@
 - **Structural (white-box)** — ครอบคลุมโค้ด (coverage)
 - **Change-related** — **confirmation testing** (retest บั๊กที่แก้) และ **regression testing** (ส่วนอื่นยังไม่พัง) ← automation มีค่ามากที่สุดตรงนี้
 
+> 📘 ประเภทการทดสอบที่ใช้เรียกในงานจริง 10 แบบ (Functional, UI, API, Database, Batch Process, File Interface, Integration, End-to-End, Regression, Automation) พร้อมตัวอย่างและวิธีประยุกต์ใช้ อยู่ในภาคเสริม [M01b — Test Types in Practice](M01b-test-types-in-practice.md)
+
 **Static vs Dynamic testing**
 - *Static*: ไม่รันโค้ด — review requirement, code review, lint
 - *Dynamic*: รันโปรแกรมแล้วตรวจผล

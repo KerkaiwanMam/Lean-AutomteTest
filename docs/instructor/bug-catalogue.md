@@ -53,6 +53,8 @@
 
 **Reference suite detection (วัดจริงด้วย `tools/grade_suite.py --bugs loanlab` เมื่อ 2026-11-14 เปิดบั๊กทีละตัว):** Playwright projects `loanlab` + `loanlab-eod` จับได้ 13 จาก 13 · Robot `tests/loanlab` จับได้ 13 จาก 13 · baseline ไม่มีบั๊กผ่านทั้งสองชุด (บันทึกใน CL-013)
 
+**Capstone pass mark (LoanLab):** detection ≥ 10 จาก 13 (`LL-BUG-01` ถึง `LL-BUG-13`) วัดแบบเปิดบั๊กทีละตัวด้วย `python tools/grade_suite.py ... --bugs loanlab` — เท่ากับเกณฑ์ของ ShopLab (ยืนยัน 2026-11-28)
+
 **Teaching tips (LoanLab)**
 - บั๊กที่ UI-only suite มองไม่เห็น: LL-BUG-03 และ LL-BUG-09 (หน้าเว็บซ่อนฟอร์มเองตั้งแต่ฝั่ง client), LL-BUG-02 ถ้าไม่ลองค่าเกินยอด, LL-BUG-10 ถึง LL-BUG-12 ถ้าไม่ควบคุม business date ผ่าน test hook → ใช้คุยเรื่อง test pyramid และ testability
 - LL-BUG-04 หาไม่เจอถ้าไม่เคยตั้งคำถามตอน requirement review (Lab 2.6 ข้อ 1) → ตัวอย่างว่า test design เริ่มที่การอ่าน requirement

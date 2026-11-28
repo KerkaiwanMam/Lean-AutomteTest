@@ -13,6 +13,7 @@
 | Templates / Cheat sheets | [docs/templates/](docs/templates/) · [docs/cheatsheets/](docs/cheatsheets/) |
 | Skills Assessments 1–4 + grader (วัดว่า test จับบั๊กได้กี่ตัว) | [docs/assessments/](docs/assessments/README.md) · [tools/grade_suite.py](tools/grade_suite.py) |
 | เฉลยบั๊กสำหรับผู้สอน | [docs/instructor/bug-catalogue.md](docs/instructor/bug-catalogue.md) |
+| คลังข้อสอบ Final Exam (90 ข้อ) + เครื่องมือสุ่มชุดสอบ — ผู้สอน, spoiler | [docs/instructor/final-exam/](docs/instructor/final-exam/README.md) · [exam_bank.py](<4. script folder/exam_bank.py>) |
 
 ---
 
@@ -82,7 +83,7 @@ k6 run tests/performance/k6-smoke-load.js
 │   ├── modules/M01…M22               คู่มือการสอน (ทฤษฎี + labs + quiz + checklist)
 │   ├── templates/                    test plan/case/strategy/summary, bug report, framework review
 │   ├── cheatsheets/                  Playwright, Robot Framework, Locators
-│   └── instructor/bug-catalogue.md   เฉลย Bug Mode (⚠️ spoiler — repo นี้เป็น public)
+│   └── instructor/                   เฉลย Bug Mode, assessment keys, final-exam bank (⚠️ spoiler — repo นี้เป็น public)
 ├── practice-app/                     ShopLab: Express 5 + SQLite (node:sqlite) + HTML/JS
 │   ├── src/                          server, routes, pricing, config (bug mode/chaos), openapi
 │   ├── public/                       UI: shop, cart, checkout, orders, admin, lab, a11y, api-docs
@@ -102,7 +103,7 @@ k6 run tests/performance/k6-smoke-load.js
 
 | Level | Modules |
 |---|---|
-| 1 Foundations | [M01 Testing Fundamentals](docs/modules/M01-testing-fundamentals.md) · [M02 Test Design Techniques](docs/modules/M02-test-design-techniques.md) · [M03 Process & Defects](docs/modules/M03-test-process-and-defects.md) · [M04 Agile/DevOps/Pyramid](docs/modules/M04-agile-devops-test-pyramid.md) |
+| 1 Foundations | [M01 Testing Fundamentals](docs/modules/M01-testing-fundamentals.md) · [M01b Test Types in Practice](docs/modules/M01b-test-types-in-practice.md) · [M02 Test Design Techniques](docs/modules/M02-test-design-techniques.md) · [M03 Process & Defects](docs/modules/M03-test-process-and-defects.md) · [M04 Agile/DevOps/Pyramid](docs/modules/M04-agile-devops-test-pyramid.md) |
 | 2 Automation Foundations | [M05 Strategy & Tools](docs/modules/M05-automation-strategy.md) · [M06 Git/CLI/Env](docs/modules/M06-toolchain-git-cli.md) · [M07 Web, Locators, HTTP](docs/modules/M07-web-fundamentals-locators.md) · [M08 Programming](docs/modules/M08-programming-for-testers.md) |
 | 3 Tools | [M09 Playwright Fundamentals](docs/modules/M09-playwright-fundamentals.md) · [M10 Playwright Advanced](docs/modules/M10-playwright-advanced.md) · [M11 Robot Fundamentals](docs/modules/M11-robot-framework-fundamentals.md) · [M12 Robot Advanced](docs/modules/M12-robot-framework-advanced.md) · [M13 API & Contract](docs/modules/M13-api-testing.md) · [M14 Database & Data](docs/modules/M14-database-data-testing.md) |
 | 4 Engineering | [M15 Framework Architecture](docs/modules/M15-framework-architecture.md) · [M16 Test Data & Environments](docs/modules/M16-test-data-environments.md) · [M17 Flaky & Debugging](docs/modules/M17-flaky-tests-debugging.md) · [M18 CI/CD & Reporting](docs/modules/M18-ci-cd-reporting.md) · [M19 Non-functional](docs/modules/M19-non-functional-testing.md) |
