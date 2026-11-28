@@ -3,7 +3,7 @@ window.SL = (() => {
   const I18N = {
     en: {
       'nav.products': 'Products', 'nav.cart': 'Cart', 'nav.orders': 'My Orders', 'nav.admin': 'Admin', 'nav.lab': 'Elements Lab',
-      'nav.api': 'API Docs', 'nav.login': 'Login', 'nav.register': 'Register', 'nav.logout': 'Logout',
+      'nav.api': 'API Docs', 'nav.loanlab': 'LoanLab', 'nav.login': 'Login', 'nav.register': 'Register', 'nav.logout': 'Logout',
       'catalog.title': 'Products', 'catalog.search': 'Search products', 'catalog.searchBtn': 'Search', 'catalog.category': 'Category',
       'catalog.all': 'All categories', 'catalog.sort': 'Sort by', 'catalog.inStock': 'In stock only', 'catalog.minPrice': 'Min price',
       'catalog.maxPrice': 'Max price', 'catalog.apply': 'Apply filters', 'catalog.clear': 'Clear', 'catalog.empty': 'No products found',
@@ -16,7 +16,7 @@ window.SL = (() => {
     },
     th: {
       'nav.products': 'สินค้า', 'nav.cart': 'ตะกร้า', 'nav.orders': 'คำสั่งซื้อของฉัน', 'nav.admin': 'ผู้ดูแลระบบ', 'nav.lab': 'แล็บองค์ประกอบ',
-      'nav.api': 'เอกสาร API', 'nav.login': 'เข้าสู่ระบบ', 'nav.register': 'สมัครสมาชิก', 'nav.logout': 'ออกจากระบบ',
+      'nav.api': 'เอกสาร API', 'nav.loanlab': 'LoanLab สินเชื่อ', 'nav.login': 'เข้าสู่ระบบ', 'nav.register': 'สมัครสมาชิก', 'nav.logout': 'ออกจากระบบ',
       'catalog.title': 'สินค้า', 'catalog.search': 'ค้นหาสินค้า', 'catalog.searchBtn': 'ค้นหา', 'catalog.category': 'หมวดหมู่',
       'catalog.all': 'ทุกหมวดหมู่', 'catalog.sort': 'เรียงตาม', 'catalog.inStock': 'เฉพาะสินค้าที่มีของ', 'catalog.minPrice': 'ราคาต่ำสุด',
       'catalog.maxPrice': 'ราคาสูงสุด', 'catalog.apply': 'กรอง', 'catalog.clear': 'ล้าง', 'catalog.empty': 'ไม่พบสินค้า',
@@ -113,6 +113,7 @@ window.SL = (() => {
             ${link('/', 'nav.products', 'products')}
             ${link('/lab', 'nav.lab', 'lab')}
             ${link('/api-docs', 'nav.api', 'api')}
+            ${link('/loanlab/', 'nav.loanlab', 'loanlab')}
             ${user && user.role === 'admin' ? link('/admin', 'nav.admin', 'admin') : ''}
           </nav>
           <div class="right">

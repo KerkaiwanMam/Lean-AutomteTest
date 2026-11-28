@@ -23,7 +23,7 @@
         <button class="btn small" type="button" id="run-eod" data-testid="run-eod">Run EOD for <span data-testid="eod-date">—</span></button>
       </div>
       <p id="eod-message" class="alert success hidden" role="status" data-testid="eod-message"></p>
-      <div style="overflow-x:auto">
+      <div class="ll-scroll">
         <table class="ll-table" data-testid="eod-table">
           <thead><tr><th>Business date</th><th>Next date</th><th class="right-align">Settled</th><th class="right-align">Payments</th><th class="right-align">Reversals</th><th>Reconciliation</th><th class="right-align">Breaks</th></tr></thead>
           <tbody id="eod-body"></tbody>
@@ -51,7 +51,7 @@
           <td><div class="ll-actions">
             ${payable
               ? `<a class="btn small primary" href="/loanlab/payment?loanId=${l.id}" data-testid="pay-link">Pay</a>`
-              : '<span class="muted" data-testid="pay-unavailable">Payment not available</span>'}
+              : `<span class="ll-not-payable" data-testid="pay-unavailable" title="${l.status === 'CLOSED' ? 'Loan is closed' : `Account is ${esc(account.status)}`}">Not payable</span>`}
             <a class="btn small" href="/loanlab/history?loanId=${l.id}" data-testid="history-link">History</a>
           </div></td>
         </tr>`;
@@ -62,6 +62,8 @@
       if (!r.ok) return showAlert(document.getElementById('load-error'), errMsg(r));
       document.querySelector('[data-testid="business-date"]').textContent = r.data.businessDate;
       document.querySelector('[data-testid="eod-date"]').textContent = r.data.businessDate;
+      const chip = document.querySelector('[data-testid="nav-business-date"]');
+      if (chip) chip.textContent = `📅 ${r.data.businessDate}`; // stays right after an EOD run on this page
       document.getElementById('no-accounts').classList.toggle('hidden', r.data.items.length > 0);
       document.getElementById('accounts').innerHTML = r.data.items.map((a) => `
         <section class="card" data-testid="account-card" data-account-id="${a.id}">
@@ -72,7 +74,7 @@
             ${officer ? `<span class="tag" data-testid="account-username">${esc(a.username)}</span>` : ''}
           </div>
           ${a.loans.length ? `
-            <div style="overflow-x:auto"><table class="ll-table" data-testid="loans-table">
+            <div class="ll-scroll"><table class="ll-table" data-testid="loans-table">
               <thead><tr><th>Loan no.</th><th class="right-align">Principal</th><th class="right-align">Outstanding</th><th>Status</th><th><span class="hidden">Actions</span></th></tr></thead>
               <tbody>${a.loans.map((l) => loanRow(l, a)).join('')}</tbody>
             </table></div>` : '<p class="muted" data-testid="no-loans">No loan under this account.</p>'}

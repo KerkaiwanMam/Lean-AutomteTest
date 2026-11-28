@@ -17,8 +17,8 @@
     <div id="officer-content" class="hidden">
       <p class="muted">Business date: <strong data-testid="business-date">—</strong></p>
 
-      <div class="row" style="align-items:stretch">
-        <form id="account-form" class="card grow" data-testid="account-form" novalidate>
+      <div class="ll-grid-2">
+        <form id="account-form" class="card" data-testid="account-form" novalidate>
           <h2 style="margin-top:0">Create account</h2>
           <div id="account-error" class="alert error hidden" role="alert" data-testid="account-error"></div>
           <div class="field">
@@ -34,7 +34,7 @@
           <button class="btn primary" type="submit" data-testid="create-account">Create account</button>
         </form>
 
-        <form id="loan-form" class="card grow" data-testid="loan-form" novalidate>
+        <form id="loan-form" class="card" data-testid="loan-form" novalidate>
           <h2 style="margin-top:0">Open loan</h2>
           <div id="loan-error" class="alert error hidden" role="alert" data-testid="loan-error"></div>
           <div class="field">
@@ -56,7 +56,7 @@
 
       <section class="card" style="margin-top:1rem">
         <h2 style="margin-top:0">All accounts</h2>
-        <div style="overflow-x:auto">
+        <div class="ll-scroll">
           <table class="ll-table" data-testid="officer-accounts-table">
             <thead><tr><th>Account no.</th><th>Customer</th><th>Holder</th><th>Status</th><th class="right-align">Loans</th><th class="right-align">Outstanding</th><th>Change status</th></tr></thead>
             <tbody id="officer-accounts-body"></tbody>
@@ -97,7 +97,7 @@
         <tr data-testid="officer-account-row" data-account-id="${a.id}">
           <td data-testid="officer-account-no">${esc(a.accountNo)}</td>
           <td data-testid="officer-account-username">${esc(a.username)}</td>
-          <td>${esc(a.holderName)}</td>
+          <td class="ll-wrap" style="min-width:8rem">${esc(a.holderName)}</td>
           <td>${status(a.status, 'officer-account-status')}</td>
           <td class="right-align" data-testid="officer-account-loans">${a.loans.length}</td>
           <td class="right-align">${money(a.loans.reduce((s, l) => s + l.outstanding, 0))}</td>

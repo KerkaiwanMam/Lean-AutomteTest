@@ -26,11 +26,11 @@
         <dt>Settlement</dt><dd data-testid="txn-settlement"></dd>
         <dt>Balance after</dt><dd data-testid="txn-balance-after"></dd>
       </dl>
-      <dl id="payment-facts" class="ll-facts hidden" style="margin-top:.4rem">
+      <dl id="payment-facts" class="ll-facts hidden">
         <dt>Reversed amount</dt><dd data-testid="txn-reversed-amount"></dd>
         <dt>Still reversible</dt><dd data-testid="txn-reversible-amount"></dd>
       </dl>
-      <dl id="reversal-facts" class="ll-facts hidden" style="margin-top:.4rem">
+      <dl id="reversal-facts" class="ll-facts hidden">
         <dt>Original transaction</dt><dd><a id="original-link" href="#" data-testid="txn-original-ref"></a></dd>
         <dt>Reversal reference</dt><dd data-testid="txn-reference"></dd>
         <dt>Reason</dt><dd data-testid="txn-reason"></dd>
@@ -40,7 +40,7 @@
 
     <section id="reversals-card" class="card hidden" style="margin-top:1rem" data-testid="reversals">
       <h2 style="margin-top:0">Reversals of this payment</h2>
-      <div style="overflow-x:auto">
+      <div class="ll-scroll">
         <table class="ll-table" data-testid="reversals-table">
           <thead><tr><th>Reference</th><th class="right-align">Amount</th><th>Business date</th><th>Reversal reference</th><th>Reason</th></tr></thead>
           <tbody id="reversals-body"></tbody>
@@ -81,7 +81,7 @@
             <td class="right-align" data-testid="reversal-amount">${money(v.amount)}</td>
             <td>${esc(v.businessDate)}</td>
             <td data-testid="reversal-reference">${esc(v.reference)}</td>
-            <td data-testid="reversal-reason">${esc(v.reason)}</td>
+            <td class="ll-wrap" data-testid="reversal-reason">${esc(v.reason)}</td>
           </tr>`).join('');
         document.getElementById('reversals-card').classList.remove('hidden');
       }

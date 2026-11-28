@@ -32,7 +32,8 @@
       <div id="payment-error" class="alert error hidden" role="alert" data-testid="payment-error"></div>
       <div class="field">
         <label for="amount">Amount (THB)</label>
-        <input id="amount" name="amount" type="text" inputmode="decimal" autocomplete="off" data-testid="amount" required>
+        <input id="amount" name="amount" type="text" inputmode="decimal" autocomplete="off" data-testid="amount" aria-describedby="amount-hint" required>
+        <span class="hint" id="amount-hint" data-testid="amount-hint"></span>
         <span class="field-error" data-testid="error-amount"></span>
       </div>
       <div class="ll-actions">
@@ -75,6 +76,9 @@
       document.getElementById('loan-status').innerHTML = status(l.status, 'loan-status');
       text('outstanding', money(l.outstanding));
       text('minimum-payment', money(l.minimumPayment));
+      text('amount-hint', l.status === 'ACTIVE'
+        ? (l.minimumPayment === l.outstanding ? `Pay exactly ${money(l.outstanding)} to close the loan.` : `From ${money(l.minimumPayment)} up to ${money(l.outstanding)} (full balance).`)
+        : '');
       document.getElementById('loan-card').classList.remove('hidden');
       const reason = l.status === 'CLOSED' ? 'This loan is closed. There is nothing left to pay.'
         : l.accountStatus !== 'ACTIVE' ? `Payments are not available while the account is ${l.accountStatus}.` : '';
